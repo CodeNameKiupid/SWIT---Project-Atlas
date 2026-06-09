@@ -8145,32 +8145,49 @@ var MOB_CATS = [
   ]},
 ];
 
+// Flat lookup array for mobile device selection
+var MOB_DEV_LOOKUP = [];
+MOB_CATS.forEach(function(cat) {
+  cat.devs.forEach(function(d) { MOB_DEV_LOOKUP.push(d); });
+});
+
 function buildPlaceSheet() {
   var h = '<div style="font-size:11px;color:#5b9bd5;font-family:monospace;font-weight:700;margin-bottom:4px;letter-spacing:1px">SELECT DEVICE TO PLACE</div>';
-  h += '<div style="font-size:10px;color:#4a5e72;font-family:monospace;margin-bottom:12px">Tap a device — then hold on the floor plan to place</div>';
+  h += '<div style="font-size:10px;color:#4a5e72;font-family:monospace;margin-bottom:12px">Tap a device then tap the floor plan to place it</div>';
+  var idx = 0;
   MOB_CATS.forEach(function(cat) {
     h += '<div class="mob-cat-title">' + cat.label + '</div>';
     h += '<div class="mob-dev-grid">';
     cat.devs.forEach(function(d) {
       var isOn = mobSelDev && mobSelDev.t === d.t ? ' on' : '';
-      h += '<div class="mob-dev-item' + isOn + '" onclick="mobPickDev(' + JSON.stringify(d) + ')">';
+      h += '<div class="mob-dev-item' + isOn + '" data-idx="' + idx + '" onclick="mobPickDev(this)">';
       h += '<div class="mob-dev-icon">' + d.i + '</div>';
       h += '<div class="mob-dev-label">' + d.l + '</div>';
       h += '</div>';
+      idx++;
     });
     h += '</div>';
   });
   return h;
 }
 
-function mobPickDev(d) {
+function mobPickDev(el) {
+  var idx = parseInt(el.dataset.idx);
+  var d   = MOB_DEV_LOOKUP[idx];
+  if (!d) return;
   mobSelDev = d;
-  // Also set the main pendingDev so the 3D canvas knows what to place
   pendingDev = {t: d.t, c: d.c, i: d.i, wj: !!d.wj};
-  closeMobSheet();
-  setBadge('HOLD ON SURFACE TO PLACE ' + d.t.toUpperCase());
-  document.getElementById('f-mode').textContent = 'PLACING';
-  document.getElementById('mtb-place').classList.add('on');
+  // Highlight selected item
+  document.querySelectorAll('.mob-dev-item').forEach(function(b) { b.classList.remove('on'); });
+  el.classList.add('on');
+  // Close sheet after short delay so user sees the selection
+  setTimeout(function() {
+    closeMobSheet();
+    setBadge('TAP SURFACE TO PLACE ' + d.t.toUpperCase());
+    document.getElementById('f-mode').textContent = 'PLACING';
+    var pb = document.getElementById('mtb-place');
+    if (pb) pb.classList.add('on');
+  }, 250);
 }
 
 // ── VIEW SHEET ─────────────────────────────────────────────
