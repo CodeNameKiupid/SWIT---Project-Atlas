@@ -475,16 +475,302 @@ select.fi{cursor:pointer}
 <style>
 @keyframes pulse { 0%,100%{opacity:0.7;transform:scale(1)} 50%{opacity:1;transform:scale(1.05)} }
 #splash-btn:hover,#splash-btn:active{background:#5b9bd522;box-shadow:0 0 20px #5b9bd544}
+
+/* ═══════════════════════════════════════════════════════════
+   MOBILE UI — shown on screens ≤ 768px or touch devices
+═══════════════════════════════════════════════════════════ */
+
+/* Mobile top bar */
+#mob-bar {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 52px;
+  background: #0d1117ee;
+  border-bottom: 1px solid #2c3e52;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 30;
+  align-items: center;
+  padding: 0 12px;
+  gap: 10px;
+}
+.mob-icon-btn {
+  background: transparent;
+  border: 1px solid #2c3e52;
+  color: #dde3ec;
+  font-size: 18px;
+  width: 40px; height: 40px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+#mob-badge {
+  flex: 1;
+  text-align: center;
+  font-size: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  color: #5b9bd5;
+  letter-spacing: 1px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Mobile bottom toolbar */
+#mob-toolbar {
+  display: none;
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: 72px;
+  background: #0d1117ee;
+  border-top: 1px solid #2c3e52;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 30;
+  padding: 0 4px;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  flex-direction: row;
+  align-items: stretch;
+}
+.mob-tool-btn {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: #7a8a9a;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 8px 0;
+  border-radius: 8px;
+  transition: all 0.15s;
+  min-width: 0;
+}
+.mob-tool-btn:active, .mob-tool-btn.on { color: #5b9bd5; background: #5b9bd511; }
+.mob-tool-icon { font-size: 22px; line-height: 1; }
+.mob-tool-label { font-size: 9px; font-family: 'JetBrains Mono', monospace; letter-spacing: 0.5px; font-weight: 700; }
+
+/* Bottom sheet */
+#mob-sheet-bg {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: #00000066;
+  z-index: 40;
+  backdrop-filter: blur(2px);
+}
+#mob-sheet-bg.show { display: block; }
+#mob-sheet {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: #162032;
+  border-top: 1px solid #2c3e52;
+  border-radius: 16px 16px 0 0;
+  z-index: 41;
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+  max-height: 75vh;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+#mob-sheet.show { transform: translateY(0); }
+#mob-sheet-handle {
+  width: 40px; height: 4px;
+  background: #2c3e52;
+  border-radius: 2px;
+  margin: 10px auto 8px;
+  flex-shrink: 0;
+}
+#mob-sheet-content {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 8px 16px 24px;
+  flex: 1;
+}
+
+/* Sheet device grid */
+.mob-cat-title {
+  font-size: 9px;
+  color: #4a5e72;
+  letter-spacing: 2px;
+  font-family: 'JetBrains Mono', monospace;
+  margin: 14px 0 8px;
+  text-transform: uppercase;
+}
+.mob-dev-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.mob-dev-item {
+  background: #0d1117;
+  border: 1px solid #2c3e52;
+  border-radius: 10px;
+  padding: 10px 4px 8px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.12s;
+  min-height: 68px;
+}
+.mob-dev-item:active { border-color: #5b9bd5; background: #0d1a2a; transform: scale(0.96); }
+.mob-dev-item.on { border-color: #3dd68c; background: #0d2018; }
+.mob-dev-icon { font-size: 24px; line-height: 1; }
+.mob-dev-label { font-size: 9px; color: #7a8a9a; font-family: 'JetBrains Mono', monospace; text-align: center; line-height: 1.2; }
+
+/* Quick edit card */
+#mob-edit-card {
+  display: none;
+  position: fixed;
+  bottom: 72px;
+  left: 12px; right: 12px;
+  background: #162032;
+  border: 1px solid #2c3e52;
+  border-radius: 16px;
+  padding: 16px;
+  z-index: 35;
+  box-shadow: 0 -4px 24px #000a;
+}
+#mob-edit-card.show { display: block; }
+.mob-label {
+  font-size: 9px;
+  color: #4a5e72;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 1px;
+  margin-bottom: 3px;
+  text-transform: uppercase;
+}
+.mob-field {
+  width: 100%;
+  background: #0d1117;
+  border: 1px solid #2c3e52;
+  color: #f4f6f9;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  min-height: 36px;
+}
+.mob-field:focus { outline: none; border-color: #5b9bd5; }
+.mob-card-btn {
+  background: transparent;
+  border: 1px solid #2c3e52;
+  color: #dde3ec;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 9px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  min-height: 40px;
+}
+
+/* Sheet view options */
+.mob-view-pills {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  margin: 8px 0 16px;
+}
+.mob-view-pill {
+  background: #0d1117;
+  border: 1px solid #2c3e52;
+  color: #7a8a9a;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 12px 8px;
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: center;
+  min-height: 52px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+}
+.mob-view-pill.on { border-color: #5b9bd5; color: #5b9bd5; background: #0d1a2a; }
+.mob-view-pill:active { transform: scale(0.96); }
+
+/* Sheet tool buttons */
+.mob-sheet-btn {
+  width: 100%;
+  background: #0d1117;
+  border: 1px solid #2c3e52;
+  color: #dde3ec;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 14px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: left;
+  margin-bottom: 8px;
+  min-height: 52px;
+  display: flex; align-items: center; gap: 12px;
+}
+.mob-sheet-btn:active { background: #1a2840; border-color: #5b9bd5; }
+
+/* Sheet device list */
+.mob-dev-list-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: #0d1117;
+  border: 1px solid #2c3e52;
+  border-radius: 10px;
+  margin-bottom: 8px;
+  cursor: pointer;
+}
+.mob-dev-list-item:active { border-color: #5b9bd5; }
+.mob-dev-list-item.on { border-color: #3dd68c; background: #0d2018; }
+
+/* ── MOBILE RESPONSIVE ── */
+@media (max-width: 768px), (pointer: coarse) and (max-width: 1024px) {
+  #header   { display: none !important; }
+  #footer   { display: none !important; }
+  #sb       { display: none !important; }
+  #ep       { display: none !important; }
+  #ctrl-hint { display: none !important; }
+  #mob-bar  { display: flex !important; }
+  #mob-toolbar { display: flex !important; }
+  #workspace { margin-top: 52px; margin-bottom: 72px; }
+  #vp { width: 100% !important; }
+}
+
+/* Also apply mobile layout when JS detects touch */
+body.is-mobile #header   { display: none !important; }
+body.is-mobile #footer   { display: none !important; }
+body.is-mobile #sb       { display: none !important; }
+body.is-mobile #ep       { display: none !important; }
+body.is-mobile #ctrl-hint { display: none !important; }
+body.is-mobile #mob-bar  { display: flex !important; }
+body.is-mobile #mob-toolbar { display: flex !important; }
+body.is-mobile #workspace { margin-top: 52px; margin-bottom: 72px; }
+body.is-mobile #vp { width: 100% !important; }
+
+
 </style>
 
 <div id="app">
 
-<!-- HEADER -->
+<!-- ═══════════════════════════════════════════════════════════════
+     DESKTOP LAYOUT (> 768px)
+     Sidebar + Canvas + Edit Panel
+═══════════════════════════════════════════════════════════════ -->
+
+<!-- HEADER (desktop + mobile) -->
 <div id="header">
-  <button id="burger" onclick="toggleSB()">☰</button>
+  <button id="burger" class="hbtn" onclick="toggleSB()" title="Menu">☰</button>
   <div class="logo">PROJECT <span style="color:#5b9bd5;font-weight:700">ATLAS</span></div>
-  <input class="hinput" id="cname" placeholder="Client" style="width:100px">
-  <input class="hinput" id="sname" placeholder="Site/Floor" style="width:90px">
+  <input class="hinput" id="cname" placeholder="Client">
+  <input class="hinput" id="sname" placeholder="Site/Floor">
   <button class="hbtn" onclick="triggerLoad()">⬆ LOAD</button>
   <button class="hbtn grn" onclick="doExport()">⬇ EXPORT</button>
   <button class="hbtn" onclick="triggerImport()">⬆ IMPORT</button>
@@ -496,10 +782,8 @@ select.fi{cursor:pointer}
 <!-- WORKSPACE -->
 <div id="workspace">
 
-  <!-- SIDEBAR -->
+  <!-- SIDEBAR (desktop only) -->
   <div id="sb">
-
-    <!-- VIEW -->
     <div class="sec">
       <div class="sec-t">// VIEW MODE</div>
       <div class="view-pills">
@@ -512,11 +796,10 @@ select.fi{cursor:pointer}
       <button class="tbtn" id="tb-labels" onclick="toggleLabels()">🏷 LABELS: ALL</button>
       <button class="tbtn" onclick="resetCam()">⊡ RESET CAMERA</button>
       <div id="pm-status" style="display:none;font-size:9px;color:#f0a500;margin-top:5px;padding:5px;background:#0d090044;border-radius:3px;border:1px solid #3d2800;line-height:1.6">
-        ① Tap switch/patch panel<br>② Tap destination device<br><small style="color:#7a8a9a">ESC to cancel</small>
+        ① Tap switch/patch panel<br>② Tap destination device<br><small style="color:#4a5e72">ESC to cancel</small>
       </div>
     </div>
 
-    <!-- LEGEND -->
     <div class="sec">
       <div class="sec-t">// LEGEND</div>
       <div class="legend-item"><div class="leg-dot" style="background:#f0a500"></div>Network Hardware</div>
@@ -524,22 +807,21 @@ select.fi{cursor:pointer}
       <div class="legend-item"><div class="leg-dot" style="background:#3dd68c"></div>Endpoints / PCs</div>
       <div class="legend-item"><div class="leg-dot" style="background:#8866ff"></div>Printers</div>
       <div class="legend-item"><div class="leg-dot" style="background:#5b9bd5"></div>Cameras / Security</div>
-      <div class="legend-item"><div class="leg-dot" style="background:#5b9bd5"></div>Port Connection</div>
     </div>
 
-    <!-- DEVICES -->
+    <!-- DEVICE LIBRARY DROPDOWNS -->
     <div class="ddwrap">
       <button class="ddhead open" onclick="toggleDD(this)">⭐ FREQUENT</button>
       <div class="ddpanel open">
         <div class="dgrid">
-          <div class="db" data-t="Wall Jack"    data-c="network" data-i="🔲" data-wj="1" onclick="pickDev(this)"><div class="ic">🔲</div><div class="lb">WALL JACK</div></div>
-          <div class="db" data-t="Patch Panel"  data-c="network" data-i="🔌" onclick="pickDev(this)"><div class="ic">🔌</div><div class="lb">PATCH PNL</div></div>
-          <div class="db" data-t="Desktop PC"   data-c="endpoint" data-i="🖥️" onclick="pickDev(this)"><div class="ic">🖥️</div><div class="lb">DESKTOP</div></div>
-          <div class="db" data-t="Laptop"       data-c="endpoint" data-i="💻" onclick="pickDev(this)"><div class="ic">💻</div><div class="lb">LAPTOP</div></div>
-          <div class="db" data-t="Net Printer"  data-c="printer"  data-i="🖨️" onclick="pickDev(this)"><div class="ic">🖨️</div><div class="lb">NET PRNT</div></div>
-          <div class="db" data-t="MFP/Copier"   data-c="printer"  data-i="📠" onclick="pickDev(this)"><div class="ic">📠</div><div class="lb">MFP/COPY</div></div>
-          <div class="db" data-t="VoIP Phone"   data-c="endpoint" data-i="☎️" onclick="pickDev(this)"><div class="ic">☎️</div><div class="lb">VOIP</div></div>
-          <div class="db" data-t="Rack Server"  data-c="server"   data-i="🖥️" onclick="pickDev(this)"><div class="ic">🖥️</div><div class="lb">RACK SVR</div></div>
+          <div class="db" data-t="Wall Jack" data-c="network" data-i="🔲" data-wj="1" onclick="pickDev(this)"><div class="ic">🔲</div><div class="lb">WALL JACK</div></div>
+          <div class="db" data-t="Patch Panel" data-c="network" data-i="🔌" onclick="pickDev(this)"><div class="ic">🔌</div><div class="lb">PATCH PNL</div></div>
+          <div class="db" data-t="Desktop PC" data-c="endpoint" data-i="🖥️" onclick="pickDev(this)"><div class="ic">🖥️</div><div class="lb">DESKTOP</div></div>
+          <div class="db" data-t="Laptop" data-c="endpoint" data-i="💻" onclick="pickDev(this)"><div class="ic">💻</div><div class="lb">LAPTOP</div></div>
+          <div class="db" data-t="Net Printer" data-c="printer" data-i="🖨️" onclick="pickDev(this)"><div class="ic">🖨️</div><div class="lb">NET PRNT</div></div>
+          <div class="db" data-t="MFP/Copier" data-c="printer" data-i="📠" onclick="pickDev(this)"><div class="ic">📠</div><div class="lb">MFP/COPY</div></div>
+          <div class="db" data-t="VoIP Phone" data-c="endpoint" data-i="☎️" onclick="pickDev(this)"><div class="ic">☎️</div><div class="lb">VOIP</div></div>
+          <div class="db" data-t="Rack Server" data-c="server" data-i="🖥️" onclick="pickDev(this)"><div class="ic">🖥️</div><div class="lb">RACK SVR</div></div>
         </div>
       </div>
     </div>
@@ -550,20 +832,17 @@ select.fi{cursor:pointer}
         <button class="sub-head" onclick="toggleSub(this)">Gateways &amp; Cloud</button>
         <div class="sub-panel">
           <div class="dgrid">
-            <div class="db" data-t="UDM-Pro"        data-c="network" data-i="🛡️" onclick="pickDev(this)"><div class="ic">🛡️</div><div class="lb">UDM-PRO</div></div>
-            <div class="db" data-t="UDM-Pro-Max"    data-c="network" data-i="🛡️" onclick="pickDev(this)"><div class="ic">🛡️</div><div class="lb">UDM-PRO-MAX</div></div>
-            <div class="db" data-t="UDM-SE"         data-c="network" data-i="🛡️" onclick="pickDev(this)"><div class="ic">🛡️</div><div class="lb">UDM-SE</div></div>
-            <div class="db" data-t="UDR7"           data-c="network" data-i="🛡️" onclick="pickDev(this)"><div class="ic">🛡️</div><div class="lb">UDR7</div></div>
+            <div class="db" data-t="UDM-Pro" data-c="network" data-i="🛡️" onclick="pickDev(this)"><div class="ic">🛡️</div><div class="lb">UDM-PRO</div></div>
+            <div class="db" data-t="UDM-Pro-Max" data-c="network" data-i="🛡️" onclick="pickDev(this)"><div class="ic">🛡️</div><div class="lb">UDM-PRO-MAX</div></div>
+            <div class="db" data-t="UDM-SE" data-c="network" data-i="🛡️" onclick="pickDev(this)"><div class="ic">🛡️</div><div class="lb">UDM-SE</div></div>
+            <div class="db" data-t="UDR7" data-c="network" data-i="🛡️" onclick="pickDev(this)"><div class="ic">🛡️</div><div class="lb">UDR7</div></div>
             <div class="db" data-t="Dream Wall UDW" data-c="network" data-i="🛡️" onclick="pickDev(this)"><div class="ic">🛡️</div><div class="lb">UDW</div></div>
-            <div class="db" data-t="EFG"            data-c="network" data-i="🛡️" onclick="pickDev(this)"><div class="ic">🛡️</div><div class="lb">EFG</div></div>
-            <div class="db" data-t="UCG-Ultra"      data-c="network" data-i="🌐" onclick="pickDev(this)"><div class="ic">🌐</div><div class="lb">UCG-ULTRA</div></div>
-            <div class="db" data-t="UCG-Max"        data-c="network" data-i="🌐" onclick="pickDev(this)"><div class="ic">🌐</div><div class="lb">UCG-MAX</div></div>
-            <div class="db" data-t="UCG-Fiber"      data-c="network" data-i="🌐" onclick="pickDev(this)"><div class="ic">🌐</div><div class="lb">UCG-FIBER</div></div>
-            <div class="db" data-t="UXG-Lite"       data-c="network" data-i="🌐" onclick="pickDev(this)"><div class="ic">🌐</div><div class="lb">UXG-LITE</div></div>
-            <div class="db" data-t="UXG-Max"        data-c="network" data-i="🌐" onclick="pickDev(this)"><div class="ic">🌐</div><div class="lb">UXG-MAX</div></div>
-            <div class="db" data-t="UXG-Pro"        data-c="network" data-i="🌐" onclick="pickDev(this)"><div class="ic">🌐</div><div class="lb">UXG-PRO</div></div>
+            <div class="db" data-t="EFG" data-c="network" data-i="🛡️" onclick="pickDev(this)"><div class="ic">🛡️</div><div class="lb">EFG</div></div>
+            <div class="db" data-t="UCG-Ultra" data-c="network" data-i="🌐" onclick="pickDev(this)"><div class="ic">🌐</div><div class="lb">UCG-ULTRA</div></div>
+            <div class="db" data-t="UCG-Max" data-c="network" data-i="🌐" onclick="pickDev(this)"><div class="ic">🌐</div><div class="lb">UCG-MAX</div></div>
+            <div class="db" data-t="UXG-Pro" data-c="network" data-i="🌐" onclick="pickDev(this)"><div class="ic">🌐</div><div class="lb">UXG-PRO</div></div>
             <div class="db" data-t="UXG-Enterprise" data-c="network" data-i="🌐" onclick="pickDev(this)"><div class="ic">🌐</div><div class="lb">UXG-ENT</div></div>
-            <div class="db" data-t="UX7"            data-c="network" data-i="🌐" onclick="pickDev(this)"><div class="ic">🌐</div><div class="lb">UX7</div></div>
+            <div class="db" data-t="UX7" data-c="network" data-i="🌐" onclick="pickDev(this)"><div class="ic">🌐</div><div class="lb">UX7</div></div>
           </div>
         </div>
         <button class="sub-head" onclick="toggleSub(this)">Switches</button>
@@ -572,68 +851,41 @@ select.fi{cursor:pointer}
             <div class="db" data-t="USW-Pro-Max-48-POE" data-c="network" data-i="🔀" onclick="pickDev(this)"><div class="ic">🔀</div><div class="lb">USW-PRO-MAX-48P</div></div>
             <div class="db" data-t="USW-Pro-Max-24-POE" data-c="network" data-i="🔀" onclick="pickDev(this)"><div class="ic">🔀</div><div class="lb">USW-PRO-MAX-24P</div></div>
             <div class="db" data-t="USW-Pro-48-POE" data-c="network" data-i="🔀" onclick="pickDev(this)"><div class="ic">🔀</div><div class="lb">USW-PRO-48-POE</div></div>
-            <div class="db" data-t="USW-Pro-48"     data-c="network" data-i="🔀" onclick="pickDev(this)"><div class="ic">🔀</div><div class="lb">USW-PRO-48</div></div>
+            <div class="db" data-t="USW-Pro-48" data-c="network" data-i="🔀" onclick="pickDev(this)"><div class="ic">🔀</div><div class="lb">USW-PRO-48</div></div>
             <div class="db" data-t="USW-Pro-24-POE" data-c="network" data-i="🔀" onclick="pickDev(this)"><div class="ic">🔀</div><div class="lb">USW-PRO-24-POE</div></div>
-            <div class="db" data-t="USW-Pro-24"     data-c="network" data-i="🔀" onclick="pickDev(this)"><div class="ic">🔀</div><div class="lb">USW-PRO-24</div></div>
-            <div class="db" data-t="USW-48-POE"     data-c="network" data-i="🔀" onclick="pickDev(this)"><div class="ic">🔀</div><div class="lb">USW-48-POE</div></div>
-            <div class="db" data-t="USW-48"         data-c="network" data-i="🔀" onclick="pickDev(this)"><div class="ic">🔀</div><div class="lb">USW-48</div></div>
-            <div class="db" data-t="USW-24-POE"     data-c="network" data-i="🔀" onclick="pickDev(this)"><div class="ic">🔀</div><div class="lb">USW-24-POE</div></div>
-            <div class="db" data-t="USW-24"         data-c="network" data-i="🔀" onclick="pickDev(this)"><div class="ic">🔀</div><div class="lb">USW-24</div></div>
+            <div class="db" data-t="USW-Pro-24" data-c="network" data-i="🔀" onclick="pickDev(this)"><div class="ic">🔀</div><div class="lb">USW-PRO-24</div></div>
+            <div class="db" data-t="USW-48-POE" data-c="network" data-i="🔀" onclick="pickDev(this)"><div class="ic">🔀</div><div class="lb">USW-48-POE</div></div>
+            <div class="db" data-t="USW-48" data-c="network" data-i="🔀" onclick="pickDev(this)"><div class="ic">🔀</div><div class="lb">USW-48</div></div>
+            <div class="db" data-t="USW-24-POE" data-c="network" data-i="🔀" onclick="pickDev(this)"><div class="ic">🔀</div><div class="lb">USW-24-POE</div></div>
+            <div class="db" data-t="USW-24" data-c="network" data-i="🔀" onclick="pickDev(this)"><div class="ic">🔀</div><div class="lb">USW-24</div></div>
             <div class="db" data-t="USW-Lite-16-POE" data-c="network" data-i="🔀" onclick="pickDev(this)"><div class="ic">🔀</div><div class="lb">USW-LITE-16P</div></div>
             <div class="db" data-t="USW-Lite-8-POE" data-c="network" data-i="🔀" onclick="pickDev(this)"><div class="ic">🔀</div><div class="lb">USW-LITE-8P</div></div>
-            <div class="db" data-t="USW-Flex-2.5G"  data-c="network" data-i="🔀" onclick="pickDev(this)"><div class="ic">🔀</div><div class="lb">USW-FLEX-2.5G</div></div>
-            <div class="db" data-t="USW-Flex-Mini"  data-c="network" data-i="🔀" onclick="pickDev(this)"><div class="ic">🔀</div><div class="lb">USW-FLEX-MINI</div></div>
-            <div class="db" data-t="USW-Flex"       data-c="network" data-i="🔀" onclick="pickDev(this)"><div class="ic">🔀</div><div class="lb">USW-FLEX</div></div>
-            <div class="db" data-t="USW-Industrial" data-c="network" data-i="🔀" onclick="pickDev(this)"><div class="ic">🔀</div><div class="lb">USW-IND</div></div>
-            <div class="db" data-t="ENT-XG-24"      data-c="network" data-i="🔀" onclick="pickDev(this)"><div class="ic">🔀</div><div class="lb">ENT-XG-24</div></div>
+            <div class="db" data-t="USW-Flex-Mini" data-c="network" data-i="🔀" onclick="pickDev(this)"><div class="ic">🔀</div><div class="lb">USW-FLEX-MINI</div></div>
+            <div class="db" data-t="USW-Flex" data-c="network" data-i="🔀" onclick="pickDev(this)"><div class="ic">🔀</div><div class="lb">USW-FLEX</div></div>
             <div class="db" data-t="Switch Generic" data-c="network" data-i="🔀" onclick="pickDev(this)"><div class="ic">🔀</div><div class="lb">SW GENERIC</div></div>
           </div>
         </div>
         <button class="sub-head" onclick="toggleSub(this)">Access Points</button>
         <div class="sub-panel">
           <div class="dgrid">
-            <div class="db" data-t="U7-Pro-XGS"    data-c="network" data-i="📶" onclick="pickDev(this)"><div class="ic">📶</div><div class="lb">U7-PRO-XGS</div></div>
-            <div class="db" data-t="U7-Pro-XG"     data-c="network" data-i="📶" onclick="pickDev(this)"><div class="ic">📶</div><div class="lb">U7-PRO-XG</div></div>
-            <div class="db" data-t="U7-Pro-Max"    data-c="network" data-i="📶" onclick="pickDev(this)"><div class="ic">📶</div><div class="lb">U7-PRO-MAX</div></div>
-            <div class="db" data-t="U7-Pro"        data-c="network" data-i="📶" onclick="pickDev(this)"><div class="ic">📶</div><div class="lb">U7-PRO</div></div>
-            <div class="db" data-t="U7-Pro-Wall"   data-c="network" data-i="📶" onclick="pickDev(this)"><div class="ic">📶</div><div class="lb">U7-PRO-WALL</div></div>
-            <div class="db" data-t="U7-Outdoor"    data-c="network" data-i="📶" onclick="pickDev(this)"><div class="ic">📶</div><div class="lb">U7-OUTDOOR</div></div>
-            <div class="db" data-t="E7-Enterprise" data-c="network" data-i="📶" onclick="pickDev(this)"><div class="ic">📶</div><div class="lb">E7-ENT</div></div>
+            <div class="db" data-t="U7-Pro-XGS" data-c="network" data-i="📶" onclick="pickDev(this)"><div class="ic">📶</div><div class="lb">U7-PRO-XGS</div></div>
+            <div class="db" data-t="U7-Pro" data-c="network" data-i="📶" onclick="pickDev(this)"><div class="ic">📶</div><div class="lb">U7-PRO</div></div>
+            <div class="db" data-t="U7-Pro-Wall" data-c="network" data-i="📶" onclick="pickDev(this)"><div class="ic">📶</div><div class="lb">U7-PRO-WALL</div></div>
             <div class="db" data-t="U6-Enterprise" data-c="network" data-i="📶" onclick="pickDev(this)"><div class="ic">📶</div><div class="lb">U6-ENT</div></div>
-            <div class="db" data-t="U6-Enterprise-IW" data-c="network" data-i="📶" onclick="pickDev(this)"><div class="ic">📶</div><div class="lb">U6-ENT-IW</div></div>
-            <div class="db" data-t="U6-Pro"        data-c="network" data-i="📶" onclick="pickDev(this)"><div class="ic">📶</div><div class="lb">U6-PRO</div></div>
-            <div class="db" data-t="U6-Lite"       data-c="network" data-i="📶" onclick="pickDev(this)"><div class="ic">📶</div><div class="lb">U6-LITE</div></div>
-            <div class="db" data-t="U6-Mesh"       data-c="network" data-i="📶" onclick="pickDev(this)"><div class="ic">📶</div><div class="lb">U6-MESH</div></div>
-            <div class="db" data-t="U6-IW"         data-c="network" data-i="📶" onclick="pickDev(this)"><div class="ic">📶</div><div class="lb">U6-IW</div></div>
-            <div class="db" data-t="U6-Outdoor"    data-c="network" data-i="📶" onclick="pickDev(this)"><div class="ic">📶</div><div class="lb">U6-OUT</div></div>
-            <div class="db" data-t="UAP-AC-Pro"    data-c="network" data-i="📶" onclick="pickDev(this)"><div class="ic">📶</div><div class="lb">UAP-AC-PRO</div></div>
-            <div class="db" data-t="UAP-AC-HD"     data-c="network" data-i="📶" onclick="pickDev(this)"><div class="ic">📶</div><div class="lb">UAP-AC-HD</div></div>
-            <div class="db" data-t="AP Generic"    data-c="network" data-i="📶" onclick="pickDev(this)"><div class="ic">📶</div><div class="lb">AP GENERIC</div></div>
+            <div class="db" data-t="U6-Pro" data-c="network" data-i="📶" onclick="pickDev(this)"><div class="ic">📶</div><div class="lb">U6-PRO</div></div>
+            <div class="db" data-t="U6-Lite" data-c="network" data-i="📶" onclick="pickDev(this)"><div class="ic">📶</div><div class="lb">U6-LITE</div></div>
+            <div class="db" data-t="UAP-AC-Pro" data-c="network" data-i="📶" onclick="pickDev(this)"><div class="ic">📶</div><div class="lb">UAP-AC-PRO</div></div>
+            <div class="db" data-t="AP Generic" data-c="network" data-i="📶" onclick="pickDev(this)"><div class="ic">📶</div><div class="lb">AP GENERIC</div></div>
           </div>
         </div>
         <button class="sub-head" onclick="toggleSub(this)">Cameras (Protect)</button>
         <div class="sub-panel">
           <div class="dgrid">
-            <div class="db" data-t="G6-Pro 4K"   data-c="camera" data-i="📷" onclick="pickDev(this)"><div class="ic">📷</div><div class="lb">G6 PRO 4K</div></div>
-            <div class="db" data-t="G6-Dome 4K"  data-c="camera" data-i="📷" onclick="pickDev(this)"><div class="ic">📷</div><div class="lb">G6 DOME 4K</div></div>
-            <div class="db" data-t="G5-Pro"      data-c="camera" data-i="📷" onclick="pickDev(this)"><div class="ic">📷</div><div class="lb">G5 PRO</div></div>
-            <div class="db" data-t="G5-Dome"     data-c="camera" data-i="📷" onclick="pickDev(this)"><div class="ic">📷</div><div class="lb">G5 DOME</div></div>
-            <div class="db" data-t="G5-Bullet"   data-c="camera" data-i="📷" onclick="pickDev(this)"><div class="ic">📷</div><div class="lb">G5 BULLET</div></div>
-            <div class="db" data-t="G5-Flex"     data-c="camera" data-i="📷" onclick="pickDev(this)"><div class="ic">📷</div><div class="lb">G5 FLEX</div></div>
-            <div class="db" data-t="AI-PTZ"      data-c="camera" data-i="📷" onclick="pickDev(this)"><div class="ic">📷</div><div class="lb">AI PTZ</div></div>
-            <div class="db" data-t="AI-360"      data-c="camera" data-i="📷" onclick="pickDev(this)"><div class="ic">📷</div><div class="lb">AI 360</div></div>
-            <div class="db" data-t="UNVR"        data-c="camera" data-i="📹" onclick="pickDev(this)"><div class="ic">📹</div><div class="lb">UNVR</div></div>
-            <div class="db" data-t="UNVR-Pro"    data-c="camera" data-i="📹" onclick="pickDev(this)"><div class="ic">📹</div><div class="lb">UNVR-PRO</div></div>
-          </div>
-        </div>
-        <button class="sub-head" onclick="toggleSub(this)">NAS &amp; Phones</button>
-        <div class="sub-panel">
-          <div class="dgrid">
-            <div class="db" data-t="UNAS-Pro-8"  data-c="server" data-i="💾" onclick="pickDev(this)"><div class="ic">💾</div><div class="lb">UNAS PRO 8</div></div>
-            <div class="db" data-t="UNAS-Pro-4"  data-c="server" data-i="💾" onclick="pickDev(this)"><div class="ic">💾</div><div class="lb">UNAS PRO 4</div></div>
-            <div class="db" data-t="UNAS-4"      data-c="server" data-i="💾" onclick="pickDev(this)"><div class="ic">💾</div><div class="lb">UNAS 4</div></div>
-            <div class="db" data-t="UVP-X"       data-c="endpoint" data-i="☎️" onclick="pickDev(this)"><div class="ic">☎️</div><div class="lb">UVP-X</div></div>
-            <div class="db" data-t="UVP-Pro"     data-c="endpoint" data-i="☎️" onclick="pickDev(this)"><div class="ic">☎️</div><div class="lb">UVP-PRO</div></div>
+            <div class="db" data-t="G6-Pro 4K" data-c="camera" data-i="📷" onclick="pickDev(this)"><div class="ic">📷</div><div class="lb">G6 PRO 4K</div></div>
+            <div class="db" data-t="G5-Pro" data-c="camera" data-i="📷" onclick="pickDev(this)"><div class="ic">📷</div><div class="lb">G5 PRO</div></div>
+            <div class="db" data-t="G5-Dome" data-c="camera" data-i="📷" onclick="pickDev(this)"><div class="ic">📷</div><div class="lb">G5 DOME</div></div>
+            <div class="db" data-t="AI-PTZ" data-c="camera" data-i="📷" onclick="pickDev(this)"><div class="ic">📷</div><div class="lb">AI PTZ</div></div>
+            <div class="db" data-t="UNVR" data-c="camera" data-i="📹" onclick="pickDev(this)"><div class="ic">📹</div><div class="lb">UNVR</div></div>
           </div>
         </div>
       </div>
@@ -643,14 +895,12 @@ select.fi{cursor:pointer}
       <button class="ddhead" onclick="toggleDD(this)">🌐 NETWORK GENERIC</button>
       <div class="ddpanel">
         <div class="dgrid">
-          <div class="db" data-t="Telus ONT"      data-c="network" data-i="📥" onclick="pickDev(this)"><div class="ic">📥</div><div class="lb">TELUS ONT</div></div>
-          <div class="db" data-t="Telus Router"   data-c="network" data-i="📡" onclick="pickDev(this)"><div class="ic">📡</div><div class="lb">TELUS RTR</div></div>
-          <div class="db" data-t="Firewall"       data-c="network" data-i="🔥" onclick="pickDev(this)"><div class="ic">🔥</div><div class="lb">FIREWALL</div></div>
-          <div class="db" data-t="Router"         data-c="network" data-i="🔄" onclick="pickDev(this)"><div class="ic">🔄</div><div class="lb">ROUTER</div></div>
-          <div class="db" data-t="Wall Jack"      data-c="network" data-i="🔲" data-wj="1" onclick="pickDev(this)"><div class="ic">🔲</div><div class="lb">WALL JACK</div></div>
-          <div class="db" data-t="Patch Panel"    data-c="network" data-i="🔌" onclick="pickDev(this)"><div class="ic">🔌</div><div class="lb">PATCH PNL</div></div>
-          <div class="db" data-t="AP Generic"     data-c="network" data-i="📶" onclick="pickDev(this)"><div class="ic">📶</div><div class="lb">AP</div></div>
-          <div class="db" data-t="Switch Generic" data-c="network" data-i="🔀" onclick="pickDev(this)"><div class="ic">🔀</div><div class="lb">SWITCH</div></div>
+          <div class="db" data-t="Telus ONT" data-c="network" data-i="📥" onclick="pickDev(this)"><div class="ic">📥</div><div class="lb">TELUS ONT</div></div>
+          <div class="db" data-t="Telus Router" data-c="network" data-i="📡" onclick="pickDev(this)"><div class="ic">📡</div><div class="lb">TELUS RTR</div></div>
+          <div class="db" data-t="Firewall" data-c="network" data-i="🔥" onclick="pickDev(this)"><div class="ic">🔥</div><div class="lb">FIREWALL</div></div>
+          <div class="db" data-t="Router" data-c="network" data-i="🔄" onclick="pickDev(this)"><div class="ic">🔄</div><div class="lb">ROUTER</div></div>
+          <div class="db" data-t="Wall Jack" data-c="network" data-i="🔲" data-wj="1" onclick="pickDev(this)"><div class="ic">🔲</div><div class="lb">WALL JACK</div></div>
+          <div class="db" data-t="Patch Panel" data-c="network" data-i="🔌" onclick="pickDev(this)"><div class="ic">🔌</div><div class="lb">PATCH PNL</div></div>
         </div>
       </div>
     </div>
@@ -659,12 +909,12 @@ select.fi{cursor:pointer}
       <button class="ddhead" onclick="toggleDD(this)">🖥️ SERVERS / STORAGE</button>
       <div class="ddpanel">
         <div class="dgrid">
-          <div class="db" data-t="Rack Server"  data-c="server" data-i="🖥️" onclick="pickDev(this)"><div class="ic">🖥️</div><div class="lb">RACK SVR</div></div>
+          <div class="db" data-t="Rack Server" data-c="server" data-i="🖥️" onclick="pickDev(this)"><div class="ic">🖥️</div><div class="lb">RACK SVR</div></div>
           <div class="db" data-t="Tower Server" data-c="server" data-i="🗄️" onclick="pickDev(this)"><div class="ic">🗄️</div><div class="lb">TOWER SVR</div></div>
-          <div class="db" data-t="NAS"          data-c="server" data-i="💾" onclick="pickDev(this)"><div class="ic">💾</div><div class="lb">NAS</div></div>
-          <div class="db" data-t="UPS"          data-c="server" data-i="🔋" onclick="pickDev(this)"><div class="ic">🔋</div><div class="lb">UPS</div></div>
-          <div class="db" data-t="PDU"          data-c="server" data-i="🔌" onclick="pickDev(this)"><div class="ic">🔌</div><div class="lb">PDU</div></div>
-          <div class="db" data-t="Server Rack"  data-c="server" data-i="📦" onclick="pickDev(this)"><div class="ic">📦</div><div class="lb">RACK</div></div>
+          <div class="db" data-t="NAS" data-c="server" data-i="💾" onclick="pickDev(this)"><div class="ic">💾</div><div class="lb">NAS</div></div>
+          <div class="db" data-t="UPS" data-c="server" data-i="🔋" onclick="pickDev(this)"><div class="ic">🔋</div><div class="lb">UPS</div></div>
+          <div class="db" data-t="PDU" data-c="server" data-i="🔌" onclick="pickDev(this)"><div class="ic">🔌</div><div class="lb">PDU</div></div>
+          <div class="db" data-t="Server Rack" data-c="server" data-i="📦" onclick="pickDev(this)"><div class="ic">📦</div><div class="lb">RACK</div></div>
         </div>
       </div>
     </div>
@@ -673,12 +923,12 @@ select.fi{cursor:pointer}
       <button class="ddhead" onclick="toggleDD(this)">💻 ENDPOINTS</button>
       <div class="ddpanel">
         <div class="dgrid">
-          <div class="db" data-t="Desktop PC"   data-c="endpoint" data-i="🖥️" onclick="pickDev(this)"><div class="ic">🖥️</div><div class="lb">DESKTOP</div></div>
-          <div class="db" data-t="Laptop"        data-c="endpoint" data-i="💻" onclick="pickDev(this)"><div class="ic">💻</div><div class="lb">LAPTOP</div></div>
-          <div class="db" data-t="Thin Client"   data-c="endpoint" data-i="📟" onclick="pickDev(this)"><div class="ic">📟</div><div class="lb">THIN CLT</div></div>
-          <div class="db" data-t="POS Terminal"  data-c="endpoint" data-i="🏧" onclick="pickDev(this)"><div class="ic">🏧</div><div class="lb">POS</div></div>
-          <div class="db" data-t="VoIP Phone"    data-c="endpoint" data-i="☎️" onclick="pickDev(this)"><div class="ic">☎️</div><div class="lb">VOIP</div></div>
-          <div class="db" data-t="Analog Phone"  data-c="endpoint" data-i="📞" onclick="pickDev(this)"><div class="ic">📞</div><div class="lb">ANALOG</div></div>
+          <div class="db" data-t="Desktop PC" data-c="endpoint" data-i="🖥️" onclick="pickDev(this)"><div class="ic">🖥️</div><div class="lb">DESKTOP</div></div>
+          <div class="db" data-t="Laptop" data-c="endpoint" data-i="💻" onclick="pickDev(this)"><div class="ic">💻</div><div class="lb">LAPTOP</div></div>
+          <div class="db" data-t="Thin Client" data-c="endpoint" data-i="📟" onclick="pickDev(this)"><div class="ic">📟</div><div class="lb">THIN CLT</div></div>
+          <div class="db" data-t="POS Terminal" data-c="endpoint" data-i="🏧" onclick="pickDev(this)"><div class="ic">🏧</div><div class="lb">POS</div></div>
+          <div class="db" data-t="VoIP Phone" data-c="endpoint" data-i="☎️" onclick="pickDev(this)"><div class="ic">☎️</div><div class="lb">VOIP</div></div>
+          <div class="db" data-t="Analog Phone" data-c="endpoint" data-i="📞" onclick="pickDev(this)"><div class="ic">📞</div><div class="lb">ANALOG</div></div>
         </div>
       </div>
     </div>
@@ -687,9 +937,9 @@ select.fi{cursor:pointer}
       <button class="ddhead" onclick="toggleDD(this)">🖨️ PRINTERS</button>
       <div class="ddpanel">
         <div class="dgrid">
-          <div class="db" data-t="Net Printer"  data-c="printer" data-i="🖨️" onclick="pickDev(this)"><div class="ic">🖨️</div><div class="lb">NET PRNT</div></div>
-          <div class="db" data-t="USB Printer"  data-c="printer" data-i="🖨️" onclick="pickDev(this)"><div class="ic">🖨️</div><div class="lb">USB PRNT</div></div>
-          <div class="db" data-t="MFP/Copier"   data-c="printer" data-i="📠" onclick="pickDev(this)"><div class="ic">📠</div><div class="lb">MFP/COPY</div></div>
+          <div class="db" data-t="Net Printer" data-c="printer" data-i="🖨️" onclick="pickDev(this)"><div class="ic">🖨️</div><div class="lb">NET PRNT</div></div>
+          <div class="db" data-t="USB Printer" data-c="printer" data-i="🖨️" onclick="pickDev(this)"><div class="ic">🖨️</div><div class="lb">USB PRNT</div></div>
+          <div class="db" data-t="MFP/Copier" data-c="printer" data-i="📠" onclick="pickDev(this)"><div class="ic">📠</div><div class="lb">MFP/COPY</div></div>
           <div class="db" data-t="Label Printer" data-c="printer" data-i="🖨️" onclick="pickDev(this)"><div class="ic">🖨️</div><div class="lb">LABEL</div></div>
         </div>
       </div>
@@ -699,21 +949,19 @@ select.fi{cursor:pointer}
       <button class="ddhead" onclick="toggleDD(this)">📷 CAMERAS GENERIC</button>
       <div class="ddpanel">
         <div class="dgrid">
-          <div class="db" data-t="IP Camera"    data-c="camera" data-i="📷" onclick="pickDev(this)"><div class="ic">📷</div><div class="lb">IP CAM</div></div>
-          <div class="db" data-t="NVR/DVR"      data-c="camera" data-i="📹" onclick="pickDev(this)"><div class="ic">📹</div><div class="lb">NVR/DVR</div></div>
+          <div class="db" data-t="IP Camera" data-c="camera" data-i="📷" onclick="pickDev(this)"><div class="ic">📷</div><div class="lb">IP CAM</div></div>
+          <div class="db" data-t="NVR/DVR" data-c="camera" data-i="📹" onclick="pickDev(this)"><div class="ic">📹</div><div class="lb">NVR/DVR</div></div>
         </div>
       </div>
     </div>
 
-    <!-- PLACED DEVICES -->
     <div class="sec" style="flex:1">
       <div class="sec-t">// PLACED (<span id="devcount">0</span>)</div>
       <div class="devlist" id="devlist"></div>
     </div>
-
   </div><!-- /sb -->
 
-  <!-- VIEWPORT -->
+  <!-- VIEWPORT (shared) -->
   <div id="vp">
     <canvas id="threeCanvas"></canvas>
 
@@ -721,17 +969,16 @@ select.fi{cursor:pointer}
     <div id="overlay">
       <div style="text-align:center;padding:32px">
         <div style="font-size:48px;margin-bottom:16px">🏢</div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:14px;color:#5b9bd5;letter-spacing:2px;margin-bottom:10px">Project Atlas</div>
-        <div style="font-size:12px;color:#7a8a9a;line-height:2">
-          Tap <b style="color:#f4f6f9">⬆ LOAD</b> in the header to upload a scan<br>
-          <span style="font-size:11px;color:#4a5e72">GLB / GLTF (Polycam) &nbsp;·&nbsp; OBJ (Magicplan)</span><br><br>
-          Tap <b style="color:#f4f6f9">⬆ IMPORT</b> to reopen a saved Project Atlas file
+        <div style="font-family:'JetBrains Mono',monospace;font-size:14px;color:#5b9bd5;letter-spacing:2px;margin-bottom:10px">PROJECT ATLAS</div>
+        <div style="font-size:12px;color:#4a5e72;line-height:2;font-family:'JetBrains Mono',monospace">
+          Tap <b style="color:#f4f6f9">⬆ LOAD</b> to upload a scan<br>
+          <span style="font-size:11px;color:#2c3e52">GLB / GLTF (Polycam) &nbsp;·&nbsp; OBJ (Magicplan)</span>
         </div>
       </div>
-      <div style="font-size:10px;color:#2c3e52;letter-spacing:1px">NO DATA LEAVES YOUR DEVICE</div>
+      <div style="font-size:10px;color:#1a2535;letter-spacing:1px;font-family:monospace">NO DATA LEAVES YOUR DEVICE</div>
     </div>
 
-    <!-- Controls hint (desktop) -->
+    <!-- Desktop controls hint -->
     <div id="ctrl-hint">
       <b>LEFT DRAG</b> Orbit &nbsp;<b>RIGHT DRAG</b> Pan<br>
       <b>SCROLL</b> Zoom &nbsp;<b>DBL CLICK</b> Focus<br>
@@ -763,29 +1010,28 @@ select.fi{cursor:pointer}
       </div>
     </div>
 
-    <!-- Joystick (turn/look) -->
+    <!-- Joystick -->
     <div id="joystick">
       <div id="joy-base"></div>
       <div id="joy-stick"></div>
     </div>
 
-    <!-- SVG connection lines -->
+    <!-- SVG connections -->
     <svg id="connSvg"></svg>
-
   </div><!-- /vp -->
 
-  <!-- EDIT PANEL -->
+  <!-- EDIT PANEL (desktop) -->
   <div id="ep">
     <div class="ep-title">// DEVICE PROPERTIES</div>
-    <div class="fg"><div class="fl">Hostname</div>        <input class="fi" id="e-name"    placeholder="SW-MAIN-01"></div>
-    <div class="fg"><div class="fl">IP Address</div>      <input class="fi" id="e-ip"      placeholder="192.168.1.x"></div>
-    <div class="fg"><div class="fl">MAC Address</div>     <input class="fi" id="e-mac"     placeholder="AA:BB:CC:DD:EE:FF"></div>
-    <div class="fg"><div class="fl">UniFi Device ID</div> <input class="fi" id="e-unifi"   placeholder="UniFi dashboard ID"></div>
-    <div class="fg"><div class="fl">Switch Port</div>     <input class="fi" id="e-port"    placeholder="Port 4 / Gi0/4"></div>
-    <div class="fg"><div class="fl">VLAN</div>            <input class="fi" id="e-vlan"    placeholder="VLAN10"></div>
-    <div class="fg"><div class="fl">Make / Model</div>    <input class="fi" id="e-model"   placeholder="USW-Pro-48"></div>
-    <div class="fg"><div class="fl">Serial / Asset</div>  <input class="fi" id="e-serial"  placeholder="ABC123"></div>
-    <div class="fg"><div class="fl">MSP Asset #</div>     <input class="fi" id="e-asset"   placeholder="MSP-00123"></div>
+    <div class="fg"><div class="fl">Hostname</div>        <input class="fi" id="e-name"   placeholder="SW-MAIN-01"></div>
+    <div class="fg"><div class="fl">IP Address</div>      <input class="fi" id="e-ip"    placeholder="192.168.1.x"></div>
+    <div class="fg"><div class="fl">MAC Address</div>     <input class="fi" id="e-mac"   placeholder="AA:BB:CC:DD:EE:FF"></div>
+    <div class="fg"><div class="fl">UniFi Device ID</div> <input class="fi" id="e-unifi" placeholder="UniFi dashboard ID"></div>
+    <div class="fg"><div class="fl">Switch Port</div>     <input class="fi" id="e-port"  placeholder="Port 4 / Gi0/4"></div>
+    <div class="fg"><div class="fl">VLAN</div>            <input class="fi" id="e-vlan"  placeholder="VLAN10"></div>
+    <div class="fg"><div class="fl">Make / Model</div>    <input class="fi" id="e-model" placeholder="USW-Pro-48"></div>
+    <div class="fg"><div class="fl">Serial / Asset</div>  <input class="fi" id="e-serial" placeholder="ABC123"></div>
+    <div class="fg"><div class="fl">MSP Asset #</div>     <input class="fi" id="e-asset" placeholder="MSP-00123"></div>
     <div class="fg"><div class="fl">Notes</div>           <textarea class="fi" id="e-notes" placeholder="Additional info..."></textarea></div>
     <div class="fg"><div class="fl">Status</div>
       <select class="fi" id="e-status">
@@ -796,11 +1042,9 @@ select.fi{cursor:pointer}
       </select>
     </div>
     <div class="ep-sec">
-      <div class="ep-sec-t">Highlight</div>
       <button class="ep-btn" id="ep-hl" onclick="toggleHL()">⬡ SET HIGHLIGHT</button>
     </div>
     <div class="ep-sec">
-      <div class="ep-sec-t">Camera View</div>
       <div id="ep-vs" style="font-size:9px;color:#4a5e72;margin-bottom:5px">No view saved</div>
       <button class="ep-btn grn" onclick="saveView()">📷 SAVE CURRENT VIEW</button>
       <button class="ep-btn" onclick="flyToSel()">▶ FLY TO DEVICE</button>
@@ -813,18 +1057,92 @@ select.fi{cursor:pointer}
 
 </div><!-- /workspace -->
 
-<!-- FOOTER -->
+<!-- FOOTER (desktop) -->
 <div id="footer">
   <div>CLIENT: <span id="f-client" style="color:#5b9bd5">—</span></div>
   <div>SITE: <span id="f-site" style="color:#5b9bd5">—</span></div>
   <div>DEVICES: <span id="f-devs" style="color:#5b9bd5">0</span></div>
   <div>MODE: <span id="f-mode" style="color:#5b9bd5">ORBIT</span></div>
-  <div style="margin-left:auto;color:#2c3e52">Project Atlas // SELF-CONTAINED</div>
+  <div style="margin-left:auto;color:#2c3e52">PROJECT ATLAS // MSP SITE MAPPING</div>
 </div>
 
 </div><!-- /app -->
 
-<!-- TOOLTIP -->
+<!-- ═══════════════════════════════════════════════════════════════
+     MOBILE UI ELEMENTS (shown only on mobile via CSS/JS)
+═══════════════════════════════════════════════════════════════ -->
+
+<!-- Mobile top bar -->
+<div id="mob-bar">
+  <button class="mob-icon-btn" onclick="toggleMobMenu()" title="Menu">☰</button>
+  <div style="font-family:'JetBrains Mono',monospace;font-size:13px;color:#f4f6f9;font-weight:700;letter-spacing:2px">ATLAS</div>
+  <div style="font-size:10px;color:#5b9bd5;font-family:monospace" id="mob-badge">LOAD A SCAN</div>
+  <button class="mob-icon-btn" onclick="doExport()" title="Export">⬇</button>
+</div>
+
+<!-- Mobile bottom toolbar -->
+<div id="mob-toolbar">
+  <button class="mob-tool-btn" onclick="showMobSheet('place')" id="mtb-place">
+    <span class="mob-tool-icon">＋</span>
+    <span class="mob-tool-label">PLACE</span>
+  </button>
+  <button class="mob-tool-btn" onclick="showMobSheet('view')" id="mtb-view">
+    <span class="mob-tool-icon">👁</span>
+    <span class="mob-tool-label">VIEW</span>
+  </button>
+  <button class="mob-tool-btn" onclick="togglePortMap()" id="mtb-ports">
+    <span class="mob-tool-icon">🔗</span>
+    <span class="mob-tool-label">PORTS</span>
+  </button>
+  <button class="mob-tool-btn" onclick="showMobSheet('devices')" id="mtb-devs">
+    <span class="mob-tool-icon">📋</span>
+    <span class="mob-tool-label">DEVICES</span>
+  </button>
+  <button class="mob-tool-btn" onclick="showMobSheet('settings')" id="mtb-settings">
+    <span class="mob-tool-icon">⚙</span>
+    <span class="mob-tool-label">MORE</span>
+  </button>
+</div>
+
+<!-- Mobile bottom sheet (shared) -->
+<div id="mob-sheet-bg" onclick="closeMobSheet()"></div>
+<div id="mob-sheet">
+  <div id="mob-sheet-handle"></div>
+  <div id="mob-sheet-content"></div>
+</div>
+
+<!-- Mobile quick edit card (after placing a device) -->
+<div id="mob-edit-card">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+    <div id="mob-edit-icon" style="font-size:28px"></div>
+    <div>
+      <div id="mob-edit-type" style="font-size:9px;color:#4a5e72;letter-spacing:1px;font-family:monospace"></div>
+      <input id="mob-edit-name" class="mob-field" placeholder="Device name / hostname">
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+    <div><div class="mob-label">IP ADDRESS</div><input class="mob-field" id="mob-edit-ip" placeholder="192.168.1.x"></div>
+    <div><div class="mob-label">PORT</div><input class="mob-field" id="mob-edit-port" placeholder="Port 4"></div>
+    <div><div class="mob-label">VLAN</div><input class="mob-field" id="mob-edit-vlan" placeholder="VLAN10"></div>
+    <div><div class="mob-label">STATUS</div>
+      <select class="mob-field" id="mob-edit-status">
+        <option value="active">Active</option>
+        <option value="inactive">Inactive</option>
+        <option value="warning">Warning</option>
+      </select>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px">
+    <button class="mob-card-btn" onclick="saveMobEdit()" style="flex:2;background:#5b9bd5;color:#fff;border-color:#5b9bd5">✓ SAVE</button>
+    <button class="mob-card-btn" onclick="moreEditFields()" style="flex:1">MORE ▾</button>
+    <button class="mob-card-btn" onclick="closeMobEdit()" style="flex:1;color:#e84057;border-color:#2a0010">✕</button>
+  </div>
+</div>
+
+<!-- SWITCH PORT PANEL -->
+<div id="switch-panel"></div>
+
+<!-- TOOLTIP (desktop hover) -->
 <div id="tip">
   <div class="t-name" id="t-name"></div>
   <div class="t-type" id="t-type"></div>
@@ -840,6 +1158,8 @@ select.fi{cursor:pointer}
     <div class="t-btn" onclick="fpToHov()">👁 1ST PERSON</div>
   </div>
 </div>
+
+
 
 
 <script>
@@ -7689,6 +8009,272 @@ function exportPortMap() {
 function importPortMap(json) {
   try { portMap = JSON.parse(json); } catch(e) {}
 }
+
+
+
+
+// ═══════════════════════════════════════════════════════════
+// MOBILE UI CONTROLLER
+// ═══════════════════════════════════════════════════════════
+
+var mobSelDev = null; // selected device for mobile placement
+
+// Apply mobile class on touch devices
+if (isMobile) {
+  document.body.classList.add('is-mobile');
+}
+
+// Sync badge between desktop and mobile
+function setBadge(txt) {
+  var b = document.getElementById('badge');
+  var mb = document.getElementById('mob-badge');
+  if (b) b.textContent = txt;
+  if (mb) mb.textContent = txt;
+}
+
+// ── MOBILE SHEET ──────────────────────────────────────────
+var currentSheet = null;
+
+function showMobSheet(type) {
+  currentSheet = type;
+  var bg      = document.getElementById('mob-sheet-bg');
+  var sheet   = document.getElementById('mob-sheet');
+  var content = document.getElementById('mob-sheet-content');
+
+  // Mark active toolbar button
+  ['place','view','devices','settings'].forEach(function(t) {
+    var btn = document.getElementById('mtb-' + t);
+    if (btn) btn.classList.toggle('on', t === type);
+  });
+
+  if (type === 'place')    content.innerHTML = buildPlaceSheet();
+  if (type === 'view')     content.innerHTML = buildViewSheet();
+  if (type === 'devices')  content.innerHTML = buildDevicesSheet();
+  if (type === 'settings') content.innerHTML = buildSettingsSheet();
+
+  bg.classList.add('show');
+  setTimeout(function() { sheet.classList.add('show'); }, 10);
+}
+
+function closeMobSheet() {
+  var bg    = document.getElementById('mob-sheet-bg');
+  var sheet = document.getElementById('mob-sheet');
+  sheet.classList.remove('show');
+  bg.classList.remove('show');
+  // Clear toolbar active states
+  ['place','view','devices','settings'].forEach(function(t) {
+    var btn = document.getElementById('mtb-' + t);
+    if (btn) btn.classList.remove('on');
+  });
+  currentSheet = null;
+}
+
+// ── PLACE SHEET ────────────────────────────────────────────
+var MOB_CATS = [
+  { label: '⭐ FREQUENT', devs: [
+    {t:'Wall Jack', c:'network', i:'🔲', wj:1, l:'WALL JACK'},
+    {t:'Patch Panel', c:'network', i:'🔌', l:'PATCH PNL'},
+    {t:'Desktop PC', c:'endpoint', i:'🖥️', l:'DESKTOP'},
+    {t:'Laptop', c:'endpoint', i:'💻', l:'LAPTOP'},
+    {t:'Net Printer', c:'printer', i:'🖨️', l:'PRINTER'},
+    {t:'MFP/Copier', c:'printer', i:'📠', l:'MFP'},
+    {t:'VoIP Phone', c:'endpoint', i:'☎️', l:'VOIP'},
+    {t:'Rack Server', c:'server', i:'🖥️', l:'RACK SVR'},
+  ]},
+  { label: '🔷 UNIFI GATEWAYS', devs: [
+    {t:'UDM-Pro', c:'network', i:'🛡️', l:'UDM-PRO'},
+    {t:'UDM-SE', c:'network', i:'🛡️', l:'UDM-SE'},
+    {t:'UDR7', c:'network', i:'🛡️', l:'UDR7'},
+    {t:'UCG-Ultra', c:'network', i:'🌐', l:'UCG-ULTRA'},
+    {t:'UXG-Pro', c:'network', i:'🌐', l:'UXG-PRO'},
+    {t:'UX7', c:'network', i:'🌐', l:'UX7'},
+    {t:'Telus ONT', c:'network', i:'📥', l:'TELUS ONT'},
+    {t:'Firewall', c:'network', i:'🔥', l:'FIREWALL'},
+  ]},
+  { label: '🔀 UNIFI SWITCHES', devs: [
+    {t:'USW-Pro-Max-48-POE', c:'network', i:'🔀', l:'USW-MAX-48P'},
+    {t:'USW-Pro-48-POE', c:'network', i:'🔀', l:'USW-PRO-48P'},
+    {t:'USW-Pro-24-POE', c:'network', i:'🔀', l:'USW-PRO-24P'},
+    {t:'USW-48-POE', c:'network', i:'🔀', l:'USW-48-POE'},
+    {t:'USW-24-POE', c:'network', i:'🔀', l:'USW-24-POE'},
+    {t:'USW-Lite-8-POE', c:'network', i:'🔀', l:'USW-LITE-8P'},
+    {t:'USW-Flex-Mini', c:'network', i:'🔀', l:'FLEX-MINI'},
+    {t:'Switch Generic', c:'network', i:'🔀', l:'SW GENERIC'},
+  ]},
+  { label: '📶 ACCESS POINTS', devs: [
+    {t:'U7-Pro', c:'network', i:'📶', l:'U7-PRO'},
+    {t:'U7-Pro-Wall', c:'network', i:'📶', l:'U7-PRO-WALL'},
+    {t:'U6-Enterprise', c:'network', i:'📶', l:'U6-ENT'},
+    {t:'U6-Pro', c:'network', i:'📶', l:'U6-PRO'},
+    {t:'U6-Lite', c:'network', i:'📶', l:'U6-LITE'},
+    {t:'AP Generic', c:'network', i:'📶', l:'AP'},
+  ]},
+  { label: '🖥️ SERVERS', devs: [
+    {t:'Rack Server', c:'server', i:'🖥️', l:'RACK SVR'},
+    {t:'Tower Server', c:'server', i:'🗄️', l:'TOWER SVR'},
+    {t:'NAS', c:'server', i:'💾', l:'NAS'},
+    {t:'UPS', c:'server', i:'🔋', l:'UPS'},
+    {t:'PDU', c:'server', i:'🔌', l:'PDU'},
+  ]},
+  { label: '📷 CAMERAS', devs: [
+    {t:'G6-Pro 4K', c:'camera', i:'📷', l:'G6 PRO 4K'},
+    {t:'G5-Pro', c:'camera', i:'📷', l:'G5 PRO'},
+    {t:'G5-Dome', c:'camera', i:'📷', l:'G5 DOME'},
+    {t:'AI-PTZ', c:'camera', i:'📷', l:'AI PTZ'},
+    {t:'UNVR', c:'camera', i:'📹', l:'UNVR'},
+    {t:'IP Camera', c:'camera', i:'📷', l:'IP CAM'},
+  ]},
+];
+
+function buildPlaceSheet() {
+  var h = '<div style="font-size:11px;color:#5b9bd5;font-family:monospace;font-weight:700;margin-bottom:4px;letter-spacing:1px">SELECT DEVICE TO PLACE</div>';
+  h += '<div style="font-size:10px;color:#4a5e72;font-family:monospace;margin-bottom:12px">Tap a device — then hold on the floor plan to place</div>';
+  MOB_CATS.forEach(function(cat) {
+    h += '<div class="mob-cat-title">' + cat.label + '</div>';
+    h += '<div class="mob-dev-grid">';
+    cat.devs.forEach(function(d) {
+      var isOn = mobSelDev && mobSelDev.t === d.t ? ' on' : '';
+      h += '<div class="mob-dev-item' + isOn + '" onclick="mobPickDev(' + JSON.stringify(d) + ')">';
+      h += '<div class="mob-dev-icon">' + d.i + '</div>';
+      h += '<div class="mob-dev-label">' + d.l + '</div>';
+      h += '</div>';
+    });
+    h += '</div>';
+  });
+  return h;
+}
+
+function mobPickDev(d) {
+  mobSelDev = d;
+  // Also set the main pendingDev so the 3D canvas knows what to place
+  pendingDev = {t: d.t, c: d.c, i: d.i, wj: !!d.wj};
+  closeMobSheet();
+  setBadge('HOLD ON SURFACE TO PLACE ' + d.t.toUpperCase());
+  document.getElementById('f-mode').textContent = 'PLACING';
+  document.getElementById('mtb-place').classList.add('on');
+}
+
+// ── VIEW SHEET ─────────────────────────────────────────────
+function buildViewSheet() {
+  var modes = [
+    {id:'real', icon:'🏠', label:'ARCH'},
+    {id:'wire', icon:'◻', label:'WIRE'},
+    {id:'blue', icon:'📐', label:'DARK'},
+  ];
+  var h = '<div class="mob-view-pills">';
+  modes.forEach(function(m) {
+    var on = viewMode === m.id ? ' on' : '';
+    h += '<div class="mob-view-pill' + on + '" onclick="setVM(\'' + m.id + '\');closeMobSheet()">';
+    h += '<span style="font-size:24px">' + m.icon + '</span>';
+    h += '<span style="font-size:11px;font-family:monospace;font-weight:700">' + m.label + '</span>';
+    h += '</div>';
+  });
+  h += '</div>';
+  h += '<button class="mob-sheet-btn" onclick="resetCam();closeMobSheet()">⊡ &nbsp;Reset Camera</button>';
+  h += '<button class="mob-sheet-btn" onclick="toggleLabels();closeMobSheet()">🏷 &nbsp;Toggle Labels</button>';
+  h += '<button class="mob-sheet-btn" onclick="enterFP();closeMobSheet()">👁 &nbsp;First Person View</button>';
+  return h;
+}
+
+// ── DEVICES SHEET ──────────────────────────────────────────
+function buildDevicesSheet() {
+  var h = '<div style="font-size:11px;color:#5b9bd5;font-family:monospace;font-weight:700;margin-bottom:12px;letter-spacing:1px">PLACED DEVICES (' + markers.length + ')</div>';
+  if (!markers.length) {
+    h += '<div style="color:#4a5e72;font-family:monospace;font-size:12px;text-align:center;padding:24px 0">No devices placed yet</div>';
+    return h;
+  }
+  markers.forEach(function(m) {
+    var sc = m.data.status === 'active' ? '#3dd68c' : m.data.status === 'warning' ? '#f0a500' : '#e84057';
+    h += '<div class="mob-dev-list-item' + (m.id === selId ? ' on' : '') + '" onclick="mobSelectDev(\'' + m.id + '\')">';
+    h += '<div style="font-size:20px">' + m.data.i + '</div>';
+    h += '<div style="flex:1">';
+    h += '<div style="font-size:12px;color:#f4f6f9;font-family:monospace;font-weight:700">' + (m.data.name || m.data.t) + '</div>';
+    h += '<div style="font-size:10px;color:#7a8a9a;font-family:monospace">' + m.data.t + (m.data.ip ? ' · ' + m.data.ip : '') + '</div>';
+    h += '</div>';
+    h += '<div style="width:8px;height:8px;border-radius:50%;background:' + sc + ';flex-shrink:0"></div>';
+    h += '</div>';
+  });
+  return h;
+}
+
+function mobSelectDev(id) {
+  selectMarker(id);
+  closeMobSheet();
+  var m = markers.find(function(x) { return x.id === id; });
+  if (m) { flyToMarker(m); openMobEdit(id); }
+}
+
+// ── SETTINGS SHEET ─────────────────────────────────────────
+function buildSettingsSheet() {
+  var h = '';
+  h += '<button class="mob-sheet-btn" onclick="triggerLoad();closeMobSheet()">⬆ &nbsp;Load Floor Scan (GLB / OBJ)</button>';
+  h += '<button class="mob-sheet-btn" onclick="doExport();closeMobSheet()">⬇ &nbsp;Export as HTML</button>';
+  h += '<button class="mob-sheet-btn" onclick="triggerImport();closeMobSheet()">⬆ &nbsp;Import Saved File</button>';
+  h += '<div style="height:1px;background:#2c3e52;margin:12px 0"></div>';
+  h += '<button class="mob-sheet-btn" onclick="togglePortMap();closeMobSheet()">🔗 &nbsp;Port Mapping Mode</button>';
+  h += '<div style="height:1px;background:#2c3e52;margin:12px 0"></div>';
+  h += '<div style="font-size:9px;color:#4a5e72;font-family:monospace;margin-bottom:8px;letter-spacing:1px">CLIENT INFO</div>';
+  h += '<div style="margin-bottom:8px"><div class="mob-label">Client Name</div><input class="mob-field" value="' + (document.getElementById('cname') ? document.getElementById('cname').value : '') + '" oninput="document.getElementById(\'cname\').value=this.value;updateFooter()"></div>';
+  h += '<div><div class="mob-label">Site / Floor</div><input class="mob-field" value="' + (document.getElementById('sname') ? document.getElementById('sname').value : '') + '" oninput="document.getElementById(\'sname\').value=this.value;updateFooter()"></div>';
+  return h;
+}
+
+// ── MOBILE EDIT CARD ───────────────────────────────────────
+var mobEditId = null;
+
+function openMobEdit(id) {
+  var m = markers.find(function(x) { return x.id === id; });
+  if (!m) return;
+  mobEditId = id;
+  document.getElementById('mob-edit-icon').textContent  = m.data.i;
+  document.getElementById('mob-edit-type').textContent  = m.data.t.toUpperCase();
+  document.getElementById('mob-edit-name').value  = m.data.name  || '';
+  document.getElementById('mob-edit-ip').value    = m.data.ip    || '';
+  document.getElementById('mob-edit-port').value  = m.data.port  || '';
+  document.getElementById('mob-edit-vlan').value  = m.data.vlan  || '';
+  document.getElementById('mob-edit-status').value = m.data.status || 'active';
+  document.getElementById('mob-edit-card').classList.add('show');
+}
+
+function saveMobEdit() {
+  var m = markers.find(function(x) { return x.id === mobEditId; });
+  if (!m) return;
+  m.data.name   = document.getElementById('mob-edit-name').value;
+  m.data.ip     = document.getElementById('mob-edit-ip').value;
+  m.data.port   = document.getElementById('mob-edit-port').value;
+  m.data.vlan   = document.getElementById('mob-edit-vlan').value;
+  m.data.status = document.getElementById('mob-edit-status').value;
+  closeMobEdit();
+  updateDevList();
+  // If wall jack — prompt to link
+  if (m.data.t === 'Wall Jack' || (m.data.wj)) promptWallJack(mobEditId);
+}
+
+function closeMobEdit() {
+  document.getElementById('mob-edit-card').classList.remove('show');
+  mobEditId = null;
+  returnToOrbit();
+}
+
+function moreEditFields() {
+  // Fall back to desktop edit panel for full fields
+  if (mobEditId) { selectMarker(mobEditId); }
+  document.getElementById('ep').classList.add('show');
+  document.getElementById('ep').style.display = 'flex';
+  closeMobEdit();
+}
+
+// Open mobile edit after placing a device
+var origPlaceDev = placeDev;
+placeDev = function(worldPt) {
+  origPlaceDev(worldPt);
+  if (isMobile && selId) {
+    setTimeout(function() { openMobEdit(selId); }, 100);
+  }
+};
+
+// Toggle mobile menu (hamburger in mob-bar)
+function toggleMobMenu() { showMobSheet('settings'); }
 
 
 </script>
