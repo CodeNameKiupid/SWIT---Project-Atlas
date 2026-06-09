@@ -1026,13 +1026,6 @@ body.is-mobile #vp { width: 100% !important; }
       <div id="fp-cross">+</div>
     </div>
 
-    <!-- Placement rotation controls -->
-    <div id="place-rotate" style="display:none;position:fixed;bottom:160px;left:50%;transform:translateX(-50%);z-index:200;align-items:center;gap:12px;background:#0d1117ee;border:1px solid #5b9bd5;border-radius:12px;padding:8px 16px">
-      <button ontouchstart="startRotate(-1)" ontouchend="stopRotate()" onmousedown="startRotate(-1)" onmouseup="stopRotate()" style="background:transparent;border:1px solid #2c3e52;color:#5b9bd5;font-size:20px;width:44px;height:44px;border-radius:8px;cursor:pointer;font-family:monospace">↺</button>
-      <div style="font-size:10px;color:#7a8a9a;font-family:monospace;text-align:center;min-width:60px">ROTATE<br><span id="rotate-deg" style="color:#5b9bd5">0°</span></div>
-      <button ontouchstart="startRotate(1)" ontouchend="stopRotate()" onmousedown="startRotate(1)" onmouseup="stopRotate()" style="background:transparent;border:1px solid #2c3e52;color:#5b9bd5;font-size:20px;width:44px;height:44px;border-radius:8px;cursor:pointer;font-family:monospace">↻</button>
-    </div>
-
     <!-- Mobile arrow buttons -->
     <div id="arrows">
       <div class="arrow-grid">
@@ -1160,7 +1153,7 @@ body.is-mobile #vp { width: 100% !important; }
   </div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
     <div><div class="mob-label">IP ADDRESS</div><input class="mob-field" id="mob-edit-ip" placeholder="192.168.1.x"></div>
-    <div><div class="mob-label">PORT</div><input class="mob-field" id="mob-edit-port" placeholder="Port 4"></div>
+    <div><div class="mob-label" id="mob-port-label">CONNECTED TO PORT</div><input class="mob-field" id="mob-edit-port" placeholder="Port 4"></div>
     <div><div class="mob-label">VLAN</div><input class="mob-field" id="mob-edit-vlan" placeholder="VLAN10"></div>
     <div><div class="mob-label">STATUS</div>
       <select class="mob-field" id="mob-edit-status">
@@ -6878,7 +6871,6 @@ function makeDeviceShape(pos, data) {
     var mat = new THREE.MeshLambertMaterial({color: 0x111111});
     mesh = new THREE.Mesh(geo, mat);
     mesh.position.y = 0.1;
-    mesh.rotation.z = Math.PI * 0.15; // slight tilt
     group.add(mesh);
     // Lens
     var lens = new THREE.Mesh(
@@ -8825,6 +8817,30 @@ function openMobEdit(id) {
   document.getElementById('mob-edit-name').value  = m.data.name  || '';
   document.getElementById('mob-edit-ip').value    = m.data.ip    || '';
   document.getElementById('mob-edit-port').value  = m.data.port  || '';
+
+  // Context-aware port label
+  var t = (m.data.t || '').toLowerCase();
+  var portLabel = 'CONNECTED TO PORT';
+  var portPh    = 'Port 4 / Gi0/4';
+  if (t.indexOf('usw') >= 0 || t.indexOf('switch') >= 0 || t.indexOf('patch') >= 0) {
+    portLabel = 'UPLINK PORT'; portPh = 'SFP1 / Gi0/48';
+  } else if (t.indexOf('wall jack') >= 0 || t.indexOf('keystone') >= 0) {
+    portLabel = 'PATCH PANEL PORT'; portPh = 'Port 12 / Panel A-12';
+  } else if (t.indexOf('ap') >= 0 || t.indexOf('u6') >= 0 || t.indexOf('u7') >= 0) {
+    portLabel = 'POE SWITCH PORT'; portPh = 'Port 4 (PoE)';
+  } else if (t.indexOf('camera') >= 0 || t.indexOf('g5') >= 0 || t.indexOf('g6') >= 0) {
+    portLabel = 'POE / NVR PORT'; portPh = 'Port 8 / NVR Ch.2';
+  } else if (t.indexOf('server') >= 0 || t.indexOf('nas') >= 0) {
+    portLabel = 'SWITCH PORT (NIC 1)'; portPh = 'Port 24 / Gi0/24';
+  } else if (t.indexOf('printer') >= 0 || t.indexOf('mfp') >= 0) {
+    portLabel = 'SWITCH PORT'; portPh = 'Port 6';
+  } else if (t.indexOf('udm') >= 0 || t.indexOf('uxg') >= 0 || t.indexOf('gateway') >= 0) {
+    portLabel = 'WAN / UPLINK PORT'; portPh = 'WAN1 / Eth0';
+  }
+  var lbl = document.getElementById('mob-port-label');
+  var inp = document.getElementById('mob-edit-port');
+  if (lbl) lbl.textContent = portLabel;
+  if (inp) inp.placeholder = portPh;
   document.getElementById('mob-edit-vlan').value  = m.data.vlan  || '';
   document.getElementById('mob-edit-status').value = m.data.status || 'active';
   document.getElementById('mob-edit-card').classList.add('show');
@@ -8908,10 +8924,10 @@ function moreEditFields() {
   h += '<div style="margin-bottom:10px"><div class="mob-label">Notes</div>';
   h += '<textarea class="mob-field" id="mob-full-notes" style="min-height:60px;resize:none">' + (m.data.notes||'') + '</textarea></div>';
   h += '<div style="display:flex;gap:8px;margin-top:4px">';
-
+  h += '<button class="mob-sheet-btn" id="mob-save-full-btn" style="flex:2;background:#5b9bd5;color:#fff;border-color:#5b9bd5;justify-content:center">✓ SAVE ALL</button>';
+  h += '<button class="mob-sheet-btn" id="mob-del-full-btn" style="flex:1;color:#e84057;border-color:#2a0010;justify-content:center">🗑</button>';
   h += '</div>';
   document.getElementById('mob-sheet-content').innerHTML = h;
-  // Attach button listeners after innerHTML set
   document.getElementById('mob-save-full-btn').addEventListener('click', function() { saveMobFull(id); });
   document.getElementById('mob-del-full-btn').addEventListener('click', function() { deleteMobFull(id); });
 }
@@ -8967,6 +8983,17 @@ function toggleMobMenu() { showMobSheet('settings'); }
 
 <!-- SWITCH PORT PANEL -->
 <div id="switch-panel"></div>
+
+
+<!-- Placement rotation controls (body level so not clipped by vp overflow) -->
+<div id="place-rotate" style="display:none;position:fixed;bottom:160px;left:50%;transform:translateX(-50%);z-index:9999;align-items:center;gap:12px;background:#0d1117f0;border:2px solid #5b9bd5;border-radius:14px;padding:10px 18px;box-shadow:0 4px 24px #000a">
+  <div style="font-size:9px;color:#7a8a9a;font-family:monospace;letter-spacing:1px;text-align:center;margin-bottom:2px">ROTATE DEVICE</div>
+  <div style="display:flex;align-items:center;gap:12px">
+    <button ontouchstart="startRotate(-1)" ontouchend="stopRotate()" onmousedown="startRotate(-1)" onmouseup="stopRotate()" style="background:#111822;border:1px solid #2c3e52;color:#5b9bd5;font-size:22px;width:52px;height:52px;border-radius:10px;cursor:pointer">↺</button>
+    <div style="font-size:18px;color:#5b9bd5;font-family:monospace;font-weight:700;min-width:52px;text-align:center"><span id="rotate-deg">0</span>°</div>
+    <button ontouchstart="startRotate(1)" ontouchend="stopRotate()" onmousedown="startRotate(1)" onmouseup="stopRotate()" style="background:#111822;border:1px solid #2c3e52;color:#5b9bd5;font-size:22px;width:52px;height:52px;border-radius:10px;cursor:pointer">↻</button>
+  </div>
+</div>
 
 </body>
 </html>
