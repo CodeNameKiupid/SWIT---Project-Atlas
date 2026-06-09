@@ -6430,11 +6430,11 @@ updateCamera();
 
 // ── CATEGORY COLORS ───────────────────────────────────────────────────────────
 var CAT_COL = {
-  network:  0xffaa00,
-  server:   0xff4455,
-  endpoint: 0x00ff88,
-  printer:  0xaa44ff,
-  camera:   0x00ccff
+  network:  0x2c5f8a,
+  server:   0xe84057,
+  endpoint: 0x3dd68c,
+  printer:  0x8866ff,
+  camera:   0x5b9bd5
 };
 var STATUS_COL = {active: 0x00ff88, inactive: 0xff4455, warning: 0xffaa00, unknown: 0x4a6070};
 
@@ -6746,16 +6746,13 @@ function makeDeviceShape(pos, data) {
   var col  = data.hl ? 0xf0a500 : catCol(data.c);
   var group = new THREE.Group();
   group.position.set(pos.x, pos.y, pos.z);
-  group.userData.markerId = ''; // set after
+  group.userData.markerId = '';
 
-  var isPoE = t.indexOf('poe') >= 0 ||
-              t.indexOf('poe+') >= 0 ||
-              t.indexOf('udm') >= 0 ||
-              t.indexOf('usg') >= 0;
+  var isPoE = t.indexOf('poe') >= 0 || t.indexOf('udm') >= 0 || t.indexOf('usg') >= 0;
 
-  var mesh; // primary raycasting mesh
+  var mesh;
 
-  // ── SWITCHES (flat wide rack box) ─────────────────────────────────────────
+  try {
   if (t.indexOf('usw') >= 0 || t.indexOf('switch') >= 0 || t.indexOf('patch') >= 0) {
     var w = t.indexOf('48') >= 0 ? 0.9 : t.indexOf('24') >= 0 ? 0.7 : 0.5;
     var geo = new THREE.BoxGeometry(w, 0.08, 0.3);
@@ -7039,15 +7036,23 @@ function makeDeviceShape(pos, data) {
     group.add(mesh);
   }
 
-  // Ensure mesh exists
+  } catch(shapeErr) {
+    console.warn("Shape error:", shapeErr);
+    mesh = new THREE.Mesh(new THREE.BoxGeometry(0.18,0.1,0.14), new THREE.MeshLambertMaterial({color:0x2c3e52}));
+    mesh.position.y = 0.05; group.add(mesh);
+  }
+
+
+  // Ensure mesh exists - use clean box, never a sphere
   if (!mesh) {
     mesh = new THREE.Mesh(
-      new THREE.SphereGeometry(0.1, 8, 8),
-      new THREE.MeshLambertMaterial({color: col})
+      new THREE.BoxGeometry(0.18, 0.1, 0.14),
+      new THREE.MeshLambertMaterial({color: 0x2c3e52})
     );
-    mesh.position.y = 0.1;
+    mesh.position.y = 0.05;
     group.add(mesh);
   }
+
 
   // ── PoE INDICATOR — small flat green disc ─────────────────────────────────
   if (isPoE) {
@@ -7709,8 +7714,11 @@ function handleTap(cx, cy) {
   var mHits = raycaster.intersectObjects(markers.map(function(m) { return m.group || m.mesh; }), true);
   if (mHits.length) {
     var id = mHits[0].object.userData.markerId;
-    if (portMapMode)  { handlePortMapClick(id); return; }
+    if (!id) return;
+    if (portMapMode) { handlePortMapClick(id); return; }
     selectMarker(id);
+    // On mobile — show edit card with delete option
+    if (isMobile) { openMobEdit(id); }
     return;
   }
 
@@ -8547,8 +8555,14 @@ var MOB_CATS = [
     {t:'UCG-Ultra', c:'network', i:'🌐', l:'UCG-ULTRA'},
     {t:'UXG-Pro', c:'network', i:'🌐', l:'UXG-PRO'},
     {t:'UX7', c:'network', i:'🌐', l:'UX7'},
-    {t:'Telus ONT', c:'network', i:'📥', l:'TELUS ONT'},
     {t:'Firewall', c:'network', i:'🔥', l:'FIREWALL'},
+    {t:'Router', c:'network', i:'🔄', l:'ROUTER'},
+  ]},
+  { label: '📡 ISP / CARRIER', devs: [
+    {t:'Telus ONT', c:'network', i:'📥', l:'TELUS ONT'},
+    {t:'Telus Router', c:'network', i:'📡', l:'TELUS RTR'},
+    {t:'Wall Jack', c:'network', i:'🔲', wj:1, l:'WALL JACK'},
+    {t:'Patch Panel', c:'network', i:'🔌', l:'PATCH PNL'},
   ]},
   { label: '🔀 UNIFI SWITCHES', devs: [
     {t:'USW-Pro-Max-48-POE', c:'network', i:'🔀', l:'USW-MAX-48P'},
@@ -8592,8 +8606,8 @@ MOB_CATS.forEach(function(cat) {
 });
 
 function buildPlaceSheet() {
-  var h = '<div style="font-size:11px;color:#5b9bd5;font-family:monospace;font-weight:700;margin-bottom:4px;letter-spacing:1px">SELECT DEVICE TO PLACE</div>';
-  h += '<div style="font-size:10px;color:#4a5e72;font-family:monospace;margin-bottom:12px">Tap a device then tap the floor plan to place it</div>';
+  var h = '<div style="font-size:11px;color:#5b9bd5;font-family:monospace;font-weight:700;margin-bottom:8px;letter-spacing:1px">SELECT DEVICE TO PLACE</div>';
+  h += '<input id="mob-dev-search" class="mob-field" placeholder="🔍  Search devices..." oninput="mobFilterDevices(this.value)" style="margin-bottom:12px;width:100%">';
   var idx = 0;
   MOB_CATS.forEach(function(cat) {
     h += '<div class="mob-cat-title">' + cat.label + '</div>';
@@ -8637,6 +8651,28 @@ document.addEventListener('click', function(e) {
 });
 
 // ── VIEW SHEET ─────────────────────────────────────────────
+
+function mobFilterDevices(query) {
+  query = (query || '').toLowerCase().trim();
+  var items = document.querySelectorAll('#mob-sheet-content .mob-dev-item');
+  var titles = document.querySelectorAll('#mob-sheet-content .mob-cat-title');
+  var grids  = document.querySelectorAll('#mob-sheet-content .mob-dev-grid');
+  if (!query) {
+    items.forEach(function(i) { i.style.display = ''; });
+    titles.forEach(function(t) { t.style.display = ''; });
+    grids.forEach(function(g) { g.style.display = ''; });
+    return;
+  }
+  // Hide all titles first
+  titles.forEach(function(t) { t.style.display = 'none'; });
+  items.forEach(function(item) {
+    var idx = parseInt(item.dataset.idx);
+    var d   = MOB_DEV_LOOKUP[idx];
+    var match = d && (d.t.toLowerCase().indexOf(query) >= 0 || d.l.toLowerCase().indexOf(query) >= 0);
+    item.style.display = match ? '' : 'none';
+  });
+}
+
 function buildViewSheet() {
   var modes = [
     {id:'real', icon:'🏠', label:'ARCH'},
