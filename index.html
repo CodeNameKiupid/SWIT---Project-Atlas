@@ -6733,36 +6733,385 @@ function applyViewMode() {
 }
 
 // ── DEVICE MARKERS ────────────────────────────────────────────────────────────
-function makeMarker(pos, data) {
-  var id  = Date.now() + Math.random();
-  var col = data.hl ? 0xffaa00 : catCol(data.c);
+// ── DEVICE SHAPE DEFINITIONS ──────────────────────────────────────────────────
+// Returns {mesh, extraMeshes[]} for each device type
+function makeDeviceShape(pos, data) {
+  var t    = (data.t || '').toLowerCase();
+  var col  = data.hl ? 0xf0a500 : catCol(data.c);
+  var group = new THREE.Group();
+  group.position.set(pos.x, pos.y, pos.z);
+  group.userData.markerId = ''; // set after
 
-  // Sphere
-  var geo  = new THREE.SphereGeometry(0.14, 12, 12);
-  var mat  = new THREE.MeshLambertMaterial({color: col, emissive: 0x001122});
-  var mesh = new THREE.Mesh(geo, mat);
-  mesh.position.set(pos.x, pos.y + 0.14, pos.z);
-  mesh.userData.markerId = id;
+  var isPoE = t.indexOf('poe') >= 0 ||
+              t.indexOf('poe+') >= 0 ||
+              t.indexOf('udm') >= 0 ||
+              t.indexOf('usg') >= 0;
 
-  // Ring
-  var rGeo  = new THREE.RingGeometry(0.18, 0.24, 24);
-  var rMat  = new THREE.MeshBasicMaterial({color: col, side: THREE.DoubleSide, transparent: true, opacity: 0.6});
-  var ring  = new THREE.Mesh(rGeo, rMat);
+  var mesh; // primary raycasting mesh
+
+  // ── SWITCHES (flat wide rack box) ─────────────────────────────────────────
+  if (t.indexOf('usw') >= 0 || t.indexOf('switch') >= 0 || t.indexOf('patch') >= 0) {
+    var w = t.indexOf('48') >= 0 ? 0.9 : t.indexOf('24') >= 0 ? 0.7 : 0.5;
+    var geo = new THREE.BoxGeometry(w, 0.08, 0.3);
+    var mat = new THREE.MeshLambertMaterial({color: 0x1a3d5c});
+    mesh = new THREE.Mesh(geo, mat);
+    mesh.position.y = 0.08;
+    group.add(mesh);
+    // Front panel strip
+    var panel = new THREE.Mesh(
+      new THREE.BoxGeometry(w - 0.02, 0.05, 0.02),
+      new THREE.MeshLambertMaterial({color: 0x0d2035})
+    );
+    panel.position.set(0, 0.08, 0.15);
+    group.add(panel);
+    // Port dots on front
+    var portCount = t.indexOf('48') >= 0 ? 12 : t.indexOf('24') >= 0 ? 8 : 4;
+    for (var pi = 0; pi < portCount; pi++) {
+      var px = -w/2 + 0.06 + pi * ((w-0.08)/portCount);
+      var portDot = new THREE.Mesh(
+        new THREE.BoxGeometry(0.025, 0.02, 0.005),
+        new THREE.MeshLambertMaterial({color: isPoE ? 0x003322 : 0x1a2535})
+      );
+      portDot.position.set(px, 0.08, 0.16);
+      group.add(portDot);
+    }
+    // PoE indicator — green strip
+    if (isPoE) {
+      var poeBadge = new THREE.Mesh(
+        new THREE.BoxGeometry(w - 0.1, 0.01, 0.01),
+        new THREE.MeshBasicMaterial({color: 0x00ff44})
+      );
+      poeBadge.position.set(0, 0.125, 0.15);
+      group.add(poeBadge);
+    }
+
+  // ── GATEWAYS / UDM / ROUTERS ───────────────────────────────────────────────
+  } else if (t.indexOf('udm') >= 0 || t.indexOf('uxg') >= 0 || t.indexOf('ucg') >= 0 || t.indexOf('router') >= 0 || t.indexOf('gateway') >= 0 || t.indexOf('ux7') >= 0) {
+    var geo = new THREE.BoxGeometry(0.5, 0.18, 0.35);
+    var mat = new THREE.MeshLambertMaterial({color: 0x0d1a2e});
+    mesh = new THREE.Mesh(geo, mat);
+    mesh.position.y = 0.09;
+    group.add(mesh);
+    // Top logo circle
+    var logo = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.06, 0.06, 0.01, 16),
+      new THREE.MeshBasicMaterial({color: 0x5b9bd5})
+    );
+    logo.position.set(0, 0.185, 0);
+    group.add(logo);
+
+  // ── FIREWALL ────────────────────────────────────────────────────────────────
+  } else if (t.indexOf('firewall') >= 0 || t.indexOf('efg') >= 0) {
+    var geo = new THREE.BoxGeometry(0.55, 0.1, 0.3);
+    var mat = new THREE.MeshLambertMaterial({color: 0x3a0010});
+    mesh = new THREE.Mesh(geo, mat);
+    mesh.position.y = 0.05;
+    group.add(mesh);
+    var ridge = new THREE.Mesh(
+      new THREE.BoxGeometry(0.45, 0.03, 0.02),
+      new THREE.MeshLambertMaterial({color: 0xe84057})
+    );
+    ridge.position.set(0, 0.115, 0.14);
+    group.add(ridge);
+
+  // ── ACCESS POINTS (dome disc) ───────────────────────────────────────────────
+  } else if (t.indexOf('u7') >= 0 || t.indexOf('u6') >= 0 || t.indexOf('uap') >= 0 || t.indexOf('ap') >= 0) {
+    // Main disc body
+    var geo = new THREE.CylinderGeometry(0.22, 0.2, 0.04, 24);
+    var mat = new THREE.MeshLambertMaterial({color: 0xf0f0f0});
+    mesh = new THREE.Mesh(geo, mat);
+    mesh.position.y = 0.04;
+    group.add(mesh);
+    // Centre dome
+    var dome = new THREE.Mesh(
+      new THREE.SphereGeometry(0.06, 16, 8, 0, Math.PI*2, 0, Math.PI/2),
+      new THREE.MeshLambertMaterial({color: 0x5b9bd5})
+    );
+    dome.position.y = 0.06;
+    group.add(dome);
+    // LED ring
+    var led = new THREE.Mesh(
+      new THREE.TorusGeometry(0.1, 0.008, 8, 32),
+      new THREE.MeshBasicMaterial({color: 0x00aaff})
+    );
+    led.rotation.x = Math.PI/2;
+    led.position.y = 0.04;
+    group.add(led);
+
+  // ── CAMERAS (cylinder) ─────────────────────────────────────────────────────
+  } else if (t.indexOf('camera') >= 0 || t.indexOf('g5') >= 0 || t.indexOf('g6') >= 0 || t.indexOf('ai-') >= 0) {
+    var geo = new THREE.CylinderGeometry(0.07, 0.09, 0.14, 12);
+    var mat = new THREE.MeshLambertMaterial({color: 0x111111});
+    mesh = new THREE.Mesh(geo, mat);
+    mesh.position.y = 0.1;
+    mesh.rotation.z = Math.PI * 0.15; // slight tilt
+    group.add(mesh);
+    // Lens
+    var lens = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.04, 0.04, 0.02, 12),
+      new THREE.MeshLambertMaterial({color: 0x3dd68c})
+    );
+    lens.position.set(0.05, 0.1, 0);
+    group.add(lens);
+
+  // ── WALL JACK (thin flat square) ────────────────────────────────────────────
+  } else if (t.indexOf('wall jack') >= 0 || t.indexOf('keystone') >= 0) {
+    var geo = new THREE.BoxGeometry(0.12, 0.03, 0.12);
+    var mat = new THREE.MeshLambertMaterial({color: 0xf0a500});
+    mesh = new THREE.Mesh(geo, mat);
+    mesh.position.y = 0.015;
+    group.add(mesh);
+    // Port hole
+    var hole = new THREE.Mesh(
+      new THREE.BoxGeometry(0.04, 0.025, 0.035),
+      new THREE.MeshLambertMaterial({color: 0x1a1a1a})
+    );
+    hole.position.set(0, 0.02, 0);
+    group.add(hole);
+
+  // ── NVR / SERVER RACK ──────────────────────────────────────────────────────
+  } else if (t.indexOf('nvr') >= 0 || t.indexOf('dvr') >= 0 || t.indexOf('unvr') >= 0) {
+    var geo = new THREE.BoxGeometry(0.3, 0.22, 0.25);
+    var mat = new THREE.MeshLambertMaterial({color: 0x111111});
+    mesh = new THREE.Mesh(geo, mat);
+    mesh.position.y = 0.11;
+    group.add(mesh);
+    for (var di = 0; di < 4; di++) {
+      var disk = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.05, 0.05, 0.02, 12),
+        new THREE.MeshLambertMaterial({color: di < 3 ? 0x3dd68c : 0x333333})
+      );
+      disk.rotation.z = Math.PI/2;
+      disk.position.set(-0.08 + di*0.055, 0.15, 0.13);
+      group.add(disk);
+    }
+
+  // ── RACK SERVER ────────────────────────────────────────────────────────────
+  } else if (t.indexOf('server') >= 0 || t.indexOf('rack') >= 0) {
+    var geo = new THREE.BoxGeometry(0.7, 0.12, 0.35);
+    var mat = new THREE.MeshLambertMaterial({color: 0x1a1a1a});
+    mesh = new THREE.Mesh(geo, mat);
+    mesh.position.y = 0.06;
+    group.add(mesh);
+    // Status LEDs
+    for (var li = 0; li < 4; li++) {
+      var led2 = new THREE.Mesh(
+        new THREE.SphereGeometry(0.008, 8, 8),
+        new THREE.MeshBasicMaterial({color: li === 0 ? 0x3dd68c : li === 1 ? 0x3dd68c : 0x333333})
+      );
+      led2.position.set(-0.3 + li*0.02, 0.07, 0.175);
+      group.add(led2);
+    }
+
+  // ── NAS ────────────────────────────────────────────────────────────────────
+  } else if (t.indexOf('nas') >= 0 || t.indexOf('unas') >= 0) {
+    var geo = new THREE.BoxGeometry(0.2, 0.28, 0.25);
+    var mat = new THREE.MeshLambertMaterial({color: 0x111111});
+    mesh = new THREE.Mesh(geo, mat);
+    mesh.position.y = 0.14;
+    group.add(mesh);
+    for (var ni = 0; ni < 3; ni++) {
+      var bay = new THREE.Mesh(
+        new THREE.BoxGeometry(0.16, 0.06, 0.02),
+        new THREE.MeshLambertMaterial({color: 0x222222})
+      );
+      bay.position.set(0, 0.22 - ni*0.08, 0.13);
+      group.add(bay);
+    }
+
+  // ── UPS ────────────────────────────────────────────────────────────────────
+  } else if (t.indexOf('ups') >= 0) {
+    var geo = new THREE.BoxGeometry(0.35, 0.22, 0.2);
+    var mat = new THREE.MeshLambertMaterial({color: 0x111111});
+    mesh = new THREE.Mesh(geo, mat);
+    mesh.position.y = 0.11;
+    group.add(mesh);
+    var battBar = new THREE.Mesh(
+      new THREE.BoxGeometry(0.25, 0.04, 0.01),
+      new THREE.MeshBasicMaterial({color: 0xf0a500})
+    );
+    battBar.position.set(0, 0.16, 0.105);
+    group.add(battBar);
+
+  // ── DESKTOP PC ─────────────────────────────────────────────────────────────
+  } else if (t.indexOf('desktop') >= 0 || t.indexOf('thin client') >= 0) {
+    var geo = new THREE.BoxGeometry(0.16, 0.3, 0.3);
+    var mat = new THREE.MeshLambertMaterial({color: 0x222222});
+    mesh = new THREE.Mesh(geo, mat);
+    mesh.position.y = 0.15;
+    group.add(mesh);
+
+  // ── LAPTOP ─────────────────────────────────────────────────────────────────
+  } else if (t.indexOf('laptop') >= 0) {
+    var base = new THREE.Mesh(
+      new THREE.BoxGeometry(0.28, 0.02, 0.2),
+      new THREE.MeshLambertMaterial({color: 0x888888})
+    );
+    base.position.y = 0.01;
+    group.add(base);
+    mesh = base;
+    var lid = new THREE.Mesh(
+      new THREE.BoxGeometry(0.28, 0.18, 0.015),
+      new THREE.MeshLambertMaterial({color: 0x888888})
+    );
+    lid.position.set(0, 0.1, -0.09);
+    lid.rotation.x = -Math.PI * 0.15;
+    group.add(lid);
+    var screen = new THREE.Mesh(
+      new THREE.BoxGeometry(0.24, 0.15, 0.005),
+      new THREE.MeshLambertMaterial({color: 0x111111})
+    );
+    screen.position.set(0, 0.1, -0.082);
+    screen.rotation.x = -Math.PI * 0.15;
+    group.add(screen);
+
+  // ── PRINTER / MFP ──────────────────────────────────────────────────────────
+  } else if (t.indexOf('printer') >= 0 || t.indexOf('mfp') >= 0 || t.indexOf('copier') >= 0) {
+    var geo = new THREE.BoxGeometry(0.4, 0.25, 0.35);
+    var mat = new THREE.MeshLambertMaterial({color: 0xdddddd});
+    mesh = new THREE.Mesh(geo, mat);
+    mesh.position.y = 0.125;
+    group.add(mesh);
+    var tray = new THREE.Mesh(
+      new THREE.BoxGeometry(0.35, 0.02, 0.15),
+      new THREE.MeshLambertMaterial({color: 0xcccccc})
+    );
+    tray.position.set(0, 0.01, 0.22);
+    group.add(tray);
+
+  // ── VOIP PHONE ─────────────────────────────────────────────────────────────
+  } else if (t.indexOf('voip') >= 0 || t.indexOf('phone') >= 0 || t.indexOf('uvp') >= 0) {
+    var base2 = new THREE.Mesh(
+      new THREE.BoxGeometry(0.18, 0.03, 0.22),
+      new THREE.MeshLambertMaterial({color: 0x222222})
+    );
+    base2.position.y = 0.015;
+    group.add(base2);
+    mesh = base2;
+    var phoneScreen = new THREE.Mesh(
+      new THREE.BoxGeometry(0.1, 0.06, 0.08),
+      new THREE.MeshLambertMaterial({color: 0x111133})
+    );
+    phoneScreen.position.set(0.02, 0.06, -0.04);
+    phoneScreen.rotation.x = -Math.PI * 0.2;
+    group.add(phoneScreen);
+    var handset = new THREE.Mesh(
+      new THREE.BoxGeometry(0.06, 0.02, 0.18),
+      new THREE.MeshLambertMaterial({color: 0x111111})
+    );
+    handset.position.set(-0.05, 0.04, 0.01);
+    group.add(handset);
+
+  // ── DEFAULT FALLBACK (sphere) ───────────────────────────────────────────────
+  } else {
+    var geo = new THREE.SphereGeometry(0.12, 10, 10);
+    var mat = new THREE.MeshLambertMaterial({color: col});
+    mesh = new THREE.Mesh(geo, mat);
+    mesh.position.y = 0.12;
+    group.add(mesh);
+  }
+
+  // Ensure mesh exists
+  if (!mesh) {
+    mesh = new THREE.Mesh(
+      new THREE.SphereGeometry(0.1, 8, 8),
+      new THREE.MeshLambertMaterial({color: col})
+    );
+    mesh.position.y = 0.1;
+    group.add(mesh);
+  }
+
+  // ── PoE INDICATOR (green bolt sprite) ─────────────────────────────────────
+  if (isPoE) {
+    var boltGeo = new THREE.CylinderGeometry(0.0, 0.06, 0.14, 3);
+    var boltMat = new THREE.MeshBasicMaterial({color: 0x00ff44});
+    var bolt    = new THREE.Mesh(boltGeo, boltMat);
+    // Position above the shape
+    var bb = new THREE.Box3().setFromObject(group);
+    bolt.position.set(0.18, bb.max.y + 0.06, 0);
+    group.add(bolt);
+  }
+
+  // ── SELECTION RING ─────────────────────────────────────────────────────────
+  var rMat = new THREE.MeshBasicMaterial({color: col, side: THREE.DoubleSide, transparent: true, opacity: 0.6});
+  var ring  = new THREE.Mesh(new THREE.RingGeometry(0.22, 0.28, 32), rMat);
   ring.rotation.x = -Math.PI / 2;
-  ring.position.set(pos.x, pos.y + 0.01, pos.z);
-  ring.userData.markerId = id;
+  ring.position.y = 0.01;
+  group.add(ring);
 
-  // Stem
+  scene.add(group);
+  return {group: group, mesh: mesh, ring: ring};
+}
+
+// ── DEVICE PORT DATABASE ───────────────────────────────────────────────────────
+var DEV_PORTS = {
+  'usw-pro-max-48': {rj45:48, poe:48, sfp:0, sfpPlus:4, sfp28:2},
+  'usw-pro-max-24': {rj45:24, poe:24, sfp:0, sfpPlus:2, sfp28:2},
+  'usw-pro-48-poe': {rj45:48, poe:32, sfp:0, sfpPlus:4, sfp28:0},
+  'usw-pro-48':     {rj45:48, poe:0,  sfp:0, sfpPlus:4, sfp28:0},
+  'usw-pro-24-poe': {rj45:24, poe:16, sfp:0, sfpPlus:2, sfp28:0},
+  'usw-pro-24':     {rj45:24, poe:0,  sfp:0, sfpPlus:2, sfp28:0},
+  'usw-48-poe':     {rj45:48, poe:32, sfp:4, sfpPlus:0, sfp28:0},
+  'usw-48':         {rj45:48, poe:0,  sfp:4, sfpPlus:0, sfp28:0},
+  'usw-24-poe':     {rj45:24, poe:16, sfp:2, sfpPlus:0, sfp28:0},
+  'usw-24':         {rj45:24, poe:0,  sfp:2, sfpPlus:0, sfp28:0},
+  'usw-lite-16-poe':{rj45:16, poe:8,  sfp:2, sfpPlus:0, sfp28:0},
+  'usw-lite-8-poe': {rj45:8,  poe:4,  sfp:2, sfpPlus:0, sfp28:0},
+  'usw-flex-mini':  {rj45:5,  poe:4,  sfp:0, sfpPlus:0, sfp28:0},
+  'usw-flex':       {rj45:5,  poe:4,  sfp:0, sfpPlus:0, sfp28:0},
+  'udm-pro':        {rj45:9,  poe:0,  sfp:2, sfpPlus:2, sfp28:0},
+  'udm-se':         {rj45:9,  poe:1,  sfp:2, sfpPlus:2, sfp28:0},
+  'patch panel':    {rj45:24, poe:0,  sfp:0, sfpPlus:0, sfp28:0},
+};
+
+function getPortDef(deviceType) {
+  var t = deviceType.toLowerCase();
+  // Try exact then partial match
+  for (var key in DEV_PORTS) {
+    if (t.indexOf(key) >= 0) return DEV_PORTS[key];
+  }
+  // Generic fallback for switches
+  if (t.indexOf('switch') >= 0) return {rj45:24, poe:0, sfp:2, sfpPlus:0, sfp28:0};
+  return null;
+}
+
+function isNetworkingDevice(deviceType) {
+  var t = deviceType.toLowerCase();
+  return t.indexOf('usw') >= 0 || t.indexOf('switch') >= 0 ||
+         t.indexOf('patch') >= 0 || t.indexOf('udm') >= 0 ||
+         t.indexOf('uxg') >= 0 || t.indexOf('ucg') >= 0 ||
+         t.indexOf('firewall') >= 0 || t.indexOf('router') >= 0 ||
+         t.indexOf('gateway') >= 0 || t.indexOf('udr') >= 0 ||
+         t.indexOf('efg') >= 0;
+}
+
+// ── UPDATED makeMarker USING 3D SHAPES ────────────────────────────────────────
+function makeMarker(pos, data) {
+  var id = Date.now() + Math.random();
+  var shaped = makeDeviceShape(pos, data);
+  var group  = shaped.group;
+  var mesh   = shaped.mesh;
+  var ring   = shaped.ring;
+
+  // Tag all meshes in group with markerId for raycasting
+  group.traverse(function(child) {
+    if (child.isMesh || child.isLine) child.userData.markerId = id;
+  });
+  group.userData.markerId = id;
+  mesh.userData.markerId  = id;
+  ring.userData.markerId  = id;
+
+  // Stem line
   var stemGeo = new THREE.BufferGeometry().setFromPoints([
-    new THREE.Vector3(pos.x, pos.y, pos.z),
-    new THREE.Vector3(pos.x, pos.y + 0.14, pos.z)
+    new THREE.Vector3(0, 0, 0),
+    new THREE.Vector3(0, 0.3, 0)
   ]);
-  var stem = new THREE.Line(stemGeo, new THREE.LineBasicMaterial({color: col, transparent: true, opacity: 0.4}));
-
-  scene.add(mesh); scene.add(ring); scene.add(stem);
+  var col  = catCol(data.c);
+  var stem = new THREE.Line(stemGeo, new THREE.LineBasicMaterial({color: col, transparent: true, opacity: 0.3}));
+  group.add(stem);
 
   var marker = {
-    id: id, mesh: mesh, ring: ring, stem: stem, outerRing: null,
+    id: id, mesh: mesh, ring: ring, stem: stem, group: group, outerRing: null,
     pos: pos.clone(), data: data
   };
   markers.push(marker);
@@ -6772,7 +7121,9 @@ function makeMarker(pos, data) {
 function removeMarker(id) {
   var m = markers.find(function(x) { return x.id === id; });
   if (!m) return;
-  scene.remove(m.mesh); scene.remove(m.ring); scene.remove(m.stem);
+  scene.remove(m.group || m.mesh);
+  if (m.ring && !m.group) scene.remove(m.ring);
+  if (m.stem && !m.group) scene.remove(m.stem);
   if (m.outerRing) scene.remove(m.outerRing);
   markers = markers.filter(function(x) { return x.id !== id; });
   portConns.filter(function(c) { return c.fromId === id || c.toId === id; })
@@ -6780,14 +7131,11 @@ function removeMarker(id) {
 }
 
 function updateMarkerColor(m) {
-  var col = m.data.hl ? 0xffaa00 : catCol(m.data.c);
-  m.mesh.material.color.setHex(col);
-  m.ring.material.color.setHex(col);
-  if (m.outerRing) m.outerRing.material.color.setHex(0xffaa00);
-  m.mesh.scale.setScalar(m.data.hl ? 1.5 : 1.0);
-  if (m.data.hl && !m.outerRing) {
-    var rg = new THREE.RingGeometry(0.3, 0.37, 24);
-    var rm = new THREE.MeshBasicMaterial({color: 0xffaa00, side: THREE.DoubleSide, transparent: true, opacity: 0.4});
+  var col = m.data.hl ? 0xf0a500 : catCol(m.data.c);
+  if (m.ring) m.ring.material.color.setHex(col);
+  if (m.data.hl && !m.outerRing && m.group) {
+    var rg = new THREE.RingGeometry(0.35, 0.42, 32);
+    var rm = new THREE.MeshBasicMaterial({color: 0xf0a500, side: THREE.DoubleSide, transparent: true, opacity: 0.4});
     var or = new THREE.Mesh(rg, rm);
     or.rotation.x = -Math.PI / 2;
     or.position.set(m.pos.x, m.pos.y + 0.01, m.pos.z);
@@ -6798,6 +7146,7 @@ function updateMarkerColor(m) {
     m.outerRing = null;
   }
 }
+
 
 // ── DEVICE PLACEMENT ──────────────────────────────────────────────────────────
 function pickDev(btn) {
@@ -6814,16 +7163,43 @@ function placeDev(worldPt) {
   var data = {
     t: pendingDev.t, c: pendingDev.c, i: pendingDev.i,
     name:'', ip:'', mac:'', unifi:'', port:'', vlan:'', model:'', serial:'', asset:'', notes:'',
-    status:'active', hl: false,
+    status:'active', hl: false, ports: null,
     view: {theta: orb.theta, phi: orb.phi, radius: orb.radius, tx: tgt.x, ty: tgt.y, tz: tgt.z}
   };
-  var isWJ = pendingDev.wj;
+  var isWJ  = pendingDev.wj;
+  var isNet = isNetworkingDevice(pendingDev.t);
   var m = makeMarker(worldPt, data);
   selectMarker(m.id);
   returnToOrbit();
   updateDevList();
   updateFooter();
-  if (isWJ) { setTimeout(function() { promptWallJack(m.id); }, 200); }
+  if (isWJ) {
+    setTimeout(function() { promptWallJack(m.id); }, 200);
+  } else if (isNet) {
+    setTimeout(function() { promptNetworkDevice(m.id); }, 200);
+  }
+}
+
+// Prompt networking device for name + ports on placement
+function promptNetworkDevice(markerId) {
+  var m = markers.find(function(x) { return x.id === markerId; }); if (!m) return;
+  var def  = getPortDef(m.data.t);
+  var name = prompt(
+    'Name this ' + m.data.t + ':\n(e.g. SW-MAIN-01, OFFICE-SWITCH)', ''
+  ) || '';
+  if (name) m.data.name = name;
+  if (def) {
+    // Store port data — initialise port map for this device
+    m.data.ports = def;
+    m.data.portCount = def.rj45 + def.sfp + def.sfpPlus + def.sfp28;
+    var portInfo = def.rj45 + ' RJ45' +
+      (def.poe > 0 ? ' (' + def.poe + ' PoE⚡)' : '') +
+      (def.sfpPlus > 0 ? ', ' + def.sfpPlus + ' SFP+' : '') +
+      (def.sfp > 0 ? ', ' + def.sfp + ' SFP' : '');
+    setBadge((name || m.data.t) + ' — ' + portInfo);
+  }
+  selectMarker(markerId);
+  updateDevList();
 }
 
 function returnToOrbit() {
@@ -7190,7 +7566,7 @@ vpEl.addEventListener('dblclick', function(e) {
   mousePt.x = ((e.clientX - rect.left) / W) * 2 - 1;
   mousePt.y = -((e.clientY - rect.top) / H) * 2 + 1;
   raycaster.setFromCamera(mousePt, camera);
-  var mHits = raycaster.intersectObjects(markers.map(function(m) { return m.mesh; }));
+  var mHits = raycaster.intersectObjects(markers.map(function(m) { return m.group || m.mesh; }), true);
   if (mHits.length) {
     var m = markers.find(function(x) { return x.id === mHits[0].object.userData.markerId; });
     if (m) { animateTo(orb.theta, Math.PI/3, 3, m.pos.clone()); return; }
@@ -7266,7 +7642,7 @@ vpEl.addEventListener('contextmenu', function(e) {
   mousePt.x = ((e.clientX - rect.left) / W) * 2 - 1;
   mousePt.y = -((e.clientY - rect.top) / H) * 2 + 1;
   raycaster.setFromCamera(mousePt, camera);
-  var hits = raycaster.intersectObjects(markers.map(function(m) { return m.mesh; }));
+  var hits = raycaster.intersectObjects(markers.map(function(m) { return m.group || m.mesh; }), true);
   if (hits.length) {
     var id = hits[0].object.userData.markerId;
     if (confirm('Delete this device?')) {
@@ -7286,7 +7662,7 @@ function handleTap(cx, cy) {
 
   // Complete pending port map if active
   if (pendingPortFrom) {
-    var mHits2 = raycaster.intersectObjects(markers.map(function(m) { return m.mesh; }));
+    var mHits2 = raycaster.intersectObjects(markers.map(function(m) { return m.group || m.mesh; }), true);
     if (mHits2.length) {
       var tapId = mHits2[0].object.userData.markerId;
       if (tapId !== pendingPortFrom.markerId) {
@@ -7302,7 +7678,7 @@ function handleTap(cx, cy) {
   }
 
   // Check markers
-  var mHits = raycaster.intersectObjects(markers.map(function(m) { return m.mesh; }));
+  var mHits = raycaster.intersectObjects(markers.map(function(m) { return m.group || m.mesh; }), true);
   if (mHits.length) {
     var id = mHits[0].object.userData.markerId;
     if (portMapMode)  { handlePortMapClick(id); return; }
@@ -7328,7 +7704,7 @@ function updateHover(cx, cy) {
   mousePt.x = ((cx - rect.left) / W) * 2 - 1;
   mousePt.y = -((cy - rect.top)  / H) * 2 + 1;
   raycaster.setFromCamera(mousePt, camera);
-  var hits = raycaster.intersectObjects(markers.map(function(m) { return m.mesh; }));
+  var hits = raycaster.intersectObjects(markers.map(function(m) { return m.group || m.mesh; }), true);
   if (hits.length) {
     var id = hits[0].object.userData.markerId;
     hovId = id;
