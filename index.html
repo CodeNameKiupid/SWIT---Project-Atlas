@@ -834,6 +834,11 @@ body.is-mobile #vp { width: 100% !important; }
     </div>
 
     <!-- DEVICE LIBRARY DROPDOWNS -->
+    <!-- Device search -->
+    <div class="sec" style="padding:8px">
+      <input id="dev-search" class="fi" placeholder="🔍  Search devices..." oninput="filterDevices(this.value)" style="width:100%;font-size:12px;background:#0d1117;border:1px solid #2c3e52;color:#f4f6f9;padding:7px 10px;border-radius:6px;font-family:JetBrains Mono,monospace">
+    </div>
+
     <div class="ddwrap">
       <button class="ddhead open" onclick="toggleDD(this)">⭐ FREQUENT</button>
       <div class="ddpanel open">
@@ -1159,7 +1164,8 @@ body.is-mobile #vp { width: 100% !important; }
   <div style="display:flex;gap:8px">
     <button class="mob-card-btn" onclick="saveMobEdit()" style="flex:2;background:#5b9bd5;color:#fff;border-color:#5b9bd5">✓ SAVE</button>
     <button class="mob-card-btn" onclick="moreEditFields()" style="flex:1">MORE ▾</button>
-    <button class="mob-card-btn" onclick="closeMobEdit()" style="flex:1;color:#e84057;border-color:#2a0010">✕</button>
+    <button class="mob-card-btn" onclick="mobDelDev()" style="flex:1;color:#e84057;border-color:#2a0010">🗑</button>
+    <button class="mob-card-btn" onclick="closeMobEdit()" style="flex:1;color:#7a8a9a">✕</button>
   </div>
 </div>
 
@@ -1171,7 +1177,7 @@ body.is-mobile #vp { width: 100% !important; }
   <div class="t-name" id="t-name"></div>
   <div class="t-type" id="t-type"></div>
   <div class="t-row"><span class="t-key">IP</span>    <span class="t-val" id="t-ip">—</span></div>
-  <div class="t-row"><span class="t-key">PORT</span>  <span class="t-val" id="t-port">—</span></div>
+  <div class="t-row"><span class="t-key">PORTS</span> <span class="t-val" id="t-port">—</span></div>
   <div class="t-row"><span class="t-key">VLAN</span>  <span class="t-val" id="t-vlan">—</span></div>
   <div class="t-row"><span class="t-key">MODEL</span> <span class="t-val" id="t-model">—</span></div>
   <div class="t-row"><span class="t-key">STATUS</span><span class="t-val" id="t-status">—</span></div>
@@ -7002,12 +7008,34 @@ function makeDeviceShape(pos, data) {
     handset.position.set(-0.05, 0.04, 0.01);
     group.add(handset);
 
-  // ── DEFAULT FALLBACK (sphere) ───────────────────────────────────────────────
-  } else {
-    var geo = new THREE.SphereGeometry(0.12, 10, 10);
-    var mat = new THREE.MeshLambertMaterial({color: col});
+  // ── TELUS ONT ──────────────────────────────────────────────────────────────
+  } else if (t.indexOf('ont') >= 0) {
+    var geo = new THREE.BoxGeometry(0.2, 0.06, 0.14);
+    var mat = new THREE.MeshLambertMaterial({color: 0x00a651});
     mesh = new THREE.Mesh(geo, mat);
-    mesh.position.y = 0.12;
+    mesh.position.y = 0.03;
+    group.add(mesh);
+    var ontLed = new THREE.Mesh(
+      new THREE.SphereGeometry(0.015, 8, 8),
+      new THREE.MeshBasicMaterial({color: 0x00ff44})
+    );
+    ontLed.position.set(0.08, 0.06, 0);
+    group.add(ontLed);
+
+  // ── TELUS ROUTER ───────────────────────────────────────────────────────────
+  } else if (t.indexOf('telus') >= 0) {
+    var geo = new THREE.BoxGeometry(0.22, 0.08, 0.16);
+    var mat = new THREE.MeshLambertMaterial({color: 0x00a651});
+    mesh = new THREE.Mesh(geo, mat);
+    mesh.position.y = 0.04;
+    group.add(mesh);
+
+  // ── DEFAULT FALLBACK — clean grey box, no glowing balls ───────────────────
+  } else {
+    var geo = new THREE.BoxGeometry(0.18, 0.1, 0.14);
+    var mat = new THREE.MeshLambertMaterial({color: 0x2c3e52});
+    mesh = new THREE.Mesh(geo, mat);
+    mesh.position.y = 0.05;
     group.add(mesh);
   }
 
@@ -7021,14 +7049,14 @@ function makeDeviceShape(pos, data) {
     group.add(mesh);
   }
 
-  // ── PoE INDICATOR (green bolt sprite) ─────────────────────────────────────
+  // ── PoE INDICATOR — small flat green disc ─────────────────────────────────
   if (isPoE) {
-    var boltGeo = new THREE.CylinderGeometry(0.0, 0.06, 0.14, 3);
-    var boltMat = new THREE.MeshBasicMaterial({color: 0x00ff44});
+    var boltMat = new THREE.MeshBasicMaterial({color: 0x00ee44, side: THREE.DoubleSide});
+    var boltGeo = new THREE.CircleGeometry(0.05, 6);
     var bolt    = new THREE.Mesh(boltGeo, boltMat);
-    // Position above the shape
-    var bb = new THREE.Box3().setFromObject(group);
-    bolt.position.set(0.18, bb.max.y + 0.06, 0);
+    bolt.rotation.x = -Math.PI / 2;
+    var bb2 = new THREE.Box3().setFromObject(group);
+    bolt.position.set(0, bb2.max.y + 0.02, 0);
     group.add(bolt);
   }
 
@@ -7729,7 +7757,18 @@ function showTip(m, cx, cy) {
   var isSwitch = !!getSwitchDef(m.data.t);
   var pbtn = document.getElementById('t-ports-btn');
   if (pbtn) pbtn.style.display = isSwitch ? 'block' : 'none';
-  document.getElementById('t-port').textContent  = m.data.port  || '—';
+  // Port display: show available ports for switches, assigned port for endpoints
+  var portDef = getPortDef(m.data.t);
+  var portTxt = '—';
+  if (portDef) {
+    var used = 0;
+    for (var pk in portMap) { if (pk.indexOf(m.id) === 0) used++; }
+    portTxt = used + '/' + (portDef.rj45 + portDef.sfp + portDef.sfpPlus + portDef.sfp28) + ' ports used';
+    if (portDef.poe > 0) portTxt += ' ⚡' + portDef.poe + 'PoE';
+  } else if (m.data.port) {
+    portTxt = m.data.port;
+  }
+  document.getElementById('t-port').textContent = portTxt;
   document.getElementById('t-vlan').textContent  = m.data.vlan  || '—';
   document.getElementById('t-model').textContent = m.data.model || '—';
   document.getElementById('t-status').textContent = m.data.status || '—';
@@ -7901,6 +7940,27 @@ setInterval(function() {
 
 // ── UI HELPERS ────────────────────────────────────────────────────────────────
 function setMode(m) { /* orbit is the only mode for now, FP via button */ }
+
+
+// ── DEVICE SEARCH ─────────────────────────────────────────────────────────────
+function filterDevices(query) {
+  query = query.toLowerCase().trim();
+  var items = document.querySelectorAll('#sb .db');
+  var panels = document.querySelectorAll('#sb .ddpanel, #sb .sub-panel');
+  if (!query) {
+    // Reset — restore collapsed state
+    items.forEach(function(i) { i.style.display = ''; });
+    panels.forEach(function(p) { /* leave as is */ });
+    return;
+  }
+  // Show all panels so results are visible
+  panels.forEach(function(p) { p.style.display = 'block'; p.classList.add('open'); });
+  items.forEach(function(item) {
+    var t = (item.dataset.t || '').toLowerCase();
+    var lb = (item.querySelector('.lb') ? item.querySelector('.lb').textContent : '').toLowerCase();
+    item.style.display = (t.indexOf(query) >= 0 || lb.indexOf(query) >= 0) ? '' : 'none';
+  });
+}
 
 function toggleDD(btn) {
   var panel = btn.nextElementSibling;
@@ -8670,6 +8730,15 @@ function saveMobEdit() {
   updateDevList();
   // If wall jack — prompt to link
   if (m.data.t === 'Wall Jack' || (m.data.wj)) promptWallJack(mobEditId);
+}
+
+
+function mobDelDev() {
+  if (!mobEditId) return;
+  if (!confirm('Delete this device?')) return;
+  removeMarker(mobEditId);
+  closeMobEdit();
+  updateDevList(); updateFooter();
 }
 
 function closeMobEdit() {
