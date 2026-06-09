@@ -7311,10 +7311,10 @@ function rotateSelected(deg) {
   var m  = markers.find(function(x) { return x.id === id; });
   if (!m || !m.group) return;
   m.group.rotation.y += deg * Math.PI / 180;
-  // Show current angle in badge
   var angle = Math.round(m.group.rotation.y * 180 / Math.PI) % 360;
   if (angle < 0) angle += 360;
-  setBadge('↺ ↻ ROTATION: ' + angle + '° · ✓ SAVE WHEN DONE');
+  var el = document.getElementById('mob-rot-deg');
+  if (el) el.textContent = angle + '°';
 }
 
 
@@ -7803,7 +7803,6 @@ function handleTap(cx, cy) {
     if (!id) return;
     if (portMapMode) { handlePortMapClick(id); return; }
     selectMarker(id);
-    // On mobile — show edit card with delete option
     if (isMobile) { openMobEdit(id); }
     return;
   }
@@ -8864,6 +8863,13 @@ function openMobEdit(id) {
   if (inp) inp.placeholder = portPh;
   document.getElementById('mob-edit-vlan').value  = m.data.vlan  || '';
   document.getElementById('mob-edit-status').value = m.data.status || 'active';
+  // Show current rotation
+  var rotEl = document.getElementById('mob-rot-deg');
+  if (rotEl && m.group) {
+    var angle = Math.round(m.group.rotation.y * 180 / Math.PI) % 360;
+    if (angle < 0) angle += 360;
+    rotEl.textContent = angle + '°';
+  }
   document.getElementById('mob-edit-card').classList.add('show');
 }
 
