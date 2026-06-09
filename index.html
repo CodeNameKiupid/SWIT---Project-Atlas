@@ -1027,7 +1027,7 @@ body.is-mobile #vp { width: 100% !important; }
     </div>
 
     <!-- Placement rotation controls -->
-    <div id="place-rotate" style="display:none;position:fixed;bottom:160px;left:50%;transform:translateX(-50%);z-index:50;display:none;align-items:center;gap:12px;background:#0d1117ee;border:1px solid #5b9bd5;border-radius:12px;padding:8px 16px">
+    <div id="place-rotate" style="display:none;position:fixed;bottom:160px;left:50%;transform:translateX(-50%);z-index:200;align-items:center;gap:12px;background:#0d1117ee;border:1px solid #5b9bd5;border-radius:12px;padding:8px 16px">
       <button ontouchstart="startRotate(-1)" ontouchend="stopRotate()" onmousedown="startRotate(-1)" onmouseup="stopRotate()" style="background:transparent;border:1px solid #2c3e52;color:#5b9bd5;font-size:20px;width:44px;height:44px;border-radius:8px;cursor:pointer;font-family:monospace">↺</button>
       <div style="font-size:10px;color:#7a8a9a;font-family:monospace;text-align:center;min-width:60px">ROTATE<br><span id="rotate-deg" style="color:#5b9bd5">0°</span></div>
       <button ontouchstart="startRotate(1)" ontouchend="stopRotate()" onmousedown="startRotate(1)" onmouseup="stopRotate()" style="background:transparent;border:1px solid #2c3e52;color:#5b9bd5;font-size:20px;width:44px;height:44px;border-radius:8px;cursor:pointer;font-family:monospace">↻</button>
@@ -7174,10 +7174,8 @@ function makeMarker(pos, data) {
   var stem = new THREE.Line(stemGeo, new THREE.LineBasicMaterial({color: col, transparent: true, opacity: 0.3}));
   group.add(stem);
 
-  // Apply placement rotation
-  if (placementRotation !== 0) {
-    group.rotation.y = placementRotation * Math.PI / 180;
-  }
+  // Apply placement rotation around Y axis
+  group.rotation.y = (placementRotation || 0) * Math.PI / 180;
 
   var marker = {
     id: id, mesh: mesh, ring: ring, stem: stem, group: group, outerRing: null,
@@ -7280,12 +7278,13 @@ var rotateInterval   = null;
 
 function showPlaceRotate() {
   var el = document.getElementById('place-rotate');
-  if (el) { el.style.display = 'flex'; }
+  if (!el) return;
+  el.style.setProperty('display', 'flex', 'important');
   updateRotateDeg();
 }
 function hidePlaceRotate() {
   var el = document.getElementById('place-rotate');
-  if (el) { el.style.display = 'none'; }
+  if (el) el.style.setProperty('display', 'none', 'important');
 }
 function updateRotateDeg() {
   var el = document.getElementById('rotate-deg');
@@ -8592,6 +8591,7 @@ function showMobSheet(type) {
   if (type === 'view')     content.innerHTML = buildViewSheet();
   if (type === 'devices')  content.innerHTML = buildDevicesSheet();
   if (type === 'settings') content.innerHTML = buildSettingsSheet();
+  if (type === '_edit')    content.innerHTML = ''; // filled by moreEditFields
 
   bg.classList.add('show');
   setTimeout(function() { sheet.classList.add('show'); }, 10);
@@ -8881,11 +8881,72 @@ function closeMobEdit() {
 }
 
 function moreEditFields() {
-  // Fall back to desktop edit panel for full fields
-  if (mobEditId) { selectMarker(mobEditId); }
-  document.getElementById('ep').classList.add('show');
-  document.getElementById('ep').style.display = 'flex';
+  // Show full edit as a bottom sheet on mobile
+  var id = mobEditId;
   closeMobEdit();
+  if (!id) return;
+  // Build full edit sheet content
+  showMobSheet('_edit');
+  var m = markers.find(function(x) { return x.id === id; });
+  if (!m) return;
+  var h = '<div style="font-size:11px;color:#5b9bd5;font-family:monospace;font-weight:700;margin-bottom:12px;letter-spacing:1px">' + m.data.i + ' ' + m.data.t.toUpperCase() + '</div>';
+  var fields = [
+    {id:'e-name',  label:'Hostname',      val: m.data.name   || '', ph: 'SW-MAIN-01'},
+    {id:'e-ip',    label:'IP Address',    val: m.data.ip     || '', ph: '192.168.1.x'},
+    {id:'e-mac',   label:'MAC Address',   val: m.data.mac    || '', ph: 'AA:BB:CC:DD:EE:FF'},
+    {id:'e-unifi', label:'UniFi ID',      val: m.data.unifi  || '', ph: 'UniFi device ID'},
+    {id:'e-port',  label:'Switch Port',   val: m.data.port   || '', ph: 'Port 4'},
+    {id:'e-vlan',  label:'VLAN',          val: m.data.vlan   || '', ph: 'VLAN10'},
+    {id:'e-model', label:'Model',         val: m.data.model  || '', ph: 'USW-Pro-48'},
+    {id:'e-serial',label:'Serial #',      val: m.data.serial || '', ph: 'ABC123'},
+    {id:'e-asset', label:'MSP Asset #',   val: m.data.asset  || '', ph: 'MSP-00123'},
+  ];
+  fields.forEach(function(f) {
+    h += '<div style="margin-bottom:10px"><div class="mob-label">' + f.label + '</div>';
+    h += '<input class="mob-field" id="mob-full-' + f.id + '" value="' + (f.val||'').replace(/"/g,"&quot;") + '" placeholder="' + f.ph + '"></div>';
+  });
+  h += '<div style="margin-bottom:10px"><div class="mob-label">Notes</div>';
+  h += '<textarea class="mob-field" id="mob-full-notes" style="min-height:60px;resize:none">' + (m.data.notes||'') + '</textarea></div>';
+  h += '<div style="display:flex;gap:8px;margin-top:4px">';
+
+  h += '</div>';
+  document.getElementById('mob-sheet-content').innerHTML = h;
+  // Attach button listeners after innerHTML set
+  document.getElementById('mob-save-full-btn').addEventListener('click', function() { saveMobFull(id); });
+  document.getElementById('mob-del-full-btn').addEventListener('click', function() { deleteMobFull(id); });
+}
+
+function saveMobFull(id) {
+  var m = markers.find(function(x) { return x.id === id; }); if (!m) return;
+  var get = function(fid) { var el = document.getElementById('mob-full-' + fid); return el ? el.value : ''; };
+  m.data.name   = get('e-name');
+  m.data.ip     = get('e-ip');
+  m.data.mac    = get('e-mac');
+  m.data.unifi  = get('e-unifi');
+  m.data.port   = get('e-port');
+  m.data.vlan   = get('e-vlan');
+  m.data.model  = get('e-model');
+  m.data.serial = get('e-serial');
+  m.data.asset  = get('e-asset');
+  var nt = document.getElementById('mob-full-notes'); m.data.notes = nt ? nt.value : '';
+  closeMobSheet();
+  updateDevList();
+}
+
+function deleteMobFull(id) {
+  var confirm_div = document.createElement('div');
+  confirm_div.style.cssText = 'position:absolute;inset:0;background:#0d1117ee;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;z-index:300';
+  confirm_div.innerHTML = '<div style="font-size:14px;color:#e84057;font-family:monospace;font-weight:700">DELETE DEVICE?</div>' +
+    '<div style="display:flex;gap:12px">' +
+    '<button id="dfy-btn" style="background:#e84057;border:none;color:#fff;font-family:monospace;font-weight:700;font-size:13px;padding:10px 24px;border-radius:8px;cursor:pointer">DELETE</button>' +
+    '<button id="dfn-btn" style="background:transparent;border:1px solid #2c3e52;color:#dde3ec;font-family:monospace;font-size:13px;padding:10px 24px;border-radius:8px;cursor:pointer">CANCEL</button>' +
+    '</div>';
+  document.getElementById('mob-sheet-content').style.position = 'relative';
+  document.getElementById('mob-sheet-content').appendChild(confirm_div);
+  document.getElementById('dfy-btn').addEventListener('click', function() {
+    removeMarker(id); closeMobSheet(); updateDevList(); updateFooter();
+  });
+  document.getElementById('dfn-btn').addEventListener('click', function() { confirm_div.remove(); });
 }
 
 // Open mobile edit after placing a device
