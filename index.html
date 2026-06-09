@@ -446,7 +446,27 @@ select.fi{cursor:pointer}
 }
 
 
+
+html.is-mobile-html #header   { display: none !important; }
+html.is-mobile-html #footer   { display: none !important; }
+html.is-mobile-html #sb       { display: none !important; }
+html.is-mobile-html #ep       { display: none !important; }
+html.is-mobile-html #ctrl-hint{ display: none !important; }
+html.is-mobile-html #mob-bar  { display: flex !important; }
+html.is-mobile-html #mob-toolbar { display: flex !important; }
+html.is-mobile-html #workspace { margin-top: 52px !important; margin-bottom: 72px !important; }
+html.is-mobile-html #vp       { width: 100% !important; }
 </style>
+<script>
+// Set mobile class IMMEDIATELY before page renders - no flash of wrong layout
+if (('ontouchstart' in window) || navigator.maxTouchPoints > 0) {
+  document.documentElement.className += ' is-mobile-html';
+  // Will apply to body once body exists
+  document.addEventListener('DOMContentLoaded', function() {
+    document.body.classList.add('is-mobile');
+  });
+}
+</script>
 </head>
 <body>
 <!-- INSTALL BANNER (shows on mobile until dismissed) -->
@@ -7545,9 +7565,8 @@ function dismissSplash() {
   setTimeout(function() { splash.style.display = 'none'; }, 500);
 }
 
-// Auto-collapse sidebar on mobile
-if (isMobile) {
-  document.getElementById('sb').classList.add('collapsed');
+// Mobile layout handled by CSS class on html element
+if (false) { // disabled - handled by is-mobile CSS
   document.getElementById('ctrl-hint').style.display = 'none';
 }
 
