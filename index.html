@@ -2,11 +2,48 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Atlas">
 <meta name="theme-color" content="#080c12">
+<style>
+:root { --sat:env(safe-area-inset-top,0px); --sab:env(safe-area-inset-bottom,0px); --sal:env(safe-area-inset-left,0px); --sar:env(safe-area-inset-right,0px); }
+html,body { height: 100%; height: -webkit-fill-available; }
+#app { min-height: 100vh; min-height: -webkit-fill-available; padding-top: var(--sat); padding-bottom: var(--sab); }
+</style>
+<script>
+// Fix iOS PWA viewport on load and orientation change
+function fixVH() {
+  var vh = window.innerHeight;
+  var vw = window.innerWidth;
+  document.documentElement.style.setProperty('--vh', (vh * 0.01) + 'px');
+  var app = document.getElementById('app');
+  if (app) { app.style.height = vh + 'px'; app.style.width = vw + 'px'; }
+  var cvEl2 = document.getElementById('threeCanvas');
+  if (cvEl2) { cvEl2.style.width = '100%'; cvEl2.style.height = '100%'; }
+  if (typeof renderer !== 'undefined' && renderer) {
+    var vp2 = document.getElementById('vp');
+    if (vp2) {
+      var W2 = vp2.clientWidth || vw;
+      var H2 = vp2.clientHeight || vh;
+      renderer.setSize(W2, H2);
+      if (typeof camera !== 'undefined' && camera) { 
+        camera.aspect = W2 / H2; 
+        camera.updateProjectionMatrix(); 
+      }
+    }
+  }
+}
+window.addEventListener('load', function() { 
+  setTimeout(fixVH, 100); 
+  setTimeout(fixVH, 500); 
+  setTimeout(fixVH, 1000);
+  setTimeout(fixVH, 2000);
+});
+window.addEventListener('resize', fixVH);
+window.addEventListener('orientationchange', function() { setTimeout(fixVH, 300); });
+</script>
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="application-name" content="Project Atlas">
 <meta name="description" content="MSP 3D Floor Plan Tool — place and map IT devices on scanned office layouts">
