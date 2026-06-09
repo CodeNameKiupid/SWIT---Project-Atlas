@@ -640,6 +640,10 @@ if (('ontouchstart' in window) || navigator.maxTouchPoints > 0) {
   gap: 4px;
   transition: all 0.12s;
   min-height: 68px;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
 }
 .mob-dev-item:active { border-color: #5b9bd5; background: #0d1a2a; transform: scale(0.96); }
 .mob-dev-item.on { border-color: #3dd68c; background: #0d2018; }
@@ -8160,7 +8164,7 @@ function buildPlaceSheet() {
     h += '<div class="mob-dev-grid">';
     cat.devs.forEach(function(d) {
       var isOn = mobSelDev && mobSelDev.t === d.t ? ' on' : '';
-      h += '<div class="mob-dev-item' + isOn + '" data-idx="' + idx + '" onclick="mobPickDev(this)">';
+      h += '<div class="mob-dev-item' + isOn + '" data-idx="' + idx + '">';
       h += '<div class="mob-dev-icon">' + d.i + '</div>';
       h += '<div class="mob-dev-label">' + d.l + '</div>';
       h += '</div>';
@@ -8171,24 +8175,30 @@ function buildPlaceSheet() {
   return h;
 }
 
-function mobPickDev(el) {
-  var idx = parseInt(el.dataset.idx);
+// Event delegation for mob sheet - handles dynamically created content
+document.addEventListener('click', function(e) {
+  var item = e.target.closest('.mob-dev-item');
+  if (!item) return;
+  var idx = parseInt(item.dataset.idx);
   var d   = MOB_DEV_LOOKUP[idx];
   if (!d) return;
   mobSelDev = d;
   pendingDev = {t: d.t, c: d.c, i: d.i, wj: !!d.wj};
-  // Highlight selected item
+  // Flash green immediately
   document.querySelectorAll('.mob-dev-item').forEach(function(b) { b.classList.remove('on'); });
-  el.classList.add('on');
-  // Close sheet after short delay so user sees the selection
+  item.classList.add('on');
+  item.style.borderColor = '#3dd68c';
+  item.style.background  = '#0d2018';
+  // Close after short delay so user sees the highlight
   setTimeout(function() {
     closeMobSheet();
     setBadge('TAP SURFACE TO PLACE ' + d.t.toUpperCase());
-    document.getElementById('f-mode').textContent = 'PLACING';
+    var fm = document.getElementById('f-mode');
+    if (fm) fm.textContent = 'PLACING';
     var pb = document.getElementById('mtb-place');
-    if (pb) pb.classList.add('on');
-  }, 250);
-}
+    if (pb) { pb.style.color = '#3dd68c'; }
+  }, 300);
+});
 
 // ── VIEW SHEET ─────────────────────────────────────────────
 function buildViewSheet() {
