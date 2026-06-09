@@ -1165,9 +1165,10 @@ body.is-mobile #vp { width: 100% !important; }
   </div>
   <div style="display:flex;gap:8px">
     <button class="mob-card-btn" onclick="saveMobEdit()" style="flex:2;background:#5b9bd5;color:#fff;border-color:#5b9bd5">✓ SAVE</button>
-    <button class="mob-card-btn" onclick="moreEditFields()" style="flex:1">MORE ▾</button>
+    <button class="mob-card-btn" onclick="rotateSelected(-15)" style="flex:1;color:#5b9bd5;font-size:16px">↺</button>
+    <button class="mob-card-btn" onclick="rotateSelected(15)"  style="flex:1;color:#5b9bd5;font-size:16px">↻</button>
+    <button class="mob-card-btn" onclick="moreEditFields()" style="flex:1">⋯</button>
     <button class="mob-card-btn" onclick="mobDelDev()" style="flex:1;color:#e84057;border-color:#2a0010">🗑</button>
-    <button class="mob-card-btn" onclick="closeMobEdit()" style="flex:1;color:#7a8a9a">✕</button>
   </div>
 </div>
 
@@ -7234,11 +7235,18 @@ function placeDev(worldPt) {
   returnToOrbit();
   updateDevList();
   updateFooter();
-  if (isWJ) {
-    setTimeout(function() { promptWallJack(m.id); }, 200);
-  } else if (isNet) {
-    setTimeout(function() { promptNetworkDevice(m.id); }, 200);
-  }
+
+  // Always open edit card after placing so user can rotate + fill details
+  setTimeout(function() {
+    if (isMobile) {
+      openMobEdit(m.id);
+      setBadge('↺ ↻ ROTATE · ✓ SAVE WHEN DONE');
+    } else if (isNet) {
+      promptNetworkDevice(m.id);
+    } else if (isWJ) {
+      promptWallJack(m.id);
+    }
+  }, 150);
 }
 
 // Prompt networking device for name + ports on placement
@@ -7297,6 +7305,19 @@ function stopRotate() {
 
 // Apply rotation when device is placed
 var origPlaceDevRotation = placeDev;
+
+function rotateSelected(deg) {
+  var id = mobEditId || selId;
+  var m  = markers.find(function(x) { return x.id === id; });
+  if (!m || !m.group) return;
+  m.group.rotation.y += deg * Math.PI / 180;
+  // Show current angle in badge
+  var angle = Math.round(m.group.rotation.y * 180 / Math.PI) % 360;
+  if (angle < 0) angle += 360;
+  setBadge('↺ ↻ ROTATION: ' + angle + '° · ✓ SAVE WHEN DONE');
+}
+
+
 
 function returnToOrbit() {
   pendingDev = null;
