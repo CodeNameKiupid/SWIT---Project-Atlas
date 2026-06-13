@@ -6375,6 +6375,7 @@ var hovId        = null; // hovered marker id
 var pendingDev   = null; // {t, c, i, wj} device to place
 var portMapMode  = false;
 var portMapFrom  = null;
+var pendingPortFrom = null;
 var showLabels   = true;
 var viewMode     = 'real';
 var modelLoaded  = false;
@@ -7727,22 +7728,7 @@ function handleTap(cx, cy) {
   mousePt.y = -((cy - rect.top)  / H) * 2 + 1;
   raycaster.setFromCamera(mousePt, camera);
 
-  // Complete pending port map if active
-  if (pendingPortFrom) {
-    var mHits2 = raycaster.intersectObjects(markers.map(function(m) { return m.group || m.mesh; }), true);
-    if (mHits2.length) {
-      var tapId = mHits2[0].object.userData.markerId;
-      if (tapId !== pendingPortFrom.markerId) {
-        completePendingPort(tapId);
-        return;
-      }
-    }
-    // Tapped empty space - cancel
-    pendingPortFrom = null;
-    document.getElementById('pm-status').style.display = 'none';
-    returnToOrbit();
-    return;
-  }
+  // Port map mode handled via panel UI now
 
   // Check markers
   var mHits = raycaster.intersectObjects(markers.map(function(m) { return m.group || m.mesh; }), true);
