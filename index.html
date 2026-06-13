@@ -228,272 +228,238 @@ select.fi{cursor:pointer}
 
 /* ── SWITCH PANEL ─────────────────────────────────────────────────────────── */
 /* ═══════════════════════════════════════════════════════
-   SWITCH PORT PANEL — UniFi-style
+   SWITCH PORT PANEL — Mobile-first list view
 ═══════════════════════════════════════════════════════ */
 #switch-panel {
   position: fixed;
   bottom: 0; left: 0; right: 0;
-  background: #111922;
-  border-top: 1px solid #2c3e52;
+  background: #0d1117;
+  border-top: 1px solid #1e2d3d;
   border-radius: 20px 20px 0 0;
   z-index: 300;
   display: none;
   flex-direction: column;
-  max-height: 85vh;
-  box-shadow: 0 -8px 40px #000c;
+  max-height: 88vh;
+  box-shadow: 0 -8px 40px #000d;
   padding-bottom: env(safe-area-inset-bottom, 0px);
+  overflow: hidden;
 }
 #switch-panel.show { display: flex; }
 
+/* Handle */
 .sp-handle {
-  width: 40px; height: 4px;
-  background: #2c3e52;
-  border-radius: 2px;
-  margin: 12px auto 0;
-  flex-shrink: 0;
+  width: 36px; height: 4px;
+  background: #2c3e52; border-radius: 2px;
+  margin: 10px auto 0; flex-shrink: 0;
 }
+
+/* Header */
 .sp-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 16px 8px;
-  flex-shrink: 0;
-  border-bottom: 1px solid #1a2535;
+  display: flex; align-items: center;
+  padding: 12px 16px 0;
+  flex-shrink: 0; gap: 12px;
 }
-.sp-header-left { display: flex; align-items: center; gap: 10px; }
-.sp-name  { font-family: 'JetBrains Mono',monospace; font-size: 14px; color: #f4f6f9; font-weight: 700; letter-spacing: 1px; }
-.sp-model { font-size: 10px; color: #7a8a9a; font-family:'JetBrains Mono',monospace; margin-top: 2px; }
-.sp-close { background: transparent; border: 1px solid #2c3e52; color: #7a8a9a; font-size: 18px; width: 36px; height: 36px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.sp-close:active { border-color: #e84057; color: #e84057; }
-
-/* Legend */
-.sp-legend {
-  display: flex; gap: 12px; padding: 8px 16px;
-  font-size: 10px; font-family: 'JetBrains Mono',monospace;
-  flex-wrap: wrap; flex-shrink: 0;
-  border-bottom: 1px solid #1a2535;
-}
-.sp-leg { display: flex; align-items: center; gap: 4px; color: #7a8a9a; }
-.sp-leg-dot { width: 8px; height: 8px; border-radius: 2px; }
-.sp-leg-connected .sp-leg-dot { background: #3dd68c; }
-.sp-leg-empty .sp-leg-dot     { background: #2c3e52; border: 1px solid #3a4e62; }
-.sp-leg-poe .sp-leg-dot       { background: #1a2535; border: 1px solid #f0a500; }
-.sp-leg-sfp .sp-leg-dot       { background: #1a2535; border: 1px solid #5b9bd5; border-radius: 1px; }
-
-/* Scrollable body */
-.sp-body {
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  flex: 1;
-  padding: 12px 12px 0;
-}
-
-/* Port grid */
-.sp-grid-wrap {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  margin-bottom: 12px;
-}
-.sp-rj45-group {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  flex: 1;
-}
-.sp-row {
-  display: flex;
-  flex-wrap: nowrap;
-  gap: 4px;
-}
-.sp-sfp-group {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  flex-shrink: 0;
-}
-
-/* Individual port square */
-.sp-port {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-end;
-  background: #1a2535;
-  border: 1.5px solid #2c3e52;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: all 0.12s;
+.sp-header-info { flex: 1; min-width: 0; }
+.sp-name { font-family:'JetBrains Mono',monospace; font-size:15px; color:#f4f6f9; font-weight:700; }
+.sp-model { font-size:11px; color:#4a5e72; font-family:'JetBrains Mono',monospace; margin-top:2px; }
+.sp-close {
+  background: transparent; border: 1px solid #1e2d3d;
+  color: #7a8a9a; font-size: 18px; width: 36px; height: 36px;
+  border-radius: 10px; cursor: pointer; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
   touch-action: manipulation;
+}
+
+/* Filter tabs — All / In Use / Available / PoE */
+.sp-filters {
+  display: flex; gap: 6px;
+  padding: 12px 16px 8px;
+  flex-shrink: 0; overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.sp-filters::-webkit-scrollbar { display: none; }
+.sp-filter-btn {
+  background: #111922; border: 1px solid #1e2d3d;
+  color: #7a8a9a; font-family:'JetBrains Mono',monospace;
+  font-size: 11px; font-weight: 700;
+  padding: 6px 14px; border-radius: 20px;
+  cursor: pointer; white-space: nowrap;
+  touch-action: manipulation; flex-shrink: 0;
+  transition: all 0.15s;
+}
+.sp-filter-btn.on {
+  background: #0d1a2e; border-color: #5b9bd5; color: #5b9bd5;
+}
+
+/* Scrollable list body */
+.sp-body {
+  overflow-y: auto; flex: 1;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Port list items — UniFi style */
+.sp-port-list {
+  padding: 0 12px 16px;
+}
+.sp-port-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 14px;
+  background: #111922; border-radius: 12px;
+  margin-bottom: 6px; cursor: pointer;
+  touch-action: manipulation;
+  transition: background 0.12s;
   -webkit-tap-highlight-color: transparent;
-  position: relative;
-  /* Size adapts to port count */
-  min-width: 0;
-  aspect-ratio: 0.85;
 }
-.sp-port:active { transform: scale(0.92); }
+.sp-port-row:active { background: #162032; }
+.sp-port-row.connected { background: #0d1f14; }
+.sp-port-row.poe-available { background: #111922; }
 
-/* Port connector hole visual */
-.sp-rj45-hole {
-  width: 60%; height: 35%;
-  background: #0a0f16;
-  border-radius: 2px 2px 0 0;
-  border: 1px solid #111822;
-  margin-bottom: 2px;
-}
-.sp-sfp-hole {
-  width: 70%; height: 40%;
-  background: #0a0f16;
-  border-radius: 2px;
-  border: 1px solid #111822;
-  margin-bottom: 2px;
-}
-.sp-port-num {
-  font-size: 9px;
-  font-family: 'JetBrains Mono', monospace;
-  line-height: 1;
-  padding: 1px 0 3px;
-  color: #7a8a9a;
-}
-
-/* Port states */
-.sp-port-empty   { background: #141c28; border-color: #2c3e52; }
-.sp-port-empty .sp-port-num { color: #4a5e72; }
-
-.sp-port-poe-empty { background: #141c28; border-color: #3d2800; }
-.sp-port-poe-empty .sp-port-num { color: #f0a500; }
-.sp-port-poe-empty::after { content:'⚡'; font-size:7px; position:absolute; top:2px; right:2px; color:#f0a500; }
-
-.sp-port-connected { background: #0d2018; border-color: #3dd68c; }
-.sp-port-connected .sp-port-num { color: #3dd68c; font-weight: 700; }
-.sp-port-connected .sp-rj45-hole,
-.sp-port-connected .sp-sfp-hole { background: #0a1f14; border-color: #1a3d28; }
-
-.sp-port-connected-poe { background: #0d2018; border-color: #3dd68c; }
-.sp-port-connected-poe .sp-port-num { color: #3dd68c; font-weight: 700; }
-.sp-port-connected-poe::after { content:'⚡'; font-size:7px; position:absolute; top:2px; right:2px; color:#3dd68c; }
-
-.sp-port-sfp { border-radius: 4px; }
-.sp-port-sfp.sp-port-empty { border-color: #2c4060; }
-.sp-port-sfp .sp-port-num { color: #5b9bd5; }
-
-.sp-port-selected { border-color: #5b9bd5 !important; background: #0d1a2e !important; box-shadow: 0 0 0 2px #5b9bd533; }
-
-/* Port detail list */
-.sp-table-wrap {
-  border-top: 1px solid #1a2535;
-  padding-top: 8px;
-  margin-bottom: 16px;
-}
-.sp-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 11px;
-}
-.sp-table th {
-  color: #4a5e72;
-  font-size: 9px;
-  letter-spacing: 1px;
-  text-align: left;
-  padding: 4px 6px;
-  border-bottom: 1px solid #1a2535;
-}
-.sp-table td {
-  padding: 7px 6px;
-  border-bottom: 1px solid #0d1320;
-  color: #7a8a9a;
-  vertical-align: middle;
-}
-.sp-row-connected td { background: #3dd68c08; }
-.sp-port-badge {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 26px; height: 20px;
+/* Port icon box */
+.sp-port-icon {
+  width: 44px; height: 44px; border-radius: 10px;
   background: #1a2535; border: 1px solid #2c3e52;
-  border-radius: 4px; font-size: 10px; color: #7a8a9a;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  flex-shrink: 0; position: relative;
+  font-size: 11px; font-family:'JetBrains Mono',monospace;
+  color: #7a8a9a; font-weight: 700;
 }
-.sp-port-badge.poe { border-color: #3d2800; color: #f0a500; }
-.sp-port-badge.connected { border-color: #3dd68c; color: #3dd68c; background: #0d2018; }
-.sp-unmap {
-  background: transparent; border: 1px solid #2a0010;
-  color: #e84057; font-size: 11px; padding: 2px 6px;
-  border-radius: 3px; cursor: pointer;
+.sp-port-icon.connected { background: #0d2018; border-color: #3dd68c; }
+.sp-port-icon.poe { border-color: #f0a500; }
+.sp-port-icon .sp-poe-badge {
+  position: absolute; bottom: -1px; right: -1px;
+  background: #f0a500; color: #000; font-size: 7px;
+  font-weight: 900; padding: 1px 3px; border-radius: 3px;
+  line-height: 1; font-family: monospace;
+}
+.sp-port-icon .sp-poe-badge.on { background: #3dd68c; }
+.sp-port-icon-inner {
+  width: 22px; height: 14px;
+  background: #0a0f16; border-radius: 2px;
+  border: 1px solid #2c3e52; margin-bottom: 3px;
+}
+.sp-port-icon.connected .sp-port-icon-inner { border-color: #3dd68c22; }
+.sp-port-icon .sp-port-num-sm {
+  font-size: 10px; color: #4a5e72;
+  font-family:'JetBrains Mono',monospace; font-weight:700;
+}
+.sp-port-icon.connected .sp-port-num-sm { color: #3dd68c; }
+
+/* Port info */
+.sp-port-info { flex: 1; min-width: 0; }
+.sp-port-title {
+  font-family:'JetBrains Mono',monospace; font-size:13px;
+  color:#f4f6f9; font-weight:700; margin-bottom:2px;
+}
+.sp-port-sub {
+  font-family:'JetBrains Mono',monospace; font-size:11px;
+  color:#4a5e72; display:flex; align-items:center; gap:6px;
+}
+.sp-port-sub .sp-speed {
+  color: #3dd68c; font-weight: 700; font-size: 10px;
+}
+.sp-port-sub .sp-via {
+  color: #f0a500; font-size: 10px;
 }
 
-/* Device picker sheet that slides over */
-#sp-picker {
-  position: absolute;
-  inset: 0;
-  background: #111922;
+/* Port chevron */
+.sp-port-chevron { color: #2c3e52; font-size: 14px; flex-shrink:0; }
+.sp-port-row.connected .sp-port-chevron { color: #3dd68c44; }
+
+/* SFP badge */
+.sp-sfp-tag {
+  font-size: 8px; color: #5b9bd5; font-family:monospace;
+  font-weight: 700; letter-spacing: 0.5px;
+}
+
+/* Port detail overlay */
+#sp-detail, #sp-picker-panel {
+  position: absolute; inset: 0;
+  background: #0d1117;
+  display: none; flex-direction: column;
   border-radius: 20px 20px 0 0;
-  z-index: 10;
-  display: none;
-  flex-direction: column;
   overflow: hidden;
 }
-#sp-picker.show { display: flex; }
-.sp-picker-header {
+#sp-detail.show, #sp-picker-panel.show { display: flex; }
+
+.sp-detail-header, .sp-picker-header {
   display: flex; align-items: center; gap: 10px;
-  padding: 14px 16px;
-  border-bottom: 1px solid #1a2535;
+  padding: 14px 16px; border-bottom: 1px solid #1e2d3d;
   flex-shrink: 0;
 }
-.sp-picker-title { font-family:'JetBrains Mono',monospace; font-size:13px; color:#5b9bd5; font-weight:700; flex:1; }
-.sp-picker-list { overflow-y:auto; flex:1; padding: 8px 0; }
-.sp-picker-item {
-  display: flex; align-items: center; gap: 12px;
-  padding: 12px 16px;
-  cursor: pointer;
-  border-bottom: 1px solid #0d1320;
+.sp-detail-title, .sp-picker-title {
+  font-family:'JetBrains Mono',monospace; font-size:13px;
+  color:#f4f6f9; font-weight:700; flex:1;
+}
+.sp-back-btn {
+  background: transparent; border: 1px solid #1e2d3d;
+  color: #5b9bd5; font-size: 13px; padding: 6px 12px;
+  border-radius: 8px; cursor: pointer; font-family:monospace;
   touch-action: manipulation;
 }
-.sp-picker-item:active { background: #1a2535; }
-.sp-picker-item.disabled { opacity: 0.4; cursor: default; }
-.sp-picker-icon { font-size: 20px; flex-shrink: 0; }
-.sp-picker-name { font-family:'JetBrains Mono',monospace; font-size:12px; color:#f4f6f9; font-weight:700; }
-.sp-picker-sub  { font-size:10px; color:#7a8a9a; font-family:'JetBrains Mono',monospace; margin-top:2px; }
-.sp-picker-badge { font-size:10px; color:#3dd68c; font-family:'JetBrains Mono',monospace; margin-left:auto; }
 
-
-</style>
-<script>
-// Set mobile class IMMEDIATELY before page renders - no flash of wrong layout
-if (('ontouchstart' in window) || navigator.maxTouchPoints > 0) {
-  document.documentElement.className += ' is-mobile-html';
-  // Will apply to body once body exists
-  document.addEventListener('DOMContentLoaded', function() {
-    document.body.classList.add('is-mobile');
-  });
+/* Connection chain card */
+.sp-chain-card {
+  margin: 14px 16px;
+  background: #111922; border: 1px solid #1e2d3d;
+  border-radius: 14px; padding: 14px;
 }
-</script>
-</head>
-<body>
-<!-- INSTALL BANNER (shows on mobile until dismissed) -->
-<div id="install-banner" style="display:none;width:100%;background:#111822;border-bottom:1px solid #5b9bd533;padding:6px 12px;font-size:11px;color:#7a8a9a;font-family:'JetBrains Mono',monospace;display:flex;align-items:center;gap:8px;flex-shrink:0">
-  <span>📱</span>
-  <span style="flex:1">Install <b style="color:#5b9bd5">Project Atlas</b>: In Safari tap <b style="color:#e8e8f0">Share</b> → <b style="color:#e8e8f0">Add to Home Screen</b></span>
-  <button onclick="document.getElementById('install-banner').style.display='none'" style="background:transparent;border:none;color:#7a8a9a;font-size:16px;cursor:pointer;padding:0 4px">✕</button>
-</div>
+.sp-chain-step {
+  display: flex; align-items: center; gap: 12px;
+  padding: 8px 0;
+}
+.sp-chain-step + .sp-chain-step {
+  border-top: 1px dashed #1e2d3d;
+}
+.sp-chain-icon { font-size: 22px; width: 32px; text-align:center; flex-shrink:0; }
+.sp-chain-name { font-family:monospace; font-size:12px; color:#f4f6f9; font-weight:700; }
+.sp-chain-sub { font-size:10px; color:#4a5e72; font-family:monospace; margin-top:1px; }
 
-<!-- ATLAS SPLASH SCREEN -->
-<div id="splash" style="position:fixed;inset:0;background:#0a1020;z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0">
-  <div style="text-align:center;padding:40px">
-    <!-- Atlas globe icon -->
-    <div style="font-size:72px;margin-bottom:20px;animation:pulse 2s infinite">🌐</div>
-    <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#7a8a9a;letter-spacing:4px;margin-bottom:8px">MSP FIELD MAPPING TOOL</div>
-    <div style="font-family:'JetBrains Mono',monospace;font-size:32px;color:#e8e8f0;letter-spacing:8px;font-weight:700;margin-bottom:4px">PROJECT</div>
-    <div style="font-family:'JetBrains Mono',monospace;font-size:48px;color:#5b9bd5;letter-spacing:8px;font-weight:700;margin-bottom:32px">ATLAS</div>
-    <div style="font-size:11px;color:#4a5e72;letter-spacing:2px;margin-bottom:40px;font-family:'JetBrains Mono',monospace">3D NETWORK & SITE MAPPING</div>
-    <div id="splash-btn" onclick="dismissSplash()" style="display:inline-block;background:transparent;border:1px solid #5b9bd5;color:#5b9bd5;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;letter-spacing:3px;padding:12px 32px;border-radius:3px;cursor:pointer;transition:all 0.2s">
-      LAUNCH ▶
-    </div>
-    <div style="margin-top:24px;font-size:10px;color:#2c3e52;letter-spacing:1px;font-family:'JetBrains Mono',monospace">NO DATA LEAVES YOUR DEVICE</div>
-  </div>
-</div>
+/* Disconnect warning */
+.sp-warn {
+  margin: 0 16px 14px;
+  background: #1a0008; border: 1px solid #3a0010;
+  border-radius: 12px; padding: 12px 14px;
+}
+.sp-warn-title { font-size:10px; color:#e84057; font-family:monospace; font-weight:700; margin-bottom:4px; letter-spacing:1px; }
+.sp-warn-body { font-size:11px; color:#7a8a9a; font-family:monospace; line-height:1.5; }
 
-<style>
-@keyframes pulse { 0%,100%{opacity:0.7;transform:scale(1)} 50%{opacity:1;transform:scale(1.05)} }
-#splash-btn:hover,#splash-btn:active{background:#5b9bd522;box-shadow:0 0 20px #5b9bd544}
+/* Action buttons */
+.sp-actions { display:flex; gap:8px; padding:0 16px 16px; flex-shrink:0; }
+.sp-btn {
+  flex:1; padding:13px; border-radius:12px;
+  font-family:'JetBrains Mono',monospace; font-size:12px;
+  font-weight:700; cursor:pointer; border:none;
+  touch-action: manipulation; min-height:48px;
+}
+.sp-btn-danger { background:#e84057; color:#fff; }
+.sp-btn-ghost { background:transparent; border:1px solid #1e2d3d; color:#7a8a9a; }
+
+/* Device picker list */
+.sp-picker-scroll { overflow-y:auto; flex:1; -webkit-overflow-scrolling:touch; }
+.sp-picker-section { padding:8px 16px 4px; font-size:9px; color:#4a5e72; font-family:monospace; letter-spacing:2px; text-transform:uppercase; }
+.sp-picker-item {
+  display:flex; align-items:center; gap:12px;
+  padding:12px 16px; cursor:pointer;
+  border-bottom:1px solid #111922;
+  touch-action:manipulation; transition:background 0.1s;
+}
+.sp-picker-item:active { background:#111922; }
+.sp-picker-item.used { opacity:0.4; pointer-events:none; }
+.sp-picker-icon { font-size:22px; width:36px; text-align:center; flex-shrink:0; }
+.sp-picker-name { font-family:monospace; font-size:13px; color:#f4f6f9; font-weight:700; }
+.sp-picker-sub { font-size:10px; color:#4a5e72; font-family:monospace; margin-top:2px; }
+.sp-picker-tag { font-size:9px; color:#f0a500; font-family:monospace; font-weight:700; margin-left:auto; flex-shrink:0; }
+
+/* Port count prompt */
+#port-count-prompt {
+  position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+  background:#111922; border:2px solid #5b9bd5; border-radius:16px;
+  padding:20px; z-index:500; width:min(320px, 90vw);
+  font-family:'JetBrains Mono',monospace; box-shadow:0 8px 40px #000d;
+}
+
 
 /* ═══════════════════════════════════════════════════════════
    MOBILE UI — shown on screens ≤ 768px or touch devices
@@ -8214,8 +8180,8 @@ if (window.__atlas) {
 </script>
 <script>
 // ─────────────────────────────────────────────────────────────────────────────
-// PROJECT ATLAS — Switch Port Panel + 3-way Port Mapping
-// Chain: Switch Port → Wall Jack → End Device
+// PROJECT ATLAS — Port Panel (Mobile-first, UniFi-style list view)
+// Chain: Switch Port → [Wall Jack] → End Device
 // ─────────────────────────────────────────────────────────────────────────────
 
 var SWITCH_DEFS = {
@@ -8241,10 +8207,10 @@ var SWITCH_DEFS = {
   'Patch Panel':         {rj45:24, poe:0,  sfp:0, sfpPlus:0, sfp28:0, speed:'cat',  rows:2},
 };
 
-// Port connection store
-// Key: switchId_portNum → {toId, toName, toType, viaId, viaName, speed, portLabel}
-// viaId/viaName = wall jack in the middle (optional)
 var portMap = {};
+var _spMarkerId = null;
+var _spFilter   = 'all';
+var _spPortNum  = null;
 
 function getSwitchDef(deviceType) {
   if (!deviceType) return null;
@@ -8256,362 +8222,324 @@ function getSwitchDef(deviceType) {
   return null;
 }
 
-var switchPanelMarkerId = null;
-
+// ── OPEN / CLOSE ──────────────────────────────────────────────────────────────
 function openSwitchPanel(markerId) {
   var m = markers.find(function(x) { return x.id === markerId; });
   if (!m) return;
   var def = getSwitchDef(m.data.t);
   if (!def) { promptPortCount(markerId); return; }
-  switchPanelMarkerId = markerId;
-  var panel = document.getElementById('switch-panel');
-  panel.innerHTML = buildSwitchPanelHTML(m, def);
-  panel.classList.add('show');
+  _spMarkerId = markerId;
+  _spFilter   = 'all';
+  renderSwitchPanel();
+  document.getElementById('switch-panel').classList.add('show');
 }
 
 function closeSwitchPanel() {
   document.getElementById('switch-panel').classList.remove('show');
-  switchPanelMarkerId = null;
+  _spMarkerId = null;
 }
 
-function spBodyClick(e, markerId) {
-  // Handle port square clicks
-  var port = e.target.closest('[data-port]');
-  if (port && port.dataset.mid) {
-    portClick(port.dataset.mid, parseInt(port.dataset.port));
-    return;
-  }
-  // Handle unmap button clicks
-  var unmap = e.target.closest('[data-pmid]');
-  if (unmap) {
-    portClick(unmap.dataset.pmid, parseInt(unmap.dataset.pnum));
-    return;
-  }
-}
-
-function buildSwitchPanelHTML(m, def) {
-  var name = m.data.name || m.data.t;
-  var totalPorts = def.rj45 + def.sfp + def.sfpPlus + def.sfp28;
-  var usedPorts = 0;
-  for (var pk in portMap) { if (pk.indexOf(m.id + '_') === 0) usedPorts++; }
-
-  var h = '<div class="sp-handle"></div>';
-  h += '<div class="sp-header">';
-  h += '<div class="sp-header-left"><div>';
-  h += '<div class="sp-name">' + name + '</div>';
-  h += '<div class="sp-model">' + m.data.t + ' &nbsp;·&nbsp; ' + usedPorts + '/' + totalPorts + ' ports' + (m.data.ip ? ' &nbsp;·&nbsp; ' + m.data.ip : '') + '</div>';
-  h += '</div></div>';
-  h += '<button class="sp-close" onclick="closeSwitchPanel()">✕</button>';
-  h += '</div>';
-
-  // Legend
-  h += '<div class="sp-legend">';
-  h += '<span class="sp-leg sp-leg-connected"><div class="sp-leg-dot"></div>Connected</span>';
-  h += '<span class="sp-leg sp-leg-empty"><div class="sp-leg-dot"></div>Empty</span>';
-  if (def.poe > 0) h += '<span class="sp-leg sp-leg-poe"><div class="sp-leg-dot"></div>PoE</span>';
-  if (def.sfp + def.sfpPlus + def.sfp28 > 0) h += '<span class="sp-leg sp-leg-sfp"><div class="sp-leg-dot"></div>SFP</span>';
-  h += '</div>';
-
-  h += '<div class="sp-body" id="sp-body-inner" onclick="spBodyClick(event,' + JSON.stringify(m.id) + ')">';
-  h += buildPortGrid(m, def);
-  h += buildPortTable(m, def);
-  h += '</div>';
-
-  // Device picker overlay
-  h += '<div id="sp-picker" style="display:none;position:absolute;inset:0;background:#111922;border-radius:20px 20px 0 0;flex-direction:column;overflow:hidden">';
-  h += '<div class="sp-picker-header">';
-  h += '<button class="sp-close" id="sp-picker-back" style="margin-right:8px">←</button>';
-  h += '<div class="sp-picker-title" id="sp-picker-title">SELECT DEVICE</div>';
-  h += '</div>';
-  h += '<div class="sp-picker-list" id="sp-picker-list"></div>';
-  h += '</div>';
-
-  // Port info overlay (shows connection details)
-  h += '<div id="sp-info" style="display:none;position:absolute;inset:0;background:#111922;border-radius:20px 20px 0 0;flex-direction:column;padding:20px;overflow-y:auto">';
-  h += '<div id="sp-info-content"></div>';
-  h += '</div>';
-
-  return h;
-}
-
-function buildPortGrid(m, def) {
-  var h = '<div class="sp-grid-wrap">';
-  var perRow = def.rows === 2 ? Math.ceil(def.rj45 / 2) : def.rj45;
-  var portW = Math.max(20, Math.min(48, Math.floor((window.innerWidth - 230) / (perRow + 2))));
-
-  if (def.rj45 > 0) {
-    h += '<div class="sp-rj45-group">';
-    if (def.rows === 2) {
-      h += '<div class="sp-row">';
-      for (var i = 1; i <= def.rj45; i += 2) h += renderPortSquare(m.id, i, 'rj45', i <= def.poe, portW);
-      h += '</div><div class="sp-row">';
-      for (var i = 2; i <= def.rj45; i += 2) h += renderPortSquare(m.id, i, 'rj45', i <= def.poe, portW);
-      h += '</div>';
-    } else {
-      h += '<div class="sp-row">';
-      for (var i = 1; i <= def.rj45; i++) h += renderPortSquare(m.id, i, 'rj45', i <= def.poe, portW);
-      h += '</div>';
-    }
-    h += '</div>';
-  }
-
-  // SFP ports
-  var sfpStart = def.rj45 + 1;
-  var sfpAll = [];
-  for (var j = 0; j < def.sfp;     j++) sfpAll.push({num: sfpStart+j,                         type:'sfp'});
-  for (var j = 0; j < def.sfpPlus; j++) sfpAll.push({num: sfpStart+def.sfp+j,                 type:'sfp+'});
-  for (var j = 0; j < def.sfp28;   j++) sfpAll.push({num: sfpStart+def.sfp+def.sfpPlus+j,     type:'sfp28'});
-
-  if (sfpAll.length > 0) {
-    h += '<div class="sp-sfp-group">';
-    for (var k = 0; k < sfpAll.length; k += 2) {
-      h += '<div class="sp-row">';
-      h += renderPortSquare(m.id, sfpAll[k].num, sfpAll[k].type, false, 46);
-      if (sfpAll[k+1]) h += renderPortSquare(m.id, sfpAll[k+1].num, sfpAll[k+1].type, false, 46);
-      h += '</div>';
-    }
-    h += '</div>';
-  }
-
-  h += '</div>';
-  return h;
-}
-
-function renderPortSquare(markerId, portNum, portType, isPoE, w) {
-  var key  = markerId + '_' + portNum;
-  var conn = portMap[key];
-  var isSFP = portType !== 'rj45';
-  var cls = 'sp-port' + (isSFP ? ' sp-port-sfp' : '');
-  if (conn)       cls += isPoE ? ' sp-port-connected-poe' : ' sp-port-connected';
-  else if (isPoE) cls += ' sp-port-poe-empty';
-  else            cls += ' sp-port-empty';
-  var h2 = Math.round(w * 1.25);
-  return '<div class="' + cls + '" style="width:' + w + 'px;height:' + h2 + 'px;flex-shrink:0" ' +
-    'data-port="' + portNum + '" data-mid="' + markerId + '">' +
-    (isSFP ? '<div class="sp-sfp-hole"></div>' : '<div class="sp-rj45-hole"></div>') +
-    '<div class="sp-port-num">' + portNum + '</div>' +
-    '</div>';
-}
-
-function buildPortTable(m, def) {
-  var h = '<div class="sp-table-wrap"><table class="sp-table">';
-  h += '<thead><tr><th>PORT</th><th>WALL JACK</th><th>END DEVICE</th><th></th></tr></thead><tbody>';
-  var all = [];
-  for (var i = 1; i <= def.rj45; i++) all.push({num:i, type:'rj45', poe:i<=def.poe});
-  var s = def.rj45+1;
-  for (var j=0;j<def.sfp;j++)     all.push({num:s+j,                        type:'sfp',  poe:false});
-  for (var j=0;j<def.sfpPlus;j++) all.push({num:s+def.sfp+j,                type:'sfp+', poe:false});
-  for (var j=0;j<def.sfp28;j++)   all.push({num:s+def.sfp+def.sfpPlus+j,   type:'sfp28',poe:false});
-  all.forEach(function(p) {
-    var key = m.id + '_' + p.num;
-    var conn = portMap[key];
-    h += '<tr class="' + (conn ? 'sp-row-connected' : '') + '">';
-    h += '<td><span class="sp-port-badge' + (p.poe?' poe':'') + (conn?' connected':'') + '">' + (p.type!=='rj45'?p.type.toUpperCase():p.num) + '</span></td>';
-    h += '<td style="color:#f4f6f9">' + (conn && conn.viaName ? '<span style="color:#f0a500">🔲 ' + conn.viaName + '</span>' : '<span style="color:#2c3e52">—</span>') + '</td>';
-    h += '<td>' + (conn ? '<span style="color:#3dd68c;font-weight:700">' + (conn.toName||'?') + '</span>' : '<span style="color:#2c3e52">Empty</span>') + '</td>';
-    h += '<td>' + (conn ? '<button class="sp-unmap" data-pmid="' + m.id + '" data-pnum="' + p.num + '">ⓘ</button>' : '') + '</td>';
-    h += '</tr>';
+function setSpFilter(f) {
+  _spFilter = f;
+  document.querySelectorAll('.sp-filter-btn').forEach(function(b) {
+    b.classList.toggle('on', b.dataset.f === f);
   });
-  h += '</tbody></table></div>';
-  return h;
+  renderPortList();
 }
 
-// ── PORT CLICK — shows info if connected, picker if empty ─────────────────────
-var _pickerMid = null, _pickerPort = null;
-
-function portClick(markerId, portNum) {
-  var key  = markerId + '_' + portNum;
-  var conn = portMap[key];
+// ── RENDER ────────────────────────────────────────────────────────────────────
+function renderSwitchPanel() {
+  var m   = markers.find(function(x) { return x.id === _spMarkerId; });
+  var def = getSwitchDef(m.data.t);
   var panel = document.getElementById('switch-panel');
 
-  if (conn) {
-    // Show connection info panel
-    showPortInfo(markerId, portNum, conn);
-  } else {
-    // Show device picker
-    showPortPicker(markerId, portNum);
-  }
+  var totalPorts = def.rj45 + def.sfp + def.sfpPlus + def.sfp28;
+  var usedPorts  = 0;
+  for (var pk in portMap) { if (pk.indexOf(_spMarkerId + '_') === 0) usedPorts++; }
+
+  panel.innerHTML =
+    '<div class="sp-handle"></div>' +
+
+    // Header
+    '<div class="sp-header">' +
+      '<div class="sp-header-info">' +
+        '<div class="sp-name">' + (m.data.name || m.data.t) + '</div>' +
+        '<div class="sp-model">' + m.data.t + ' &nbsp;·&nbsp; ' + usedPorts + '/' + totalPorts + ' ports used' + (m.data.ip ? ' &nbsp;·&nbsp; ' + m.data.ip : '') + '</div>' +
+      '</div>' +
+      '<button class="sp-close" onclick="closeSwitchPanel()">✕</button>' +
+    '</div>' +
+
+    // Filter tabs
+    '<div class="sp-filters">' +
+      '<button class="sp-filter-btn on" data-f="all" onclick="setSpFilter(\'all\')">All</button>' +
+      '<button class="sp-filter-btn" data-f="inuse" onclick="setSpFilter(\'inuse\')">In Use</button>' +
+      '<button class="sp-filter-btn" data-f="available" onclick="setSpFilter(\'available\')">Available</button>' +
+      (def.poe > 0 ? '<button class="sp-filter-btn" data-f="nopoe" onclick="setSpFilter(\'nopoe\')">No PoE</button><button class="sp-filter-btn" data-f="poe" onclick="setSpFilter(\'poe\')">PoE+</button>' : '') +
+    '</div>' +
+
+    // Port list
+    '<div class="sp-body"><div class="sp-port-list" id="sp-port-list"></div></div>' +
+
+    // Detail overlay (hidden)
+    '<div id="sp-detail"></div>' +
+
+    // Picker overlay (hidden)
+    '<div id="sp-picker-panel"></div>';
+
+  renderPortList();
 }
 
-function showPortInfo(markerId, portNum, conn) {
-  var info = document.getElementById('sp-info');
-  var content = document.getElementById('sp-info-content');
-  if (!info || !content) return;
+function renderPortList() {
+  var m   = markers.find(function(x) { return x.id === _spMarkerId; });
+  var def = getSwitchDef(m.data.t);
+  var list = document.getElementById('sp-port-list');
+  if (!list) return;
 
-  var sw = markers.find(function(x) { return x.id === markerId; });
-  var endDev = markers.find(function(x) { return x.id === conn.toId; });
-  var wj = conn.viaId ? markers.find(function(x) { return x.id === conn.viaId; }) : null;
+  // Build all ports
+  var allPorts = [];
+  for (var i = 1; i <= def.rj45; i++)
+    allPorts.push({num:i, type:'rj45', poe: i<=def.poe, label:'Port '+i});
+  var s = def.rj45 + 1;
+  for (var j=0; j<def.sfp;     j++) allPorts.push({num:s+j,                        type:'sfp',   poe:false, label:'SFP '+(j+1)});
+  for (var j=0; j<def.sfpPlus; j++) allPorts.push({num:s+def.sfp+j,                type:'sfp+',  poe:false, label:'SFP+ '+(j+1)});
+  for (var j=0; j<def.sfp28;   j++) allPorts.push({num:s+def.sfp+def.sfpPlus+j,   type:'sfp28', poe:false, label:'SFP28 '+(j+1)});
 
-  var h = '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">';
-  h += '<div style="font-family:monospace;font-size:13px;color:#5b9bd5;font-weight:700">PORT ' + portNum + ' — CONNECTION DETAILS</div>';
-  h += '<button onclick="closePortInfo()" style="background:transparent;border:1px solid #2c3e52;color:#7a8a9a;font-family:monospace;font-size:11px;padding:6px 12px;border-radius:6px;cursor:pointer">← BACK</button>';
-  h += '</div>';
-
-  // Chain diagram
-  h += '<div style="background:#0d1117;border:1px solid #2c3e52;border-radius:10px;padding:14px;margin-bottom:16px">';
-  h += '<div style="font-size:9px;color:#4a5e72;font-family:monospace;letter-spacing:1px;margin-bottom:10px">CONNECTION CHAIN</div>';
-
-  // Switch
-  h += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">';
-  h += '<div style="font-size:18px">🔀</div>';
-  h += '<div><div style="font-size:12px;color:#f4f6f9;font-family:monospace;font-weight:700">' + (sw ? (sw.data.name || sw.data.t) : 'Switch') + '</div>';
-  h += '<div style="font-size:10px;color:#7a8a9a;font-family:monospace">Port ' + portNum + (conn.speed ? ' · ' + conn.speed : '') + '</div></div>';
-  h += '</div>';
-  h += '<div style="margin-left:14px;border-left:2px dashed #2c3e52;height:16px"></div>';
-
-  // Wall jack (if any)
-  if (wj || conn.viaName) {
-    h += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">';
-    h += '<div style="font-size:18px">🔲</div>';
-    h += '<div><div style="font-size:12px;color:#f0a500;font-family:monospace;font-weight:700">' + (conn.viaName || 'Wall Jack') + '</div>';
-    h += '<div style="font-size:10px;color:#7a8a9a;font-family:monospace">Patch through</div></div>';
-    h += '</div>';
-    h += '<div style="margin-left:14px;border-left:2px dashed #2c3e52;height:16px"></div>';
-  }
-
-  // End device
-  h += '<div style="display:flex;align-items:center;gap:10px">';
-  h += '<div style="font-size:18px">' + (endDev ? endDev.data.i : '💻') + '</div>';
-  h += '<div><div style="font-size:12px;color:#3dd68c;font-family:monospace;font-weight:700">' + (conn.toName || 'Unknown') + '</div>';
-  h += '<div style="font-size:10px;color:#7a8a9a;font-family:monospace">' + (conn.toType || '') + (endDev && endDev.data.ip ? ' · ' + endDev.data.ip : '') + '</div></div>';
-  h += '</div>';
-  h += '</div>';
-
-  // Disconnect warning
-  h += '<div style="background:#2a0010;border:1px solid #e84057;border-radius:8px;padding:12px;margin-bottom:16px">';
-  h += '<div style="font-size:10px;color:#e84057;font-family:monospace;font-weight:700;margin-bottom:4px">⚠ DISCONNECT WARNING</div>';
-  h += '<div style="font-size:11px;color:#7a8a9a;font-family:monospace">Removing this connection will sever the link between <span style="color:#f4f6f9">' + (sw ? (sw.data.name||sw.data.t) : 'switch') + '</span> and <span style="color:#3dd68c">' + (conn.toName||'device') + '</span>.' + (conn.viaName ? ' Wall jack <span style="color:#f0a500">' + conn.viaName + '</span> will show as unlinked.' : '') + '</div>';
-  h += '</div>';
-
-  h += '<div style="display:flex;gap:8px">';
-  h += '<button id="sp-do-disconnect" style="flex:1;background:#e84057;border:none;color:#fff;font-family:monospace;font-weight:700;font-size:12px;padding:12px;border-radius:8px;cursor:pointer">DISCONNECT</button>';
-  h += '<button id="sp-keep-conn" style="flex:1;background:transparent;border:1px solid #2c3e52;color:#7a8a9a;font-family:monospace;font-size:12px;padding:12px;border-radius:8px;cursor:pointer">KEEP CONNECTION</button>';
-  h += '</div>';
-
-  content.innerHTML = h;
-  // Attach listeners after innerHTML set
-  var discBtn = document.getElementById('sp-do-disconnect');
-  var keepBtn = document.getElementById('sp-keep-conn');
-  if (discBtn) discBtn.addEventListener('click', function() { unmapPort(markerId, portNum); closePortInfo(); });
-  if (keepBtn) keepBtn.addEventListener('click', closePortInfo);
-  info.style.display = 'flex';
-}
-
-function closePortInfo() {
-  var info = document.getElementById('sp-info');
-  if (info) info.style.display = 'none';
-}
-
-function showPortPicker(markerId, portNum) {
-  _pickerMid  = markerId;
-  _pickerPort = portNum;
-  var picker = document.getElementById('sp-picker');
-  var list   = document.getElementById('sp-picker-list');
-  var title  = document.getElementById('sp-picker-title');
-  var back   = document.getElementById('sp-picker-back');
-  if (!picker || !list) return;
-
-  title.textContent = 'PORT ' + portNum + ' — CONNECT TO DEVICE';
-  if (back) back.onclick = function() { picker.style.display = 'none'; };
-
-  // Step 1: pick end device or wall jack
-  var h = '<div style="padding:10px 16px;font-size:9px;color:#4a5e72;font-family:monospace;letter-spacing:1px;border-bottom:1px solid #1a2535">STEP 1: SELECT DEVICE TO CONNECT</div>';
-
-  var hasDevices = false;
-  markers.forEach(function(dev) {
-    if (dev.id === markerId) return;
-    // Check if already connected to this port
-    var alreadyOnThisSwitch = false;
-    for (var pk in portMap) {
-      if (pk.indexOf(markerId + '_') === 0 && portMap[pk].toId === dev.id) { alreadyOnThisSwitch = true; break; }
-    }
-    hasDevices = true;
-    var isWJ = dev.data.t === 'Wall Jack' || !!dev.data.wj;
-    var sub = dev.data.t + (dev.data.ip ? ' · ' + dev.data.ip : '') + (alreadyOnThisSwitch ? ' · Already on another port' : '');
-    h += '<div class="sp-picker-item' + (alreadyOnThisSwitch ? ' disabled' : '') + '" data-devid="' + dev.id + '" data-iswj="' + isWJ + '">';
-    h += '<div class="sp-picker-icon">' + dev.data.i + '</div>';
-    h += '<div style="flex:1"><div class="sp-picker-name">' + (dev.data.name || dev.data.t) + '</div>';
-    h += '<div class="sp-picker-sub">' + sub + '</div></div>';
-    if (isWJ) h += '<div style="font-size:9px;color:#f0a500;font-family:monospace">WALL JACK</div>';
-    h += '</div>';
+  // Filter
+  var filtered = allPorts.filter(function(p) {
+    var key  = _spMarkerId + '_' + p.num;
+    var conn = portMap[key];
+    if (_spFilter === 'inuse')     return !!conn;
+    if (_spFilter === 'available') return !conn;
+    if (_spFilter === 'poe')       return p.poe;
+    if (_spFilter === 'nopoe')     return !p.poe;
+    return true;
   });
 
-  if (!hasDevices) h += '<div style="padding:24px;text-align:center;font-family:monospace;font-size:12px;color:#4a5e72">No other devices placed yet.<br>Place devices first, then map ports.</div>';
+  if (!filtered.length) {
+    list.innerHTML = '<div style="padding:32px;text-align:center;font-family:monospace;font-size:12px;color:#4a5e72">No ports match this filter</div>';
+    return;
+  }
 
-  list.innerHTML = h;
-  list.onclick = function(e) {
-    var item = e.target.closest('.sp-picker-item');
-    if (!item || item.classList.contains('disabled')) return;
-    var devId = item.dataset.devid;
-    var isWJ  = item.dataset.iswj === 'true';
-    connectPort(_pickerMid, _pickerPort, devId, isWJ);
-    picker.style.display = 'none';
-  };
+  list.innerHTML = filtered.map(function(p) {
+    var key  = _spMarkerId + '_' + p.num;
+    var conn = portMap[key];
+    var isSFP = p.type !== 'rj45';
+    var iconClass = 'sp-port-icon' + (conn ? ' connected' : p.poe ? ' poe' : '');
+    var rowClass  = 'sp-port-row' + (conn ? ' connected' : '');
 
-  picker.style.display = 'flex';
+    var iconHtml =
+      '<div class="' + iconClass + '">' +
+        (isSFP ? '<div class="sp-sfp-tag">' + p.type.toUpperCase() + '</div>' : '<div class="sp-port-icon-inner"></div>') +
+        '<div class="sp-port-num-sm">' + p.num + '</div>' +
+        (p.poe ? '<div class="sp-poe-badge' + (conn ? ' on' : '') + '">⚡</div>' : '') +
+      '</div>';
+
+    var infoHtml =
+      '<div class="sp-port-info">' +
+        '<div class="sp-port-title">' + p.label + '</div>' +
+        '<div class="sp-port-sub">' +
+          (conn
+            ? '<span>' + (conn.toName || 'Device') + '</span>' +
+              (conn.viaName ? '<span class="sp-via">via ' + conn.viaName + '</span>' : '') +
+              '<span class="sp-speed">' + (conn.speed || def.speed || '1G') + 'bE</span>'
+            : '<span>Available</span>' + (p.poe ? '<span class="sp-via">PoE</span>' : '')
+          ) +
+        '</div>' +
+      '</div>';
+
+    return '<div class="' + rowClass + '" data-port="' + p.num + '" onclick="spPortTap(' + p.num + ')">' +
+      iconHtml + infoHtml +
+      '<div class="sp-port-chevron">›</div>' +
+    '</div>';
+  }).join('');
 }
 
-function connectPort(switchId, portNum, deviceId, isWallJack) {
+// ── PORT TAP ──────────────────────────────────────────────────────────────────
+function spPortTap(portNum) {
+  _spPortNum = portNum;
+  var key  = _spMarkerId + '_' + portNum;
+  var conn = portMap[key];
+  if (conn) showPortDetail(portNum, conn);
+  else      showPortPicker(portNum);
+}
+
+// ── PORT DETAIL (connected port) ──────────────────────────────────────────────
+function showPortDetail(portNum, conn) {
+  var detail = document.getElementById('sp-detail');
+  var m   = markers.find(function(x) { return x.id === _spMarkerId; });
+  var def = getSwitchDef(m.data.t);
+  var endDev = markers.find(function(x) { return x.id === conn.toId; });
+  var isPoE  = portNum <= def.poe;
+
+  detail.innerHTML =
+    '<div class="sp-detail-header">' +
+      '<button class="sp-back-btn" onclick="closePortDetail()">← Back</button>' +
+      '<div class="sp-detail-title">Port ' + portNum + (isPoE ? ' ⚡' : '') + '</div>' +
+    '</div>' +
+
+    // Connection chain
+    '<div class="sp-chain-card">' +
+      '<div style="font-size:9px;color:#4a5e72;font-family:monospace;letter-spacing:2px;margin-bottom:8px">CONNECTION CHAIN</div>' +
+
+      // Switch
+      '<div class="sp-chain-step">' +
+        '<div class="sp-chain-icon">🔀</div>' +
+        '<div><div class="sp-chain-name">' + (m.data.name || m.data.t) + '</div>' +
+        '<div class="sp-chain-sub">Port ' + portNum + (isPoE ? ' · PoE' : '') + ' · ' + (conn.speed || def.speed || '1G') + 'bE</div></div>' +
+      '</div>' +
+
+      // Wall jack if any
+      (conn.viaName ?
+        '<div class="sp-chain-step">' +
+          '<div class="sp-chain-icon">🔲</div>' +
+          '<div><div class="sp-chain-name" style="color:#f0a500">' + conn.viaName + '</div>' +
+          '<div class="sp-chain-sub">Wall Jack · Patch through</div></div>' +
+        '</div>' : '') +
+
+      // End device
+      '<div class="sp-chain-step">' +
+        '<div class="sp-chain-icon">' + (endDev ? endDev.data.i : '💻') + '</div>' +
+        '<div><div class="sp-chain-name" style="color:#3dd68c">' + (conn.toName || 'Unknown') + '</div>' +
+        '<div class="sp-chain-sub">' + (conn.toType || '') + (endDev && endDev.data.ip ? ' · ' + endDev.data.ip : '') + '</div></div>' +
+      '</div>' +
+    '</div>' +
+
+    // Disconnect warning
+    '<div class="sp-warn">' +
+      '<div class="sp-warn-title">⚠ DISCONNECT WARNING</div>' +
+      '<div class="sp-warn-body">Removing this connection will sever the link between <strong style="color:#f4f6f9">' + (m.data.name || m.data.t) + '</strong> and <strong style="color:#3dd68c">' + (conn.toName || 'device') + '</strong>.' +
+      (conn.viaName ? ' Wall jack <strong style="color:#f0a500">' + conn.viaName + '</strong> will show as unlinked.' : '') + '</div>' +
+    '</div>' +
+
+    '<div class="sp-actions">' +
+      '<button class="sp-btn sp-btn-danger" id="sp-disc-btn">Disconnect</button>' +
+      '<button class="sp-btn sp-btn-ghost" onclick="closePortDetail()">Keep</button>' +
+    '</div>';
+
+  document.getElementById('sp-disc-btn').addEventListener('click', function() {
+    spUnmapPort(_spMarkerId, portNum);
+    closePortDetail();
+    renderPortList();
+  });
+
+  detail.classList.add('show');
+}
+
+function closePortDetail() {
+  var d = document.getElementById('sp-detail');
+  if (d) d.classList.remove('show');
+}
+
+// ── PORT PICKER (empty port) ───────────────────────────────────────────────────
+function showPortPicker(portNum) {
+  var picker = document.getElementById('sp-picker-panel');
+  var m   = markers.find(function(x) { return x.id === _spMarkerId; });
+  var def = getSwitchDef(m.data.t);
+  var isPoE = portNum <= def.poe;
+
+  // Separate wall jacks from other devices
+  var wallJacks = markers.filter(function(d) { return d.id !== _spMarkerId && (d.data.t === 'Wall Jack' || d.data.wj); });
+  var others    = markers.filter(function(d) { return d.id !== _spMarkerId && d.data.t !== 'Wall Jack' && !d.data.wj; });
+
+  function isUsed(devId) {
+    for (var pk in portMap) {
+      if (pk.indexOf(_spMarkerId + '_') === 0 && portMap[pk].toId === devId) return true;
+    }
+    return false;
+  }
+
+  function renderItems(devList) {
+    if (!devList.length) return '<div style="padding:12px 16px;font-size:11px;color:#4a5e72;font-family:monospace">None placed yet</div>';
+    return devList.map(function(dev) {
+      var used = isUsed(dev.id);
+      return '<div class="sp-picker-item' + (used ? ' used' : '') + '" data-devid="' + dev.id + '">' +
+        '<div class="sp-picker-icon">' + dev.data.i + '</div>' +
+        '<div style="flex:1">' +
+          '<div class="sp-picker-name">' + (dev.data.name || dev.data.t) + '</div>' +
+          '<div class="sp-picker-sub">' + dev.data.t + (dev.data.ip ? ' · ' + dev.data.ip : '') + (used ? ' · Already connected' : '') + '</div>' +
+        '</div>' +
+        (dev.data.t === 'Wall Jack' || dev.data.wj ? '<div class="sp-picker-tag">WALL JACK</div>' : '') +
+        '<div style="color:#2c3e52;font-size:14px">›</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  picker.innerHTML =
+    '<div class="sp-picker-header">' +
+      '<button class="sp-back-btn" onclick="closePortPicker()">← Back</button>' +
+      '<div class="sp-picker-title">Port ' + portNum + (isPoE ? ' ⚡' : '') + ' — Connect to</div>' +
+    '</div>' +
+    '<div class="sp-picker-scroll">' +
+      (wallJacks.length ? '<div class="sp-picker-section">Wall Jacks</div>' + renderItems(wallJacks) : '') +
+      '<div class="sp-picker-section">Devices</div>' +
+      renderItems(others) +
+    '</div>';
+
+  // Event delegation
+  picker.querySelector('.sp-picker-scroll').addEventListener('click', function(e) {
+    var item = e.target.closest('.sp-picker-item');
+    if (!item || item.classList.contains('used')) return;
+    var devId = item.dataset.devid;
+    var dev = markers.find(function(x) { return x.id === devId; });
+    var isWJ = dev && (dev.data.t === 'Wall Jack' || dev.data.wj);
+    spConnectPort(_spMarkerId, portNum, devId, isWJ);
+    closePortPicker();
+    renderPortList();
+  });
+
+  picker.classList.add('show');
+}
+
+function closePortPicker() {
+  var p = document.getElementById('sp-picker-panel');
+  if (p) p.classList.remove('show');
+}
+
+// ── CONNECT / DISCONNECT ──────────────────────────────────────────────────────
+function spConnectPort(switchId, portNum, deviceId, isWallJack) {
   var sw  = markers.find(function(x) { return x.id === switchId; });
   var dev = markers.find(function(x) { return x.id === deviceId; });
   if (!sw || !dev) return;
+  var def = getSwitchDef(sw.data.t);
 
-  var key = switchId + '_' + portNum;
-  portMap[key] = {
+  portMap[switchId + '_' + portNum] = {
     toId:      deviceId,
     toName:    dev.data.name || dev.data.t,
     toType:    dev.data.t,
     viaId:     isWallJack ? deviceId : null,
     viaName:   isWallJack ? (dev.data.name || 'Wall Jack') : null,
-    speed:     '1G',
+    speed:     def ? def.speed : '1G',
     portLabel: 'Port ' + portNum
   };
 
-  // Draw line between switch and device
-  addPortConn(switchId, deviceId, portNum);
-
-  // Refresh panel
-  var m   = markers.find(function(x) { return x.id === switchId; });
-  var def = getSwitchDef(m ? m.data.t : '');
-  if (m && def) {
-    var panel = document.getElementById('switch-panel');
-    panel.innerHTML = buildSwitchPanelHTML(m, def);
-    panel.classList.add('show');
-  }
+  makePortConn(sw, dev, portNum, '');
 }
 
-function unmapPort(switchId, portNum) {
+function spUnmapPort(switchId, portNum) {
   var key  = switchId + '_' + portNum;
   if (!portMap[key]) return;
-  var conn = portConns.find(function(c) { return c.fromId === switchId && c.portNum === portNum; });
+  var conn = portConns.find(function(c) { return c.fromId === switchId; });
   if (conn) removePortConn(conn.id);
   delete portMap[key];
-  var m   = markers.find(function(x) { return x.id === switchId; });
-  var def = getSwitchDef(m ? m.data.t : '');
-  if (m && def) {
-    var panel = document.getElementById('switch-panel');
-    panel.innerHTML = buildSwitchPanelHTML(m, def);
-    panel.classList.add('show');
-  }
 }
 
+// ── PORT COUNT PROMPT ─────────────────────────────────────────────────────────
 function promptPortCount(markerId) {
   var m = markers.find(function(x) { return x.id === markerId; });
   if (!m) return;
   var panel = document.createElement('div');
   panel.id = 'port-count-prompt';
-  panel.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#162032;border:2px solid #5b9bd5;border-radius:14px;padding:20px;z-index:500;width:320px;font-family:JetBrains Mono,monospace;box-shadow:0 8px 40px #000c';
   var btns = [4,8,12,16,24,48].map(function(n) {
-    return '<button class="pcp-btn" data-n="' + n + '" style="background:#0d1117;border:1px solid #2c3e52;color:#dde3ec;font-family:monospace;font-size:13px;padding:10px;border-radius:8px;cursor:pointer">' + n + '</button>';
+    return '<button class="pcp-btn" data-n="' + n + '" style="background:#111922;border:1px solid #1e2d3d;color:#dde3ec;font-family:monospace;font-size:14px;padding:12px;border-radius:10px;cursor:pointer;touch-action:manipulation">' + n + '</button>';
   }).join('');
   panel.innerHTML =
-    '<div style="font-size:13px;color:#5b9bd5;font-weight:700;margin-bottom:8px">' + m.data.i + ' ' + m.data.t + '</div>' +
-    '<div style="font-size:11px;color:#7a8a9a;margin-bottom:14px">How many RJ45 ports does this device have?</div>' +
-    '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px">' + btns + '</div>' +
-    '<div style="margin-bottom:12px"><input id="pcp-custom" class="mob-field" type="number" placeholder="Custom port count..." style="width:100%"></div>' +
+    '<div style="font-size:14px;color:#5b9bd5;font-weight:700;margin-bottom:6px">' + m.data.i + ' ' + m.data.t + '</div>' +
+    '<div style="font-size:11px;color:#7a8a9a;margin-bottom:14px">How many RJ45 ports?</div>' +
+    '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px">' + btns + '</div>' +
+    '<input id="pcp-custom" type="number" placeholder="Custom..." style="width:100%;background:#111922;border:1px solid #1e2d3d;color:#f4f6f9;font-family:monospace;font-size:13px;padding:10px;border-radius:10px;margin-bottom:12px">' +
     '<div style="display:flex;gap:8px">' +
-    '<button id="pcp-confirm" style="flex:2;background:#5b9bd5;border:none;color:#fff;font-family:monospace;font-weight:700;font-size:12px;padding:10px;border-radius:8px;cursor:pointer">CONFIRM</button>' +
-    '<button id="pcp-cancel" style="background:transparent;border:1px solid #2c3e52;color:#7a8a9a;font-family:monospace;font-size:12px;padding:10px;border-radius:8px;cursor:pointer">✕</button>' +
+    '<button id="pcp-confirm" style="flex:2;background:#5b9bd5;border:none;color:#fff;font-family:monospace;font-weight:700;font-size:13px;padding:12px;border-radius:10px;cursor:pointer;touch-action:manipulation">CONFIRM</button>' +
+    '<button id="pcp-cancel" style="background:transparent;border:1px solid #1e2d3d;color:#7a8a9a;font-family:monospace;font-size:13px;padding:12px;border-radius:10px;cursor:pointer;touch-action:manipulation">✕</button>' +
     '</div>';
   document.body.appendChild(panel);
   panel._portCount = 24;
@@ -8619,23 +8547,18 @@ function promptPortCount(markerId) {
     var btn = e.target.closest('.pcp-btn');
     if (!btn) return;
     panel._portCount = parseInt(btn.dataset.n);
-    panel.querySelectorAll('.pcp-btn').forEach(function(b) { b.style.borderColor='#2c3e52'; b.style.color='#dde3ec'; });
+    panel.querySelectorAll('.pcp-btn').forEach(function(b) { b.style.borderColor='#1e2d3d'; b.style.color='#dde3ec'; });
     btn.style.borderColor = '#5b9bd5'; btn.style.color = '#5b9bd5';
   });
-  document.getElementById('pcp-confirm').addEventListener('click', function() { confirmPortCount(markerId); });
+  document.getElementById('pcp-confirm').addEventListener('click', function() {
+    var custom = document.getElementById('pcp-custom');
+    var count = (custom && custom.value) ? parseInt(custom.value) : panel._portCount;
+    if (!count || count < 1) count = 24;
+    SWITCH_DEFS[m.data.t] = {rj45:count, poe:0, sfp:0, sfpPlus:0, sfp28:0, speed:'1G', rows:count>12?2:1};
+    panel.remove();
+    openSwitchPanel(markerId);
+  });
   document.getElementById('pcp-cancel').addEventListener('click', function() { panel.remove(); });
-}
-
-function confirmPortCount(markerId) {
-  var panel = document.getElementById('port-count-prompt');
-  var m = markers.find(function(x) { return x.id === markerId; });
-  if (!m || !panel) return;
-  var custom = document.getElementById('pcp-custom');
-  var count = (custom && custom.value) ? parseInt(custom.value) : panel._portCount;
-  if (!count || count < 1) count = 24;
-  SWITCH_DEFS[m.data.t] = {rj45:count, poe:0, sfp:0, sfpPlus:0, sfp28:0, speed:'1G', rows:count>12?2:1};
-  panel.remove();
-  openSwitchPanel(markerId);
 }
 
 </script>
