@@ -227,235 +227,234 @@ select.fi{cursor:pointer}
 #ep::-webkit-scrollbar-thumb{background:#2c3e52;border-radius:2px}
 
 /* ── SWITCH PANEL ─────────────────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════
+   SWITCH PORT PANEL — UniFi-style
+═══════════════════════════════════════════════════════ */
 #switch-panel {
   position: fixed;
   bottom: 0; left: 0; right: 0;
-  background: #0a0f1a;
+  background: #111922;
   border-top: 1px solid #2c3e52;
-  z-index: 50;
+  border-radius: 20px 20px 0 0;
+  z-index: 300;
   display: none;
   flex-direction: column;
-  max-height: 60vh;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  box-shadow: 0 -4px 30px #000a;
+  max-height: 85vh;
+  box-shadow: 0 -8px 40px #000c;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
+#switch-panel.show { display: flex; }
 
+.sp-handle {
+  width: 40px; height: 4px;
+  background: #2c3e52;
+  border-radius: 2px;
+  margin: 12px auto 0;
+  flex-shrink: 0;
+}
 .sp-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 14px;
-  border-bottom: 1px solid #2c3e52;
+  padding: 12px 16px 8px;
   flex-shrink: 0;
-  background: #0d1117;
-}
-.sp-name  { font-family: 'Courier New',monospace; font-size: 14px; color: #e8e8f0; font-weight: 700; letter-spacing: 1px; }
-.sp-model { font-size: 10px; color: #7a8a9a; font-family:'JetBrains Mono',monospace; margin-top: 2px; }
-.sp-close { background: transparent; border: 1px solid #2a0010; color: #e84057; font-size: 14px; width: 32px; height: 32px; border-radius: 3px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-
-.sp-legend {
-  display: flex;
-  gap: 14px;
-  padding: 6px 14px;
-  font-size: 10px;
-  font-family:'JetBrains Mono',monospace;
   border-bottom: 1px solid #1a2535;
-  flex-wrap: wrap;
 }
-.sp-leg { color: #7a8a9a; }
-.sp-leg-connected { color: #3dd68c; }
-.sp-leg-empty     { color: #4a5e72; }
-.sp-leg-poe       { color: #f0a500; }
-.sp-leg-sfp       { color: #5b9bd5; }
+.sp-header-left { display: flex; align-items: center; gap: 10px; }
+.sp-name  { font-family: 'JetBrains Mono',monospace; font-size: 14px; color: #f4f6f9; font-weight: 700; letter-spacing: 1px; }
+.sp-model { font-size: 10px; color: #7a8a9a; font-family:'JetBrains Mono',monospace; margin-top: 2px; }
+.sp-close { background: transparent; border: 1px solid #2c3e52; color: #7a8a9a; font-size: 18px; width: 36px; height: 36px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.sp-close:active { border-color: #e84057; color: #e84057; }
 
-/* PORT GRID */
+/* Legend */
+.sp-legend {
+  display: flex; gap: 12px; padding: 8px 16px;
+  font-size: 10px; font-family: 'JetBrains Mono',monospace;
+  flex-wrap: wrap; flex-shrink: 0;
+  border-bottom: 1px solid #1a2535;
+}
+.sp-leg { display: flex; align-items: center; gap: 4px; color: #7a8a9a; }
+.sp-leg-dot { width: 8px; height: 8px; border-radius: 2px; }
+.sp-leg-connected .sp-leg-dot { background: #3dd68c; }
+.sp-leg-empty .sp-leg-dot     { background: #2c3e52; border: 1px solid #3a4e62; }
+.sp-leg-poe .sp-leg-dot       { background: #1a2535; border: 1px solid #f0a500; }
+.sp-leg-sfp .sp-leg-dot       { background: #1a2535; border: 1px solid #5b9bd5; border-radius: 1px; }
+
+/* Scrollable body */
+.sp-body {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  flex: 1;
+  padding: 12px 12px 0;
+}
+
+/* Port grid */
 .sp-grid-wrap {
   display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 14px;
-  background: #0d1117;
-  border-bottom: 1px solid #2c3e52;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  flex-shrink: 0;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 12px;
 }
-
-/* Switch body */
-.sp-row-wrap {
-  background: #111820;
-  border: 1px solid #2c3e52;
-  border-radius: 4px;
-  padding: 8px 10px;
+.sp-rj45-group {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  flex: 1;
 }
-
 .sp-row {
   display: flex;
-  gap: 3px;
-  align-items: center;
+  flex-wrap: nowrap;
+  gap: 4px;
+}
+.sp-sfp-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex-shrink: 0;
 }
 
-/* Individual port */
+/* Individual port square */
 .sp-port {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
+  justify-content: flex-end;
+  background: #1a2535;
+  border: 1.5px solid #2c3e52;
+  border-radius: 5px;
   cursor: pointer;
-  padding: 3px 2px;
-  border-radius: 3px;
-  transition: background 0.1s;
-  min-width: 28px;
+  transition: all 0.12s;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
   position: relative;
+  /* Size adapts to port count */
+  min-width: 0;
+  aspect-ratio: 0.85;
 }
-.sp-port:hover { background: #2c3e52; }
-.sp-port:active { background: #0d2a44; }
+.sp-port:active { transform: scale(0.92); }
 
-.sp-port-inner {
-  width: 22px;
-  height: 18px;
+/* Port connector hole visual */
+.sp-rj45-hole {
+  width: 60%; height: 35%;
+  background: #0a0f16;
+  border-radius: 2px 2px 0 0;
+  border: 1px solid #111822;
+  margin-bottom: 2px;
+}
+.sp-sfp-hole {
+  width: 70%; height: 40%;
+  background: #0a0f16;
   border-radius: 2px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  border: 1px solid #111822;
+  margin-bottom: 2px;
 }
-
-/* RJ45 port face */
-.sp-rj45 {
-  width: 18px;
-  height: 14px;
-  border-radius: 1px;
-  border: 2px solid currentColor;
-  position: relative;
-}
-.sp-rj45::after {
-  content: '';
-  position: absolute;
-  top: 2px; left: 50%;
-  transform: translateX(-50%);
-  width: 10px; height: 6px;
-  border-top: 1px solid currentColor;
-  border-left: 1px solid currentColor;
-  border-right: 1px solid currentColor;
-}
-
-/* SFP slot */
-.sp-sfp-slot {
-  width: 20px;
-  height: 12px;
-  background: currentColor;
-  border-radius: 1px;
-  opacity: 0.5;
-}
-
 .sp-port-num {
   font-size: 9px;
-  font-family:'JetBrains Mono',monospace;
-  color: #4a5e72;
+  font-family: 'JetBrains Mono', monospace;
   line-height: 1;
-}
-
-.sp-port-dot {
-  position: absolute;
-  top: 2px;
-  right: 2px;
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: #3dd68c;
+  padding: 1px 0 3px;
+  color: #7a8a9a;
 }
 
 /* Port states */
-.sp-port-connected    { color: #3dd68c; }
-.sp-port-connected .sp-port-num { color: #3dd68c; }
-.sp-port-poe-empty    { color: #f0a500; }
+.sp-port-empty   { background: #141c28; border-color: #2c3e52; }
+.sp-port-empty .sp-port-num { color: #4a5e72; }
+
+.sp-port-poe-empty { background: #141c28; border-color: #3d2800; }
 .sp-port-poe-empty .sp-port-num { color: #f0a500; }
-.sp-port-empty        { color: #4a5e72; }
-.sp-port-sfp          { color: #5b9bd5; }
+.sp-port-poe-empty::after { content:'⚡'; font-size:7px; position:absolute; top:2px; right:2px; color:#f0a500; }
 
-/* SFP group */
-.sp-sfp-group {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  margin-left: 8px;
-  border-left: 1px solid #2c3e52;
-  padding-left: 8px;
-}
+.sp-port-connected { background: #0d2018; border-color: #3dd68c; }
+.sp-port-connected .sp-port-num { color: #3dd68c; font-weight: 700; }
+.sp-port-connected .sp-rj45-hole,
+.sp-port-connected .sp-sfp-hole { background: #0a1f14; border-color: #1a3d28; }
 
-/* PORT TABLE */
+.sp-port-connected-poe { background: #0d2018; border-color: #3dd68c; }
+.sp-port-connected-poe .sp-port-num { color: #3dd68c; font-weight: 700; }
+.sp-port-connected-poe::after { content:'⚡'; font-size:7px; position:absolute; top:2px; right:2px; color:#3dd68c; }
+
+.sp-port-sfp { border-radius: 4px; }
+.sp-port-sfp.sp-port-empty { border-color: #2c4060; }
+.sp-port-sfp .sp-port-num { color: #5b9bd5; }
+
+.sp-port-selected { border-color: #5b9bd5 !important; background: #0d1a2e !important; box-shadow: 0 0 0 2px #5b9bd533; }
+
+/* Port detail list */
 .sp-table-wrap {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  padding: 0 4px 8px;
+  border-top: 1px solid #1a2535;
+  padding-top: 8px;
+  margin-bottom: 16px;
 }
-
 .sp-table {
   width: 100%;
   border-collapse: collapse;
+  font-family: 'JetBrains Mono', monospace;
   font-size: 11px;
-  font-family:'JetBrains Mono',monospace;
-}
-.sp-table thead tr {
-  background: #0d1117;
-  border-bottom: 1px solid #2c3e52;
 }
 .sp-table th {
-  padding: 6px 10px;
-  text-align: left;
-  font-size: 9px;
   color: #4a5e72;
+  font-size: 9px;
   letter-spacing: 1px;
-  font-weight: 700;
-  white-space: nowrap;
+  text-align: left;
+  padding: 4px 6px;
+  border-bottom: 1px solid #1a2535;
 }
 .sp-table td {
-  padding: 6px 10px;
-  color: #6a8a9a;
-  border-bottom: 1px solid #0a1218;
-  white-space: nowrap;
-}
-.sp-row-tr:active { background: #0a1520; }
-.sp-row-connected td { background: #3dd68c08; }
-
-.sp-port-badge {
-  display: inline-block;
-  background: #0f1a24;
-  border: 1px solid #2c3e52;
+  padding: 7px 6px;
+  border-bottom: 1px solid #0d1320;
   color: #7a8a9a;
-  font-size: 10px;
-  padding: 1px 6px;
-  border-radius: 2px;
-  min-width: 24px;
-  text-align: center;
+  vertical-align: middle;
+}
+.sp-row-connected td { background: #3dd68c08; }
+.sp-port-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 26px; height: 20px;
+  background: #1a2535; border: 1px solid #2c3e52;
+  border-radius: 4px; font-size: 10px; color: #7a8a9a;
 }
 .sp-port-badge.poe { border-color: #3d2800; color: #f0a500; }
-
+.sp-port-badge.connected { border-color: #3dd68c; color: #3dd68c; background: #0d2018; }
 .sp-unmap {
-  background: transparent;
-  border: 1px solid #2a0010;
-  color: #e84057;
-  font-size: 10px;
-  padding: 2px 6px;
-  border-radius: 2px;
-  cursor: pointer;
+  background: transparent; border: 1px solid #2a0010;
+  color: #e84057; font-size: 11px; padding: 2px 6px;
+  border-radius: 3px; cursor: pointer;
 }
 
+/* Device picker sheet that slides over */
+#sp-picker {
+  position: absolute;
+  inset: 0;
+  background: #111922;
+  border-radius: 20px 20px 0 0;
+  z-index: 10;
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+}
+#sp-picker.show { display: flex; }
+.sp-picker-header {
+  display: flex; align-items: center; gap: 10px;
+  padding: 14px 16px;
+  border-bottom: 1px solid #1a2535;
+  flex-shrink: 0;
+}
+.sp-picker-title { font-family:'JetBrains Mono',monospace; font-size:13px; color:#5b9bd5; font-weight:700; flex:1; }
+.sp-picker-list { overflow-y:auto; flex:1; padding: 8px 0; }
+.sp-picker-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px;
+  cursor: pointer;
+  border-bottom: 1px solid #0d1320;
+  touch-action: manipulation;
+}
+.sp-picker-item:active { background: #1a2535; }
+.sp-picker-item.disabled { opacity: 0.4; cursor: default; }
+.sp-picker-icon { font-size: 20px; flex-shrink: 0; }
+.sp-picker-name { font-family:'JetBrains Mono',monospace; font-size:12px; color:#f4f6f9; font-weight:700; }
+.sp-picker-sub  { font-size:10px; color:#7a8a9a; font-family:'JetBrains Mono',monospace; margin-top:2px; }
+.sp-picker-badge { font-size:10px; color:#3dd68c; font-family:'JetBrains Mono',monospace; margin-left:auto; }
 
 
-html.is-mobile-html #header   { display: none !important; }
-html.is-mobile-html #footer   { display: none !important; }
-html.is-mobile-html #sb       { display: none !important; }
-html.is-mobile-html #ep       { display: none !important; }
-html.is-mobile-html #ctrl-hint{ display: none !important; }
-html.is-mobile-html #mob-bar  { display: flex !important; }
-html.is-mobile-html #mob-toolbar { display: flex !important; }
-html.is-mobile-html #workspace { margin-top: 52px !important; margin-bottom: 72px !important; }
-html.is-mobile-html #vp       { width: 100% !important; }
 </style>
 <script>
 // Set mobile class IMMEDIATELY before page renders - no flash of wrong layout
@@ -1176,7 +1175,7 @@ body.is-mobile #vp { width: 100% !important; }
 <div id="switch-panel"></div>
 
 <!-- TOOLTIP (desktop hover) -->
-<div id="tip">
+<div id="tip" onmouseenter="this.dataset.pinned='1'" onmouseleave="this.dataset.pinned='0';hideTip()">
   <div class="t-name" id="t-name"></div>
   <div class="t-type" id="t-type"></div>
   <div class="t-row"><span class="t-key">IP</span>    <span class="t-val" id="t-ip">—</span></div>
@@ -6767,333 +6766,242 @@ function applyViewMode() {
 // ── DEVICE SHAPE DEFINITIONS ──────────────────────────────────────────────────
 // Returns {mesh, extraMeshes[]} for each device type
 function makeDeviceShape(pos, data) {
-  var t    = (data.t || '').toLowerCase();
-  var col  = data.hl ? 0xf0a500 : devCol(data);
+  var t     = (data.t || '').toLowerCase();
+  var col   = data.hl ? 0xf0a500 : devCol(data);
   var group = new THREE.Group();
   group.position.set(pos.x, pos.y, pos.z);
   group.userData.markerId = '';
 
-  var isPoE = t.indexOf('poe') >= 0 || t.indexOf('udm') >= 0 || t.indexOf('usg') >= 0;
-
+  var isPoE = t.indexOf('poe') >= 0 || t.indexOf('udm-se') >= 0;
   var mesh;
 
+  // ── Real-world scaled dimensions (world units, 1wu = 0.841m) ──────────────
   try {
-  if (t.indexOf('usw') >= 0 || t.indexOf('switch') >= 0 || t.indexOf('patch') >= 0) {
-    var w = t.indexOf('48') >= 0 ? 0.9 : t.indexOf('24') >= 0 ? 0.7 : 0.5;
-    var geo = new THREE.BoxGeometry(w, 0.08, 0.3);
-    var mat = new THREE.MeshLambertMaterial({color: devCol(data)});
-    mesh = new THREE.Mesh(geo, mat);
-    mesh.position.y = 0.08;
+
+  if (t.indexOf('usw') >= 0 || t.indexOf('switch') >= 0) {
+    // Rack-mount switch: 19" wide, 1U tall
+    var sw = t.indexOf('48') >= 0 ? 0.52 : t.indexOf('24') >= 0 ? 0.52 : t.indexOf('16') >= 0 ? 0.52 : t.indexOf('flex-mini') >= 0 ? 0.12 : t.indexOf('flex') >= 0 ? 0.12 : 0.52;
+    var sd = t.indexOf('flex') >= 0 ? 0.12 : 0.27;
+    var geo = new THREE.BoxGeometry(sw, 0.044, sd);
+    mesh = new THREE.Mesh(geo, new THREE.MeshLambertMaterial({color: devCol(data)}));
+    mesh.position.y = 0.022;
     group.add(mesh);
-    // Front panel strip
-    var panel = new THREE.Mesh(
-      new THREE.BoxGeometry(w - 0.02, 0.05, 0.02),
-      new THREE.MeshLambertMaterial({color: 0x162d4a})
-    );
-    panel.position.set(0, 0.08, 0.15);
-    group.add(panel);
-    // Port dots on front
-    var portCount = t.indexOf('48') >= 0 ? 12 : t.indexOf('24') >= 0 ? 8 : 4;
-    for (var pi = 0; pi < portCount; pi++) {
-      var px = -w/2 + 0.06 + pi * ((w-0.08)/portCount);
-      var portDot = new THREE.Mesh(
-        new THREE.BoxGeometry(0.025, 0.02, 0.005),
-        new THREE.MeshLambertMaterial({color: isPoE ? 0x003322 : 0x1a2535})
-      );
-      portDot.position.set(px, 0.08, 0.16);
-      group.add(portDot);
+    // Front panel
+    var fp = new THREE.Mesh(new THREE.BoxGeometry(sw-0.01, 0.036, 0.01), new THREE.MeshLambertMaterial({color: 0x0d1a2e}));
+    fp.position.set(0, 0.022, sd/2);
+    group.add(fp);
+    // Port dots - count based on model
+    var pc = t.indexOf('48') >= 0 ? 12 : t.indexOf('24') >= 0 ? 8 : t.indexOf('16') >= 0 ? 6 : 4;
+    for (var pi = 0; pi < pc; pi++) {
+      var px = -sw/2 + 0.03 + pi * ((sw-0.05)/pc);
+      var pd = new THREE.Mesh(new THREE.BoxGeometry(0.016, 0.012, 0.004), new THREE.MeshLambertMaterial({color: isPoE ? 0x003322 : 0x1a2535}));
+      pd.position.set(px, 0.022, sd/2+0.005);
+      group.add(pd);
     }
-    // PoE indicator — green strip
     if (isPoE) {
-      var poeBadge = new THREE.Mesh(
-        new THREE.BoxGeometry(w - 0.1, 0.01, 0.01),
-        new THREE.MeshBasicMaterial({color: 0x00ff44})
-      );
-      poeBadge.position.set(0, 0.125, 0.15);
-      group.add(poeBadge);
+      var pg = new THREE.Mesh(new THREE.BoxGeometry(sw-0.06, 0.005, 0.004), new THREE.MeshBasicMaterial({color:0x00ff44}));
+      pg.position.set(0, 0.044, sd/2+0.005);
+      group.add(pg);
     }
 
-  // ── GATEWAYS / UDM / ROUTERS ───────────────────────────────────────────────
-  } else if (t.indexOf('udm') >= 0 || t.indexOf('uxg') >= 0 || t.indexOf('ucg') >= 0 || t.indexOf('router') >= 0 || t.indexOf('gateway') >= 0 || t.indexOf('ux7') >= 0) {
-    var geo = new THREE.BoxGeometry(0.5, 0.18, 0.35);
-    var mat = new THREE.MeshLambertMaterial({color: 0x0d1a2e});
-    mesh = new THREE.Mesh(geo, mat);
-    mesh.position.y = 0.09;
+  } else if (t.indexOf('patch') >= 0) {
+    // Patch panel 1U 19"
+    var pp = t.indexOf('48') >= 0 ? 0.52 : 0.52;
+    mesh = new THREE.Mesh(new THREE.BoxGeometry(pp, 0.044, 0.17), new THREE.MeshLambertMaterial({color: 0x1a1a2e}));
+    mesh.position.y = 0.022;
     group.add(mesh);
-    // Top logo circle
-    var logo = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.06, 0.06, 0.01, 16),
-      new THREE.MeshBasicMaterial({color: 0x5b9bd5})
-    );
-    logo.position.set(0, 0.185, 0);
+    // Port holes
+    var phc = t.indexOf('48') >= 0 ? 12 : 8;
+    for (var phi = 0; phi < phc; phi++) {
+      var phx = -pp/2 + 0.03 + phi * ((pp-0.05)/phc);
+      var ph = new THREE.Mesh(new THREE.BoxGeometry(0.018, 0.012, 0.005), new THREE.MeshLambertMaterial({color: 0xf0a500}));
+      ph.position.set(phx, 0.022, 0.088);
+      group.add(ph);
+    }
+
+  } else if (t.indexOf('udm') >= 0 || t.indexOf('uxg') >= 0 || t.indexOf('ucg') >= 0 || t.indexOf('udr') >= 0 || t.indexOf('ux7') >= 0) {
+    // UniFi gateways — rack mount or desktop
+    var rack = t.indexOf('udm-pro') >= 0 || t.indexOf('uxg') >= 0 || t.indexOf('ucg') >= 0;
+    if (rack) {
+      mesh = new THREE.Mesh(new THREE.BoxGeometry(0.52, 0.088, 0.27), new THREE.MeshLambertMaterial({color:0x0d1a2e}));
+      mesh.position.y = 0.044;
+    } else {
+      mesh = new THREE.Mesh(new THREE.BoxGeometry(0.19, 0.17, 0.19), new THREE.MeshLambertMaterial({color:0x0d1a2e}));
+      mesh.position.y = 0.085;
+    }
+    group.add(mesh);
+    var logo = new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.03,0.008,16), new THREE.MeshBasicMaterial({color:0x5b9bd5}));
+    logo.position.set(0, rack ? 0.093 : 0.175, 0);
     group.add(logo);
 
-  // ── FIREWALL ────────────────────────────────────────────────────────────────
   } else if (t.indexOf('firewall') >= 0 || t.indexOf('efg') >= 0) {
-    var geo = new THREE.BoxGeometry(0.55, 0.1, 0.3);
-    var mat = new THREE.MeshLambertMaterial({color: 0x3a0010});
-    mesh = new THREE.Mesh(geo, mat);
-    mesh.position.y = 0.05;
+    mesh = new THREE.Mesh(new THREE.BoxGeometry(0.52, 0.044, 0.27), new THREE.MeshLambertMaterial({color:0x3a0010}));
+    mesh.position.y = 0.022;
     group.add(mesh);
-    var ridge = new THREE.Mesh(
-      new THREE.BoxGeometry(0.45, 0.03, 0.02),
-      new THREE.MeshLambertMaterial({color: 0xe84057})
-    );
-    ridge.position.set(0, 0.115, 0.14);
+    var ridge = new THREE.Mesh(new THREE.BoxGeometry(0.44, 0.012, 0.008), new THREE.MeshLambertMaterial({color:0xe84057}));
+    ridge.position.set(0, 0.05, 0.138);
     group.add(ridge);
 
-  // ── ACCESS POINTS (dome disc) ───────────────────────────────────────────────
-  } else if (t.indexOf('u7') >= 0 || t.indexOf('u6') >= 0 || t.indexOf('uap') >= 0 || t.indexOf('ap') >= 0) {
-    // Main disc body
-    var geo = new THREE.CylinderGeometry(0.22, 0.2, 0.04, 24);
-    var mat = new THREE.MeshLambertMaterial({color: 0xf0f0f0});
-    mesh = new THREE.Mesh(geo, mat);
-    mesh.position.y = 0.04;
+  } else if (t.indexOf('u7') >= 0 || t.indexOf('u6') >= 0 || t.indexOf('uap') >= 0 || (t.indexOf('ap') >= 0 && t.indexOf('cap') < 0)) {
+    // AP disc — 6.3" diameter, 1.3" tall
+    mesh = new THREE.Mesh(new THREE.CylinderGeometry(0.095, 0.085, 0.033, 32), new THREE.MeshLambertMaterial({color:0xf0f0f0}));
+    mesh.position.y = 0.0165;
     group.add(mesh);
-    // Centre dome
-    var dome = new THREE.Mesh(
-      new THREE.SphereGeometry(0.06, 16, 8, 0, Math.PI*2, 0, Math.PI/2),
-      new THREE.MeshLambertMaterial({color: 0x5b9bd5})
-    );
-    dome.position.y = 0.06;
+    var dome = new THREE.Mesh(new THREE.SphereGeometry(0.03, 16, 8, 0, Math.PI*2, 0, Math.PI/2), new THREE.MeshLambertMaterial({color:0x5b9bd5}));
+    dome.position.y = 0.033;
     group.add(dome);
-    // LED ring
-    var led = new THREE.Mesh(
-      new THREE.TorusGeometry(0.1, 0.008, 8, 32),
-      new THREE.MeshBasicMaterial({color: 0x00aaff})
-    );
+    var led = new THREE.Mesh(new THREE.TorusGeometry(0.05, 0.004, 8, 32), new THREE.MeshBasicMaterial({color:0x00aaff}));
     led.rotation.x = Math.PI/2;
-    led.position.y = 0.04;
+    led.position.y = 0.017;
     group.add(led);
 
-  // ── CAMERAS (cylinder) ─────────────────────────────────────────────────────
-  } else if (t.indexOf('camera') >= 0 || t.indexOf('g5') >= 0 || t.indexOf('g6') >= 0 || t.indexOf('ai-') >= 0) {
-    var geo = new THREE.CylinderGeometry(0.07, 0.09, 0.14, 12);
-    var mat = new THREE.MeshLambertMaterial({color: 0x111111});
-    mesh = new THREE.Mesh(geo, mat);
-    mesh.position.y = 0.1;
+  } else if (t.indexOf('camera') >= 0 || t.indexOf('g5') >= 0 || t.indexOf('g6') >= 0 || t.indexOf('ai-ptz') >= 0) {
+    // Dome camera — 5" dome
+    mesh = new THREE.Mesh(new THREE.CylinderGeometry(0.065, 0.078, 0.077, 20), new THREE.MeshLambertMaterial({color:0x111111}));
+    mesh.position.y = 0.039;
     group.add(mesh);
-    // Lens
-    var lens = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.04, 0.04, 0.02, 12),
-      new THREE.MeshLambertMaterial({color: 0x3dd68c})
-    );
-    lens.position.set(0.05, 0.1, 0);
+    var lens = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.022, 0.015, 12), new THREE.MeshLambertMaterial({color:0x00ccff}));
+    lens.position.y = 0.084;
     group.add(lens);
 
-  // ── WALL JACK (thin flat square) ────────────────────────────────────────────
   } else if (t.indexOf('wall jack') >= 0 || t.indexOf('keystone') >= 0) {
-    var geo = new THREE.BoxGeometry(0.12, 0.03, 0.12);
-    var mat = new THREE.MeshLambertMaterial({color: 0xf0a500});
-    mesh = new THREE.Mesh(geo, mat);
-    mesh.position.y = 0.015;
+    // Standard keystone wall jack ~2.75" square
+    mesh = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.008, 0.07), new THREE.MeshLambertMaterial({color:0xe84057}));
+    mesh.position.y = 0.004;
     group.add(mesh);
-    // Port hole
-    var hole = new THREE.Mesh(
-      new THREE.BoxGeometry(0.04, 0.025, 0.035),
-      new THREE.MeshLambertMaterial({color: 0x1a1a1a})
-    );
-    hole.position.set(0, 0.02, 0);
+    var hole = new THREE.Mesh(new THREE.BoxGeometry(0.025, 0.007, 0.018), new THREE.MeshLambertMaterial({color:0x1a1a1a}));
+    hole.position.y = 0.005;
     group.add(hole);
 
-  // ── NVR / SERVER RACK ──────────────────────────────────────────────────────
+  } else if (t.indexOf('ont') >= 0) {
+    // Telus ONT — small box ~5.5" x 1.5" x 4"
+    mesh = new THREE.Mesh(new THREE.BoxGeometry(0.17, 0.05, 0.12), new THREE.MeshLambertMaterial({color:0x00a651}));
+    mesh.position.y = 0.025;
+    group.add(mesh);
+    var ontLed = new THREE.Mesh(new THREE.SphereGeometry(0.008, 8, 8), new THREE.MeshBasicMaterial({color:0x00ff44}));
+    ontLed.position.set(0.07, 0.055, 0);
+    group.add(ontLed);
+
+  } else if (t.indexOf('telus') >= 0 || t.indexOf('router') >= 0 || t.indexOf('gateway') >= 0) {
+    // Telus Router / generic router
+    mesh = new THREE.Mesh(new THREE.BoxGeometry(0.23, 0.055, 0.17), new THREE.MeshLambertMaterial({color: t.indexOf('telus') >= 0 ? 0x00a651 : 0x2c5f8a}));
+    mesh.position.y = 0.028;
+    group.add(mesh);
+
   } else if (t.indexOf('nvr') >= 0 || t.indexOf('dvr') >= 0 || t.indexOf('unvr') >= 0) {
-    var geo = new THREE.BoxGeometry(0.3, 0.22, 0.25);
-    var mat = new THREE.MeshLambertMaterial({color: 0x111111});
-    mesh = new THREE.Mesh(geo, mat);
-    mesh.position.y = 0.11;
+    mesh = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.175, 0.22), new THREE.MeshLambertMaterial({color:0x111111}));
+    mesh.position.y = 0.088;
     group.add(mesh);
-    for (var di = 0; di < 4; di++) {
-      var disk = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.05, 0.05, 0.02, 12),
-        new THREE.MeshLambertMaterial({color: di < 3 ? 0x3dd68c : 0x333333})
-      );
-      disk.rotation.z = Math.PI/2;
-      disk.position.set(-0.08 + di*0.055, 0.15, 0.13);
-      group.add(disk);
+    for (var ni = 0; ni < 4; ni++) {
+      var nd = new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.03,0.01,12), new THREE.MeshLambertMaterial({color:ni<3?0x3dd68c:0x333333}));
+      nd.rotation.z = Math.PI/2;
+      nd.position.set(-0.06+ni*0.04, 0.15, 0.115);
+      group.add(nd);
     }
 
-  // ── RACK SERVER ────────────────────────────────────────────────────────────
   } else if (t.indexOf('server') >= 0 || t.indexOf('rack') >= 0) {
-    var geo = new THREE.BoxGeometry(0.7, 0.12, 0.35);
-    var mat = new THREE.MeshLambertMaterial({color: 0x1a1a1a});
-    mesh = new THREE.Mesh(geo, mat);
-    mesh.position.y = 0.06;
+    // 1U rack server 19" x 1.75" x 9"
+    mesh = new THREE.Mesh(new THREE.BoxGeometry(0.52, 0.044, 0.23), new THREE.MeshLambertMaterial({color:0x1a1a1a}));
+    mesh.position.y = 0.022;
     group.add(mesh);
-    // Status LEDs
     for (var li = 0; li < 4; li++) {
-      var led2 = new THREE.Mesh(
-        new THREE.SphereGeometry(0.008, 8, 8),
-        new THREE.MeshBasicMaterial({color: li === 0 ? 0x3dd68c : li === 1 ? 0x3dd68c : 0x333333})
-      );
-      led2.position.set(-0.3 + li*0.02, 0.07, 0.175);
-      group.add(led2);
+      var sl = new THREE.Mesh(new THREE.SphereGeometry(0.005,8,8), new THREE.MeshBasicMaterial({color:li<2?0x3dd68c:0x333333}));
+      sl.position.set(-0.24+li*0.015, 0.022, 0.116);
+      group.add(sl);
     }
 
-  // ── NAS ────────────────────────────────────────────────────────────────────
-  } else if (t.indexOf('nas') >= 0 || t.indexOf('unas') >= 0) {
-    var geo = new THREE.BoxGeometry(0.2, 0.28, 0.25);
-    var mat = new THREE.MeshLambertMaterial({color: 0x111111});
-    mesh = new THREE.Mesh(geo, mat);
-    mesh.position.y = 0.14;
+  } else if (t.indexOf('nas') >= 0) {
+    mesh = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.21, 0.23), new THREE.MeshLambertMaterial({color:0x111111}));
+    mesh.position.y = 0.105;
     group.add(mesh);
-    for (var ni = 0; ni < 3; ni++) {
-      var bay = new THREE.Mesh(
-        new THREE.BoxGeometry(0.16, 0.06, 0.02),
-        new THREE.MeshLambertMaterial({color: 0x222222})
-      );
-      bay.position.set(0, 0.22 - ni*0.08, 0.13);
+    for (var bi = 0; bi < 3; bi++) {
+      var bay = new THREE.Mesh(new THREE.BoxGeometry(0.13, 0.048, 0.01), new THREE.MeshLambertMaterial({color:0x222222}));
+      bay.position.set(0, 0.175-bi*0.06, 0.116);
       group.add(bay);
     }
 
-  // ── UPS ────────────────────────────────────────────────────────────────────
   } else if (t.indexOf('ups') >= 0) {
-    var geo = new THREE.BoxGeometry(0.35, 0.22, 0.2);
-    var mat = new THREE.MeshLambertMaterial({color: 0x111111});
-    mesh = new THREE.Mesh(geo, mat);
+    mesh = new THREE.Mesh(new THREE.BoxGeometry(0.10, 0.15, 0.34), new THREE.MeshLambertMaterial({color:0x111111}));
+    mesh.position.y = 0.075;
+    group.add(mesh);
+    var bb = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.02, 0.005), new THREE.MeshBasicMaterial({color:0x00cc66}));
+    bb.position.set(0, 0.13, 0.172);
+    group.add(bb);
+
+  } else if (t.indexOf('desktop') >= 0 || t.indexOf('thin client') >= 0) {
+    // Mid-tower: 6.9" x 15" x 15.7"
+    mesh = new THREE.Mesh(new THREE.BoxGeometry(0.21, 0.38, 0.40), new THREE.MeshLambertMaterial({color:0x222222}));
+    mesh.position.y = 0.19;
+    group.add(mesh);
+
+  } else if (t.indexOf('laptop') >= 0) {
+    // 14" laptop: 12.6" x 0.7" x 8.7"
+    var lb = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.018, 0.22), new THREE.MeshLambertMaterial({color:0xf0c040}));
+    lb.position.y = 0.009;
+    group.add(lb);
+    mesh = lb;
+    var ll = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.20, 0.012), new THREE.MeshLambertMaterial({color:0xd4a820}));
+    ll.position.set(0, 0.11, -0.106);
+    ll.rotation.x = -Math.PI * 0.12;
+    group.add(ll);
+    var ls = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.17, 0.005), new THREE.MeshLambertMaterial({color:0x111111}));
+    ls.position.set(0, 0.11, -0.1);
+    ls.rotation.x = -Math.PI * 0.12;
+    group.add(ls);
+
+  } else if (t.indexOf('printer') >= 0 || t.indexOf('mfp') >= 0 || t.indexOf('copier') >= 0) {
+    mesh = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.22, 0.40), new THREE.MeshLambertMaterial({color:0x222222}));
     mesh.position.y = 0.11;
     group.add(mesh);
-    var battBar = new THREE.Mesh(
-      new THREE.BoxGeometry(0.25, 0.04, 0.01),
-      new THREE.MeshBasicMaterial({color: 0xf0a500})
-    );
-    battBar.position.set(0, 0.16, 0.105);
-    group.add(battBar);
-
-  // ── DESKTOP PC ─────────────────────────────────────────────────────────────
-  } else if (t.indexOf('desktop') >= 0 || t.indexOf('thin client') >= 0) {
-    var geo = new THREE.BoxGeometry(0.16, 0.3, 0.3);
-    var mat = new THREE.MeshLambertMaterial({color: 0x222222});
-    mesh = new THREE.Mesh(geo, mat);
-    mesh.position.y = 0.15;
-    group.add(mesh);
-
-  // ── LAPTOP ─────────────────────────────────────────────────────────────────
-  } else if (t.indexOf('laptop') >= 0) {
-    var base = new THREE.Mesh(
-      new THREE.BoxGeometry(0.28, 0.02, 0.2),
-      new THREE.MeshLambertMaterial({color: 0x888888})
-    );
-    base.position.y = 0.01;
-    group.add(base);
-    mesh = base;
-    var lid = new THREE.Mesh(
-      new THREE.BoxGeometry(0.28, 0.18, 0.015),
-      new THREE.MeshLambertMaterial({color: 0x888888})
-    );
-    lid.position.set(0, 0.1, -0.09);
-    lid.rotation.x = -Math.PI * 0.15;
-    group.add(lid);
-    var screen = new THREE.Mesh(
-      new THREE.BoxGeometry(0.24, 0.15, 0.005),
-      new THREE.MeshLambertMaterial({color: 0x111111})
-    );
-    screen.position.set(0, 0.1, -0.082);
-    screen.rotation.x = -Math.PI * 0.15;
-    group.add(screen);
-
-  // ── PRINTER / MFP ──────────────────────────────────────────────────────────
-  } else if (t.indexOf('printer') >= 0 || t.indexOf('mfp') >= 0 || t.indexOf('copier') >= 0) {
-    var geo = new THREE.BoxGeometry(0.4, 0.25, 0.35);
-    var mat = new THREE.MeshLambertMaterial({color: 0xdddddd});
-    mesh = new THREE.Mesh(geo, mat);
-    mesh.position.y = 0.125;
-    group.add(mesh);
-    var tray = new THREE.Mesh(
-      new THREE.BoxGeometry(0.35, 0.02, 0.15),
-      new THREE.MeshLambertMaterial({color: 0xcccccc})
-    );
-    tray.position.set(0, 0.01, 0.22);
+    var tray = new THREE.Mesh(new THREE.BoxGeometry(0.40, 0.01, 0.18), new THREE.MeshLambertMaterial({color:0x333333}));
+    tray.position.set(0, 0.005, 0.22);
     group.add(tray);
 
-  // ── VOIP PHONE ─────────────────────────────────────────────────────────────
-  } else if (t.indexOf('voip') >= 0 || t.indexOf('phone') >= 0 || t.indexOf('uvp') >= 0) {
-    var base2 = new THREE.Mesh(
-      new THREE.BoxGeometry(0.18, 0.03, 0.22),
-      new THREE.MeshLambertMaterial({color: 0x222222})
-    );
-    base2.position.y = 0.015;
-    group.add(base2);
-    mesh = base2;
-    var phoneScreen = new THREE.Mesh(
-      new THREE.BoxGeometry(0.1, 0.06, 0.08),
-      new THREE.MeshLambertMaterial({color: 0x111133})
-    );
-    phoneScreen.position.set(0.02, 0.06, -0.04);
-    phoneScreen.rotation.x = -Math.PI * 0.2;
-    group.add(phoneScreen);
-    var handset = new THREE.Mesh(
-      new THREE.BoxGeometry(0.06, 0.02, 0.18),
-      new THREE.MeshLambertMaterial({color: 0x111111})
-    );
-    handset.position.set(-0.05, 0.04, 0.01);
-    group.add(handset);
+  } else if (t.indexOf('voip') >= 0 || t.indexOf('phone') >= 0) {
+    var vb = new THREE.Mesh(new THREE.BoxGeometry(0.21, 0.04, 0.26), new THREE.MeshLambertMaterial({color:0x111111}));
+    vb.position.y = 0.02;
+    group.add(vb);
+    mesh = vb;
+    var vs = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.055, 0.09), new THREE.MeshLambertMaterial({color:0x111133}));
+    vs.position.set(0.02, 0.07, -0.05);
+    vs.rotation.x = -Math.PI * 0.2;
+    group.add(vs);
 
-  // ── TELUS ONT ──────────────────────────────────────────────────────────────
-  } else if (t.indexOf('ont') >= 0) {
-    var geo = new THREE.BoxGeometry(0.2, 0.06, 0.14);
-    var mat = new THREE.MeshLambertMaterial({color: 0x00a651});
-    mesh = new THREE.Mesh(geo, mat);
-    mesh.position.y = 0.03;
-    group.add(mesh);
-    var ontLed = new THREE.Mesh(
-      new THREE.SphereGeometry(0.015, 8, 8),
-      new THREE.MeshBasicMaterial({color: 0x00ff44})
-    );
-    ontLed.position.set(0.08, 0.06, 0);
-    group.add(ontLed);
-
-  // ── TELUS ROUTER ───────────────────────────────────────────────────────────
-  } else if (t.indexOf('telus') >= 0) {
-    var geo = new THREE.BoxGeometry(0.22, 0.08, 0.16);
-    var mat = new THREE.MeshLambertMaterial({color: 0x00a651});
-    mesh = new THREE.Mesh(geo, mat);
+  } else {
+    // Clean grey box fallback
+    mesh = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.08, 0.12), new THREE.MeshLambertMaterial({color:0x2c3e52}));
     mesh.position.y = 0.04;
     group.add(mesh);
+  }
 
-  // ── DEFAULT FALLBACK — clean grey box, no glowing balls ───────────────────
-  } else {
-    var geo = new THREE.BoxGeometry(0.18, 0.1, 0.14);
-    var mat = new THREE.MeshLambertMaterial({color: 0x2c3e52});
-    mesh = new THREE.Mesh(geo, mat);
-    mesh.position.y = 0.05;
+  } catch(e) {
+    mesh = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.08, 0.12), new THREE.MeshLambertMaterial({color:0x2c3e52}));
+    mesh.position.y = 0.04;
     group.add(mesh);
   }
 
-  } catch(shapeErr) {
-    console.warn("Shape error:", shapeErr);
-    mesh = new THREE.Mesh(new THREE.BoxGeometry(0.18,0.1,0.14), new THREE.MeshLambertMaterial({color:0x2c3e52}));
-    mesh.position.y = 0.05; group.add(mesh);
-  }
-
-
-  // Ensure mesh exists - use clean box, never a sphere
   if (!mesh) {
-    mesh = new THREE.Mesh(
-      new THREE.BoxGeometry(0.18, 0.1, 0.14),
-      new THREE.MeshLambertMaterial({color: 0x2c3e52})
-    );
-    mesh.position.y = 0.05;
+    mesh = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.08, 0.12), new THREE.MeshLambertMaterial({color:0x2c3e52}));
+    mesh.position.y = 0.04;
     group.add(mesh);
   }
 
-
-  // ── PoE INDICATOR — small flat green disc ─────────────────────────────────
+  // PoE indicator — small green disc above device
   if (isPoE) {
-    var boltMat = new THREE.MeshBasicMaterial({color: 0x00ee44, side: THREE.DoubleSide});
-    var boltGeo = new THREE.CircleGeometry(0.05, 6);
-    var bolt    = new THREE.Mesh(boltGeo, boltMat);
-    bolt.rotation.x = -Math.PI / 2;
+    var pm = new THREE.MeshBasicMaterial({color:0x00ee44, side:THREE.DoubleSide});
+    var pGeo = new THREE.CircleGeometry(0.025, 6);
+    var pDisc = new THREE.Mesh(pGeo, pm);
+    pDisc.rotation.x = -Math.PI/2;
     var bb2 = new THREE.Box3().setFromObject(group);
-    bolt.position.set(0, bb2.max.y + 0.02, 0);
-    group.add(bolt);
+    pDisc.position.set(0, bb2.max.y + 0.01, 0);
+    group.add(pDisc);
   }
 
-  // ── SELECTION RING ─────────────────────────────────────────────────────────
-  var rMat = new THREE.MeshBasicMaterial({color: col, side: THREE.DoubleSide, transparent: true, opacity: 0.6});
-  var ring  = new THREE.Mesh(new THREE.RingGeometry(0.22, 0.28, 32), rMat);
+  // Selection ring — small, same size regardless of device
+  var rMat = new THREE.MeshBasicMaterial({color: col, side:THREE.DoubleSide, transparent:true, opacity:0.5});
+  var ring  = new THREE.Mesh(new THREE.RingGeometry(0.05, 0.07, 24), rMat);
   ring.rotation.x = -Math.PI / 2;
-  ring.position.y = 0.01;
+  ring.position.y = 0.002;
   group.add(ring);
 
   scene.add(group);
@@ -7150,13 +7058,18 @@ function makeMarker(pos, data) {
   var mesh   = shaped.mesh;
   var ring   = shaped.ring;
 
-  // Tag all meshes in group with markerId for raycasting
+  // Only the ring is the hit target — tiny, accurate, non-overlapping
+  // All other meshes have raycasting disabled
   group.traverse(function(child) {
-    if (child.isMesh || child.isLine) child.userData.markerId = id;
+    if (child.isMesh || child.isLine) {
+      child.userData.markerId = id;
+      child.raycast = function(){}; // disable raycasting on shape meshes
+    }
   });
+  // Re-enable ONLY on the ring (small flat disc at base)
+  ring.raycast = THREE.Mesh.prototype.raycast;
+  ring.userData.markerId = id;
   group.userData.markerId = id;
-  mesh.userData.markerId  = id;
-  ring.userData.markerId  = id;
 
   // Stem line
   var stemGeo = new THREE.BufferGeometry().setFromPoints([
@@ -7249,25 +7162,18 @@ function placeDev(worldPt) {
   }, 150);
 }
 
-// Prompt networking device for name + ports on placement
+// Prompt networking device for name inline (no prompt() blocking)
 function promptNetworkDevice(markerId) {
   var m = markers.find(function(x) { return x.id === markerId; }); if (!m) return;
-  var def  = getPortDef(m.data.t);
-  var name = prompt(
-    'Name this ' + m.data.t + ':\n(e.g. SW-MAIN-01, OFFICE-SWITCH)', ''
-  ) || '';
-  if (name) m.data.name = name;
-  if (def) {
-    // Store port data — initialise port map for this device
-    m.data.ports = def;
-    m.data.portCount = def.rj45 + def.sfp + def.sfpPlus + def.sfp28;
-    var portInfo = def.rj45 + ' RJ45' +
-      (def.poe > 0 ? ' (' + def.poe + ' PoE⚡)' : '') +
-      (def.sfpPlus > 0 ? ', ' + def.sfpPlus + ' SFP+' : '') +
-      (def.sfp > 0 ? ', ' + def.sfp + ' SFP' : '');
-    setBadge((name || m.data.t) + ' — ' + portInfo);
+  // Just open the edit card — user can name it there
+  if (isMobile) {
+    openMobEdit(markerId);
+  } else {
+    selectMarker(markerId);
+    // Open the switch panel directly if it has ports
+    var def = getSwitchDef(m.data.t);
+    if (def) openSwitchPanel(markerId);
   }
-  selectMarker(markerId);
   updateDevList();
 }
 
@@ -7317,6 +7223,99 @@ function rotateSelected(deg) {
   if (el) el.textContent = angle + '°';
 }
 
+
+
+// ── PROMPT PORT COUNT for unknown networking devices ──────────────────────────
+function promptPortCount(markerId) {
+  var m = markers.find(function(x) { return x.id === markerId; });
+  if (!m) return;
+
+  // Build inline prompt as a floating panel
+  var existing = document.getElementById('port-count-prompt');
+  if (existing) existing.remove();
+
+  var panel = document.createElement('div');
+  panel.id = 'port-count-prompt';
+  panel.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#162032;border:2px solid #5b9bd5;border-radius:14px;padding:20px;z-index:500;width:300px;font-family:JetBrains Mono,monospace;box-shadow:0 8px 40px #000c';
+  panel.innerHTML =
+    '<div style="font-size:13px;color:#5b9bd5;font-weight:700;margin-bottom:4px">' + m.data.i + ' ' + m.data.t + '</div>' +
+    '<div style="font-size:10px;color:#7a8a9a;margin-bottom:14px">How many RJ45 ports does this device have?</div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">' +
+    ['4','5','8','12','16','24','48','Custom'].map(function(n,idx) {
+      return '<button class="pcp-btn" data-n="' + (n === 'Custom' ? '0' : n) + '" style="background:#0d1117;border:1px solid #2c3e52;color:#dde3ec;font-family:monospace;font-size:13px;padding:10px;border-radius:8px;cursor:pointer">' + n + '</button>';
+    }).join('') +
+    '</div>' +
+    '<div id="port-custom-row" style="display:none;margin-bottom:14px">' +
+    '<div style="font-size:9px;color:#4a5e72;margin-bottom:4px">CUSTOM PORT COUNT</div>' +
+    '<input id="port-custom-val" class="mob-field" type="number" placeholder="e.g. 28" style="width:100%">' +
+    '</div>' +
+    '<div style="display:flex;gap:8px">' +
+    '<button id="pcp-confirm" style="flex:2;background:#5b9bd5;border:none;color:#fff;font-family:monospace;font-weight:700;font-size:12px;padding:10px;border-radius:8px;cursor:pointer">CONFIRM &amp; OPEN PORT PANEL</button>' +
+    '<button id="pcp-cancel" style="background:transparent;border:1px solid #2c3e52;color:#7a8a9a;font-family:monospace;font-size:12px;padding:10px 14px;border-radius:8px;cursor:pointer">✕</button>' +
+    '</div>';
+  document.body.appendChild(panel);
+  panel._portCount = 24; // default
+  // Event delegation for port count buttons
+  panel.addEventListener('click', function(e) {
+    var btn = e.target.closest('.pcp-btn');
+    if (btn) { applyPortCount(markerId, parseInt(btn.dataset.n), btn); return; }
+  });
+  document.getElementById('pcp-confirm').addEventListener('click', function() { confirmPortCount(markerId); });
+  document.getElementById('pcp-cancel').addEventListener('click', function() { panel.remove(); });
+}
+
+function applyPortCount(markerId, count, btn) {
+  var panel = document.getElementById('port-count-prompt');
+  if (!panel) return;
+  panel.querySelectorAll('button').forEach(function(b) { b.style.borderColor = '#2c3e52'; b.style.color = '#dde3ec'; });
+  btn.style.borderColor = '#5b9bd5'; btn.style.color = '#5b9bd5';
+  if (count === 0) {
+    document.getElementById('port-custom-row').style.display = 'block';
+    panel._portCount = 0;
+  } else {
+    document.getElementById('port-custom-row').style.display = 'none';
+    panel._portCount = count;
+  }
+}
+
+function confirmPortCount(markerId) {
+  var panel = document.getElementById('port-count-prompt');
+  var m = markers.find(function(x) { return x.id === markerId; });
+  if (!m || !panel) return;
+  var count = panel._portCount;
+  if (count === 0) {
+    count = parseInt(document.getElementById('port-custom-val').value) || 24;
+  }
+  // Register custom switch def
+  SWITCH_DEFS[m.data.t] = { rj45: count, poe: 0, sfp: 0, sfpPlus: 0, sfp28: 0, speed: '1G', rows: count > 12 ? 2 : 1 };
+  panel.remove();
+  openSwitchPanel(markerId);
+}
+
+// ── FIX RIGHT-CLICK DELETE — replace confirm() with inline panel ───────────────
+function showDeleteConfirm(markerId, x, y) {
+  var existing = document.getElementById('del-confirm');
+  if (existing) existing.remove();
+  var div = document.createElement('div');
+  div.id = 'del-confirm';
+  div.style.cssText = 'position:fixed;left:' + x + 'px;top:' + y + 'px;background:#162032;border:2px solid #e84057;border-radius:10px;padding:12px 16px;z-index:500;font-family:monospace;box-shadow:0 4px 20px #000c';
+  var m = markers.find(function(x) { return x.id === markerId; });
+  var name = m ? (m.data.name || m.data.t) : 'device';
+  div.innerHTML = '<div style="font-size:11px;color:#e84057;margin-bottom:10px;font-weight:700">DELETE ' + name.toUpperCase() + '?</div>' +
+    '<div style="display:flex;gap:8px">' +
+    '<button id="del-yes" style="background:#e84057;border:none;color:#fff;font-family:monospace;font-weight:700;font-size:11px;padding:7px 16px;border-radius:6px;cursor:pointer">DELETE</button>' +
+    '<button id="del-no" style="background:transparent;border:1px solid #2c3e52;color:#7a8a9a;font-family:monospace;font-size:11px;padding:7px 14px;border-radius:6px;cursor:pointer">CANCEL</button>' +
+    '</div>';
+  document.body.appendChild(div);
+  document.getElementById('del-yes').onclick = function() {
+    removeMarker(markerId);
+    div.remove();
+    updateDevList(); updateFooter();
+  };
+  document.getElementById('del-no').onclick = function() { div.remove(); };
+  // Auto-dismiss after 4 seconds
+  setTimeout(function() { if (div.parentNode) div.remove(); }, 4000);
+}
 
 
 function returnToOrbit() {
@@ -7437,8 +7436,7 @@ function handlePortMapClick(id) {
     document.getElementById('pm-status').innerHTML = '① <b style="color:#3dd68c">Device A selected</b><br>② Tap destination device<br><small style="color:#7a8a9a">ESC to cancel</small>';
     setBadge('PORT MAP: Now tap Device B');
   } else if (id !== portMapFrom) {
-    var pA = prompt('Port on Device A (e.g. Port 4):') || '';
-    var pB = prompt('Port on Device B (e.g. Port 1):') || '';
+    var pA = ''; var pB = ''; // ports set via port panel
     var fromM = markers.find(function(x) { return x.id === portMapFrom; });
     var toM   = markers.find(function(x) { return x.id === id; });
     makePortConn(fromM, toM, pA, pB);
@@ -7493,24 +7491,12 @@ function promptWallJack(markerId) {
       m.data.t.toLowerCase().indexOf('switch') >= 0 ||
       m.data.t.toLowerCase().indexOf('patch') >= 0);
   });
-  var name = prompt('Name this wall jack / port:\n(e.g. Office 2A, Reception)') || '';
+  var name = ''; // named via edit card
   var m = markers.find(function(x) { return x.id === markerId; }); if (!m) return;
   if (name) m.data.name = name;
-  if (switches.length > 0) {
-    var msg = 'Link to switch port?\n\nAvailable:\n';
-    switches.forEach(function(sw, i) { msg += (i+1) + '. ' + (sw.data.name || sw.data.t) + '\n'; });
-    msg += '\nEnter number (0 to skip):';
-    var pick = parseInt(prompt(msg) || '0');
-    if (pick > 0 && pick <= switches.length) {
-      var sw   = switches[pick - 1];
-      var port = prompt('Port on ' + (sw.data.name || sw.data.t) + ':') || '';
-      if (port) {
-        m.data.port = port;
-        makePortConn(sw, m, port, name || 'Wall Jack');
-      }
-    }
-  }
+  // Wall jack linking now done via port panel — just select it
   selectMarker(markerId);
+  if (isMobile) openMobEdit(markerId);
   updateDevList();
 }
 
@@ -7764,11 +7750,7 @@ vpEl.addEventListener('contextmenu', function(e) {
   var hits = raycaster.intersectObjects(markers.map(function(m) { return m.group || m.mesh; }), true);
   if (hits.length) {
     var id = hits[0].object.userData.markerId;
-    if (confirm('Delete this device?')) {
-      removeMarker(id);
-      if (selId === id) { selId = null; document.getElementById('ep').classList.remove('show'); }
-      updateDevList(); updateFooter();
-    }
+    showDeleteConfirm(id, e.clientX, e.clientY);
   }
 });
 
@@ -7803,14 +7785,36 @@ function handleTap(cx, cy) {
     if (!id) return;
     if (portMapMode) { handlePortMapClick(id); return; }
     selectMarker(id);
-    if (isMobile) { openMobEdit(id); }
+    var tappedM = markers.find(function(x) { return x.id === id; });
+    if (!tappedM) return;
+    var def = getSwitchDef(tappedM.data.t);
+    if (def) {
+      // Switch or patch panel — open port panel directly
+      openSwitchPanel(id);
+    } else if (isNetworkingDevice(tappedM.data.t)) {
+      // Networking device with unknown ports — ask for count then open panel
+      promptPortCount(id);
+    } else if (isMobile) {
+      openMobEdit(id);
+    }
     return;
   }
 
-  // Place device on mesh
+  // Place device on mesh — only on upward-facing horizontal surfaces (floor/top)
   if (pendingDev && meshObjects.length) {
     var hits = raycaster.intersectObjects(meshObjects, true);
-    if (hits.length) { placeDev(hits[0].point); return; }
+    // Filter to only faces with upward-facing normals (worldNormalY > 0.3)
+    // This prevents placing on walls (normalY = 0)
+    var floorHit = null;
+    for (var hi = 0; hi < hits.length; hi++) {
+      var h = hits[hi];
+      if (!h.face) continue;
+      var wn = h.face.normal.clone().transformDirection(h.object.matrixWorld);
+      if (wn.y > 0.3) { floorHit = h; break; }
+    }
+    if (floorHit) { placeDev(floorHit.point); return; }
+    // Fallback: if no floor hit, use first hit anyway (GLB models)
+    if (hits.length && modelExt === 'glb') { placeDev(hits[0].point); return; }
   }
 
   // Deselect
@@ -7841,16 +7845,23 @@ function updateHover(cx, cy) {
 
 function showTip(m, cx, cy) {
   var tip = document.getElementById('tip');
+  if (tip.dataset.pinned === '1') return; // don't move while hovering buttons
   tip.style.display = 'block';
-  tip.style.left = (cx + 18) + 'px';
-  tip.style.top  = (cy - 10) + 'px';
+  // Position once — top-right of device, doesn't chase mouse
+  var vw = window.innerWidth;
+  var x = cx + 18;
+  var y = Math.max(80, cy - 80);
+  // Keep on screen
+  if (x + 220 > vw) x = cx - 230;
+  tip.style.left = x + 'px';
+  tip.style.top  = y + 'px';
   document.getElementById('t-name').textContent  = m.data.name  || '(unnamed)';
   document.getElementById('t-type').textContent  = m.data.i + ' ' + m.data.t.toUpperCase();
   document.getElementById('t-ip').textContent    = m.data.ip    || '—';
   var isSwitch = !!getSwitchDef(m.data.t);
   var pbtn = document.getElementById('t-ports-btn');
   if (pbtn) pbtn.style.display = isSwitch ? 'block' : 'none';
-  // Port display: show available ports for switches, assigned port for endpoints
+  // Port display
   var portDef = getPortDef(m.data.t);
   var portTxt = '—';
   if (portDef) {
@@ -7861,9 +7872,9 @@ function showTip(m, cx, cy) {
   } else if (m.data.port) {
     portTxt = m.data.port;
   }
-  document.getElementById('t-port').textContent = portTxt;
-  document.getElementById('t-vlan').textContent  = m.data.vlan  || '—';
-  document.getElementById('t-model').textContent = m.data.model || '—';
+  document.getElementById('t-port').textContent  = portTxt;
+  document.getElementById('t-vlan').textContent  = m.data.vlan   || '—';
+  document.getElementById('t-model').textContent = m.data.model  || '—';
   document.getElementById('t-status').textContent = m.data.status || '—';
   var connLbl = getConnectionLabel(m);
   var tipConn = document.getElementById('t-conn');
@@ -7871,6 +7882,8 @@ function showTip(m, cx, cy) {
     tipConn.style.display = connLbl ? 'flex' : 'none';
     if (connLbl) document.getElementById('t-conn-val').textContent = connLbl;
   }
+  // Store id for when mouse leaves canvas
+  tip.dataset.mid = m.id;
 }
 function hideTip() {
   document.getElementById('tip').style.display = 'none';
@@ -8202,825 +8215,427 @@ if (window.__atlas) {
 <script>
 // ─────────────────────────────────────────────────────────────────────────────
 // PROJECT ATLAS — Switch Port Panel + 3-way Port Mapping
+// Chain: Switch Port → Wall Jack → End Device
 // ─────────────────────────────────────────────────────────────────────────────
 
-// ── SWITCH DEFINITIONS ───────────────────────────────────────────────────────
-// Each entry: { rj45, poe (how many of rj45 are PoE), sfp, sfpPlus, sfp28, speed }
 var SWITCH_DEFS = {
-  'USW-Flex-Mini':        { rj45:5,  poe:4,  sfp:0, sfpPlus:0, sfp28:0, speed:'1G',   rows:1 },
-  'USW-Flex':             { rj45:5,  poe:4,  sfp:0, sfpPlus:0, sfp28:0, speed:'1G',   rows:1 },
-  'USW-Flex-2.5G':        { rj45:5,  poe:4,  sfp:0, sfpPlus:0, sfp28:0, speed:'2.5G', rows:1 },
-  'USW-Lite-8-POE':       { rj45:8,  poe:4,  sfp:2, sfpPlus:0, sfp28:0, speed:'1G',   rows:1 },
-  'USW-Lite-16-POE':      { rj45:16, poe:8,  sfp:2, sfpPlus:0, sfp28:0, speed:'1G',   rows:2 },
-  'USW-24':               { rj45:24, poe:0,  sfp:2, sfpPlus:0, sfp28:0, speed:'1G',   rows:2 },
-  'USW-24-POE':           { rj45:24, poe:16, sfp:2, sfpPlus:0, sfp28:0, speed:'1G',   rows:2 },
-  'USW-48':               { rj45:48, poe:0,  sfp:4, sfpPlus:0, sfp28:0, speed:'1G',   rows:2 },
-  'USW-48-POE':           { rj45:48, poe:32, sfp:4, sfpPlus:0, sfp28:0, speed:'1G',   rows:2 },
-  'USW-Pro-24':           { rj45:24, poe:0,  sfp:0, sfpPlus:2, sfp28:2, speed:'1G',   rows:2 },
-  'USW-Pro-24-POE':       { rj45:24, poe:16, sfp:0, sfpPlus:2, sfp28:2, speed:'1G',   rows:2 },
-  'USW-Pro-48':           { rj45:48, poe:0,  sfp:0, sfpPlus:4, sfp28:2, speed:'1G',   rows:2 },
-  'USW-Pro-48-POE':       { rj45:48, poe:32, sfp:0, sfpPlus:4, sfp28:2, speed:'1G',   rows:2 },
-  'USW-Pro-Max-24-POE':   { rj45:24, poe:24, sfp:0, sfpPlus:2, sfp28:2, speed:'1G',   rows:2 },
-  'USW-Pro-Max-48-POE':   { rj45:48, poe:48, sfp:0, sfpPlus:4, sfp28:2, speed:'1G',   rows:2 },
-  'USW-EnterpriseXG-24':  { rj45:24, poe:0,  sfp:0, sfpPlus:8, sfp28:4, speed:'10G',  rows:2 },
-  'USW-Industrial':       { rj45:8,  poe:8,  sfp:2, sfpPlus:0, sfp28:0, speed:'1G',   rows:1 },
-  'ENT-XG-24':            { rj45:24, poe:0,  sfp:0, sfpPlus:8, sfp28:4, speed:'10G',  rows:2 },
-  'Switch Generic':       { rj45:24, poe:0,  sfp:2, sfpPlus:0, sfp28:0, speed:'1G',   rows:2 },
-  'Patch Panel':          { rj45:24, poe:0,  sfp:0, sfpPlus:0, sfp28:0, speed:'cat',  rows:2 }
+  'USW-Flex-Mini':       {rj45:5,  poe:4,  sfp:0, sfpPlus:0, sfp28:0, speed:'1G',   rows:1},
+  'USW-Flex':            {rj45:5,  poe:4,  sfp:0, sfpPlus:0, sfp28:0, speed:'1G',   rows:1},
+  'USW-Industrial':      {rj45:8,  poe:8,  sfp:2, sfpPlus:0, sfp28:0, speed:'1G',   rows:1},
+  'USW-Lite-8-POE':      {rj45:8,  poe:4,  sfp:2, sfpPlus:0, sfp28:0, speed:'1G',   rows:1},
+  'USW-Lite-16-POE':     {rj45:16, poe:8,  sfp:2, sfpPlus:0, sfp28:0, speed:'1G',   rows:2},
+  'USW-24':              {rj45:24, poe:0,  sfp:2, sfpPlus:0, sfp28:0, speed:'1G',   rows:2},
+  'USW-24-POE':          {rj45:24, poe:16, sfp:2, sfpPlus:0, sfp28:0, speed:'1G',   rows:2},
+  'USW-48':              {rj45:48, poe:0,  sfp:4, sfpPlus:0, sfp28:0, speed:'1G',   rows:2},
+  'USW-48-POE':          {rj45:48, poe:32, sfp:4, sfpPlus:0, sfp28:0, speed:'1G',   rows:2},
+  'USW-Pro-24':          {rj45:24, poe:0,  sfp:0, sfpPlus:2, sfp28:2, speed:'1G',   rows:2},
+  'USW-Pro-24-POE':      {rj45:24, poe:16, sfp:0, sfpPlus:2, sfp28:2, speed:'1G',   rows:2},
+  'USW-Pro-48':          {rj45:48, poe:0,  sfp:0, sfpPlus:4, sfp28:2, speed:'1G',   rows:2},
+  'USW-Pro-48-POE':      {rj45:48, poe:32, sfp:0, sfpPlus:4, sfp28:2, speed:'1G',   rows:2},
+  'USW-Pro-Max-24-POE':  {rj45:24, poe:24, sfp:0, sfpPlus:2, sfp28:2, speed:'2.5G', rows:2},
+  'USW-Pro-Max-48-POE':  {rj45:48, poe:48, sfp:0, sfpPlus:4, sfp28:2, speed:'2.5G', rows:2},
+  'USW-EnterpriseXG-24': {rj45:24, poe:0,  sfp:0, sfpPlus:8, sfp28:4, speed:'10G',  rows:2},
+  'UDM-Pro':             {rj45:9,  poe:0,  sfp:2, sfpPlus:2, sfp28:0, speed:'1G',   rows:1},
+  'UDM-SE':              {rj45:9,  poe:1,  sfp:2, sfpPlus:2, sfp28:0, speed:'1G',   rows:1},
+  'Switch Generic':      {rj45:24, poe:0,  sfp:2, sfpPlus:0, sfp28:0, speed:'1G',   rows:2},
+  'Patch Panel':         {rj45:24, poe:0,  sfp:0, sfpPlus:0, sfp28:0, speed:'cat',  rows:2},
 };
 
-// Port connection store: portKey → {connId, toId, toName, toPort, label}
-// portKey = markerId + '_' + portNum
-var portMap = {}; // global port assignments
+// Port connection store
+// Key: switchId_portNum → {toId, toName, toType, viaId, viaName, speed, portLabel}
+// viaId/viaName = wall jack in the middle (optional)
+var portMap = {};
 
-// ── SWITCH PANEL HTML ─────────────────────────────────────────────────────────
 function getSwitchDef(deviceType) {
-  // Try exact match first
+  if (!deviceType) return null;
   if (SWITCH_DEFS[deviceType]) return SWITCH_DEFS[deviceType];
-  // Try partial match
   var keys = Object.keys(SWITCH_DEFS);
   for (var i = 0; i < keys.length; i++) {
-    if (deviceType.indexOf(keys[i]) >= 0 || keys[i].indexOf(deviceType) >= 0) {
-      return SWITCH_DEFS[keys[i]];
-    }
+    if (deviceType.toLowerCase().indexOf(keys[i].toLowerCase()) >= 0) return SWITCH_DEFS[keys[i]];
   }
   return null;
 }
+
+var switchPanelMarkerId = null;
 
 function openSwitchPanel(markerId) {
   var m = markers.find(function(x) { return x.id === markerId; });
   if (!m) return;
   var def = getSwitchDef(m.data.t);
-  if (!def) {
-    // Not a switch — use regular edit panel
+  if (!def) { promptPortCount(markerId); return; }
+  switchPanelMarkerId = markerId;
+  var panel = document.getElementById('switch-panel');
+  panel.innerHTML = buildSwitchPanelHTML(m, def);
+  panel.classList.add('show');
+}
+
+function closeSwitchPanel() {
+  document.getElementById('switch-panel').classList.remove('show');
+  switchPanelMarkerId = null;
+}
+
+function spBodyClick(e, markerId) {
+  // Handle port square clicks
+  var port = e.target.closest('[data-port]');
+  if (port && port.dataset.mid) {
+    portClick(port.dataset.mid, parseInt(port.dataset.port));
     return;
   }
-
-  var panel = document.getElementById('switch-panel');
-  if (!panel) return;
-
-  panel.style.display = 'flex';
-  panel.innerHTML = buildSwitchPanel(m, def);
+  // Handle unmap button clicks
+  var unmap = e.target.closest('[data-pmid]');
+  if (unmap) {
+    portClick(unmap.dataset.pmid, parseInt(unmap.dataset.pnum));
+    return;
+  }
 }
 
-function buildSwitchPanel(m, def) {
+function buildSwitchPanelHTML(m, def) {
   var name = m.data.name || m.data.t;
-  var html = '';
+  var totalPorts = def.rj45 + def.sfp + def.sfpPlus + def.sfp28;
+  var usedPorts = 0;
+  for (var pk in portMap) { if (pk.indexOf(m.id + '_') === 0) usedPorts++; }
 
-  // Header
-  html += '<div class="sp-header">';
-  html += '<div>';
-  html += '<div class="sp-name">' + name + '</div>';
-  html += '<div class="sp-model">' + m.data.t + (m.data.ip ? ' &nbsp;·&nbsp; ' + m.data.ip : '') + '</div>';
-  html += '</div>';
-  html += '<button class="sp-close" onclick="closeSwitchPanel()">✕</button>';
-  html += '</div>';
+  var h = '<div class="sp-handle"></div>';
+  h += '<div class="sp-header">';
+  h += '<div class="sp-header-left"><div>';
+  h += '<div class="sp-name">' + name + '</div>';
+  h += '<div class="sp-model">' + m.data.t + ' &nbsp;·&nbsp; ' + usedPorts + '/' + totalPorts + ' ports' + (m.data.ip ? ' &nbsp;·&nbsp; ' + m.data.ip : '') + '</div>';
+  h += '</div></div>';
+  h += '<button class="sp-close" onclick="closeSwitchPanel()">✕</button>';
+  h += '</div>';
 
-  // Port legend
-  html += '<div class="sp-legend">';
-  html += '<span class="sp-leg sp-leg-connected">● Connected</span>';
-  html += '<span class="sp-leg sp-leg-empty">● Empty</span>';
-  if (def.poe > 0) html += '<span class="sp-leg sp-leg-poe">● PoE</span>';
-  if (def.sfp > 0 || def.sfpPlus > 0) html += '<span class="sp-leg sp-leg-sfp">▣ SFP</span>';
-  html += '</div>';
+  // Legend
+  h += '<div class="sp-legend">';
+  h += '<span class="sp-leg sp-leg-connected"><div class="sp-leg-dot"></div>Connected</span>';
+  h += '<span class="sp-leg sp-leg-empty"><div class="sp-leg-dot"></div>Empty</span>';
+  if (def.poe > 0) h += '<span class="sp-leg sp-leg-poe"><div class="sp-leg-dot"></div>PoE</span>';
+  if (def.sfp + def.sfpPlus + def.sfp28 > 0) h += '<span class="sp-leg sp-leg-sfp"><div class="sp-leg-dot"></div>SFP</span>';
+  h += '</div>';
 
-  // Port grid — RJ45 ports
-  html += '<div class="sp-grid-wrap">';
+  h += '<div class="sp-body" id="sp-body-inner" onclick="spBodyClick(event,' + JSON.stringify(m.id) + ')">';
+  h += buildPortGrid(m, def);
+  h += buildPortTable(m, def);
+  h += '</div>';
 
-  // Split into two rows for rack-mount switches (rows=2)
-  var ports = [];
-  for (var i = 1; i <= def.rj45; i++) {
-    ports.push({num: i, type: 'rj45', poe: i <= def.poe});
-  }
-  // Add SFP ports
-  for (var j = 1; j <= def.sfp; j++) {
-    ports.push({num: def.rj45 + j, type: 'sfp', poe: false});
-  }
-  for (var k = 1; k <= def.sfpPlus; k++) {
-    ports.push({num: def.rj45 + def.sfp + k, type: 'sfp+', poe: false});
-  }
-  for (var l = 1; l <= def.sfp28; l++) {
-    ports.push({num: def.rj45 + def.sfp + def.sfpPlus + l, type: 'sfp28', poe: false});
-  }
+  // Device picker overlay
+  h += '<div id="sp-picker" style="display:none;position:absolute;inset:0;background:#111922;border-radius:20px 20px 0 0;flex-direction:column;overflow:hidden">';
+  h += '<div class="sp-picker-header">';
+  h += '<button class="sp-close" id="sp-picker-back" style="margin-right:8px">←</button>';
+  h += '<div class="sp-picker-title" id="sp-picker-title">SELECT DEVICE</div>';
+  h += '</div>';
+  h += '<div class="sp-picker-list" id="sp-picker-list"></div>';
+  h += '</div>';
 
-  if (def.rows === 2 && def.rj45 > 0) {
-    // Rack-mount style: two rows, odd ports top, even ports bottom
-    var topPorts    = ports.filter(function(p, idx) { return p.type === 'rj45' && p.num % 2 === 1; });
-    var bottomPorts = ports.filter(function(p, idx) { return p.type === 'rj45' && p.num % 2 === 0; });
-    var sfpPorts    = ports.filter(function(p) { return p.type !== 'rj45'; });
+  // Port info overlay (shows connection details)
+  h += '<div id="sp-info" style="display:none;position:absolute;inset:0;background:#111922;border-radius:20px 20px 0 0;flex-direction:column;padding:20px;overflow-y:auto">';
+  h += '<div id="sp-info-content"></div>';
+  h += '</div>';
 
-    html += '<div class="sp-row-wrap">';
-    html += '<div class="sp-row">';
-    topPorts.forEach(function(p) { html += renderPort(m.id, p, def.speed); });
-    html += '</div>';
-    html += '<div class="sp-row">';
-    bottomPorts.forEach(function(p) { html += renderPort(m.id, p, def.speed); });
-    html += '</div>';
-    html += '</div>';
+  return h;
+}
 
-    if (sfpPorts.length > 0) {
-      html += '<div class="sp-sfp-group">';
-      sfpPorts.forEach(function(p) { html += renderPort(m.id, p, p.type); });
-      html += '</div>';
+function buildPortGrid(m, def) {
+  var h = '<div class="sp-grid-wrap">';
+  var perRow = def.rows === 2 ? Math.ceil(def.rj45 / 2) : def.rj45;
+  var portW = Math.max(20, Math.min(48, Math.floor((window.innerWidth - 230) / (perRow + 2))));
+
+  if (def.rj45 > 0) {
+    h += '<div class="sp-rj45-group">';
+    if (def.rows === 2) {
+      h += '<div class="sp-row">';
+      for (var i = 1; i <= def.rj45; i += 2) h += renderPortSquare(m.id, i, 'rj45', i <= def.poe, portW);
+      h += '</div><div class="sp-row">';
+      for (var i = 2; i <= def.rj45; i += 2) h += renderPortSquare(m.id, i, 'rj45', i <= def.poe, portW);
+      h += '</div>';
+    } else {
+      h += '<div class="sp-row">';
+      for (var i = 1; i <= def.rj45; i++) h += renderPortSquare(m.id, i, 'rj45', i <= def.poe, portW);
+      h += '</div>';
     }
-  } else {
-    // Single row (flex mini etc)
-    html += '<div class="sp-row-wrap"><div class="sp-row">';
-    ports.forEach(function(p) { html += renderPort(m.id, p, def.speed); });
-    html += '</div></div>';
+    h += '</div>';
   }
 
-  html += '</div>'; // sp-grid-wrap
+  // SFP ports
+  var sfpStart = def.rj45 + 1;
+  var sfpAll = [];
+  for (var j = 0; j < def.sfp;     j++) sfpAll.push({num: sfpStart+j,                         type:'sfp'});
+  for (var j = 0; j < def.sfpPlus; j++) sfpAll.push({num: sfpStart+def.sfp+j,                 type:'sfp+'});
+  for (var j = 0; j < def.sfp28;   j++) sfpAll.push({num: sfpStart+def.sfp+def.sfpPlus+j,     type:'sfp28'});
 
-  // Port detail table
-  html += '<div class="sp-table-wrap">';
-  html += '<table class="sp-table">';
-  html += '<thead><tr><th>Port</th><th>Name</th><th>Connected To</th><th>Speed</th><th></th></tr></thead>';
-  html += '<tbody id="sp-tbody-' + m.id + '">';
-  html += buildPortRows(m, ports);
-  html += '</tbody></table>';
-  html += '</div>';
+  if (sfpAll.length > 0) {
+    h += '<div class="sp-sfp-group">';
+    for (var k = 0; k < sfpAll.length; k += 2) {
+      h += '<div class="sp-row">';
+      h += renderPortSquare(m.id, sfpAll[k].num, sfpAll[k].type, false, 46);
+      if (sfpAll[k+1]) h += renderPortSquare(m.id, sfpAll[k+1].num, sfpAll[k+1].type, false, 46);
+      h += '</div>';
+    }
+    h += '</div>';
+  }
 
-  return html;
+  h += '</div>';
+  return h;
 }
 
-function renderPort(markerId, p, speed) {
-  var key  = markerId + '_' + p.num;
+function renderPortSquare(markerId, portNum, portType, isPoE, w) {
+  var key  = markerId + '_' + portNum;
   var conn = portMap[key];
-  var cls  = 'sp-port';
-  if (conn)    cls += ' sp-port-connected';
-  else if (p.poe) cls += ' sp-port-poe-empty';
-  else         cls += ' sp-port-empty';
-  if (p.type !== 'rj45') cls += ' sp-port-sfp';
-
-  var label = p.num;
-  var title = 'Port ' + p.num + (p.poe ? ' (PoE)' : '') + (conn ? '\n→ ' + (conn.toName || 'Device') : ' — Empty');
-
-  return '<div class="' + cls + '" title="' + title + '" onclick="portClick(\'' + markerId + '\',' + p.num + ')">' +
-    '<div class="sp-port-inner">' +
-      (p.type !== 'rj45' ? '<div class="sp-sfp-slot"></div>' : '<div class="sp-rj45"></div>') +
-    '</div>' +
-    '<div class="sp-port-num">' + label + '</div>' +
-    (conn ? '<div class="sp-port-dot"></div>' : '') +
-  '</div>';
+  var isSFP = portType !== 'rj45';
+  var cls = 'sp-port' + (isSFP ? ' sp-port-sfp' : '');
+  if (conn)       cls += isPoE ? ' sp-port-connected-poe' : ' sp-port-connected';
+  else if (isPoE) cls += ' sp-port-poe-empty';
+  else            cls += ' sp-port-empty';
+  var h2 = Math.round(w * 1.25);
+  return '<div class="' + cls + '" style="width:' + w + 'px;height:' + h2 + 'px;flex-shrink:0" ' +
+    'data-port="' + portNum + '" data-mid="' + markerId + '">' +
+    (isSFP ? '<div class="sp-sfp-hole"></div>' : '<div class="sp-rj45-hole"></div>') +
+    '<div class="sp-port-num">' + portNum + '</div>' +
+    '</div>';
 }
 
-function buildPortRows(m, ports) {
-  var html = '';
-  ports.forEach(function(p) {
-    var key  = m.id + '_' + p.num;
+function buildPortTable(m, def) {
+  var h = '<div class="sp-table-wrap"><table class="sp-table">';
+  h += '<thead><tr><th>PORT</th><th>WALL JACK</th><th>END DEVICE</th><th></th></tr></thead><tbody>';
+  var all = [];
+  for (var i = 1; i <= def.rj45; i++) all.push({num:i, type:'rj45', poe:i<=def.poe});
+  var s = def.rj45+1;
+  for (var j=0;j<def.sfp;j++)     all.push({num:s+j,                        type:'sfp',  poe:false});
+  for (var j=0;j<def.sfpPlus;j++) all.push({num:s+def.sfp+j,                type:'sfp+', poe:false});
+  for (var j=0;j<def.sfp28;j++)   all.push({num:s+def.sfp+def.sfpPlus+j,   type:'sfp28',poe:false});
+  all.forEach(function(p) {
+    var key = m.id + '_' + p.num;
     var conn = portMap[key];
-    html += '<tr class="sp-row-tr' + (conn ? ' sp-row-connected' : '') + '" id="sp-row-' + m.id + '-' + p.num + '">';
-    html += '<td><span class="sp-port-badge' + (p.poe ? ' poe' : '') + '">' + p.num + '</span></td>';
-    html += '<td>' + (conn ? (conn.portLabel || 'Port ' + p.num) : '<span style="color:#4a5e72">—</span>') + '</td>';
-    html += '<td>' + (conn ? '<span style="color:#3dd68c">' + (conn.toName || '?') + '</span>' : '<span style="color:#4a5e72">Empty</span>') + '</td>';
-    html += '<td style="color:#7a8a9a;font-size:10px">' + (conn ? (conn.speed || '1G') : '') + '</td>';
-    html += '<td>' + (conn ? '<button class="sp-unmap" onclick="unmapPort(\'' + m.id + '\',' + p.num + ')">✕</button>' : '') + '</td>';
-    html += '</tr>';
+    h += '<tr class="' + (conn ? 'sp-row-connected' : '') + '">';
+    h += '<td><span class="sp-port-badge' + (p.poe?' poe':'') + (conn?' connected':'') + '">' + (p.type!=='rj45'?p.type.toUpperCase():p.num) + '</span></td>';
+    h += '<td style="color:#f4f6f9">' + (conn && conn.viaName ? '<span style="color:#f0a500">🔲 ' + conn.viaName + '</span>' : '<span style="color:#2c3e52">—</span>') + '</td>';
+    h += '<td>' + (conn ? '<span style="color:#3dd68c;font-weight:700">' + (conn.toName||'?') + '</span>' : '<span style="color:#2c3e52">Empty</span>') + '</td>';
+    h += '<td>' + (conn ? '<button class="sp-unmap" data-pmid="' + m.id + '" data-pnum="' + p.num + '">ⓘ</button>' : '') + '</td>';
+    h += '</tr>';
   });
-  return html;
+  h += '</tbody></table></div>';
+  return h;
 }
 
-// ── PORT CLICK ────────────────────────────────────────────────────────────────
-var pendingPortFrom = null; // {markerId, portNum}
+// ── PORT CLICK — shows info if connected, picker if empty ─────────────────────
+var _pickerMid = null, _pickerPort = null;
 
 function portClick(markerId, portNum) {
   var key  = markerId + '_' + portNum;
   var conn = portMap[key];
+  var panel = document.getElementById('switch-panel');
 
   if (conn) {
-    // Already connected — show info or offer to unmap
-    if (confirm('Port ' + portNum + ' → ' + (conn.toName || 'device') + '\n\nUnmap this connection?')) {
-      unmapPort(markerId, portNum);
-    }
-    return;
+    // Show connection info panel
+    showPortInfo(markerId, portNum, conn);
+  } else {
+    // Show device picker
+    showPortPicker(markerId, portNum);
   }
-
-  // Start a connection from this port
-  pendingPortFrom = {markerId: markerId, portNum: portNum};
-  closeSwitchPanel();
-  setBadge('PORT MAP: Tap the Wall Jack or Device to connect to Port ' + portNum);
-  document.getElementById('f-mode').textContent = 'PORT MAPPING';
-  document.getElementById('pm-status').style.display = 'block';
-  document.getElementById('pm-status').innerHTML =
-    'Connecting: <b style="color:#5b9bd5">' + (markers.find(function(x){return x.id===markerId;})||{}).data.name || 'Switch' +
-    ' Port ' + portNum + '</b><br>Tap destination device<br><small style="color:#7a8a9a">ESC to cancel</small>';
 }
 
-function completePendingPort(toMarkerId) {
-  if (!pendingPortFrom) return;
-  var fromM = markers.find(function(x) { return x.id === pendingPortFrom.markerId; });
-  var toM   = markers.find(function(x) { return x.id === toMarkerId; });
-  if (!fromM || !toM) { pendingPortFrom = null; return; }
+function showPortInfo(markerId, portNum, conn) {
+  var info = document.getElementById('sp-info');
+  var content = document.getElementById('sp-info-content');
+  if (!info || !content) return;
 
-  var portNum   = pendingPortFrom.portNum;
-  var key       = pendingPortFrom.markerId + '_' + portNum;
-  var portLabel = prompt('Label for this port connection:\n(e.g. Reception Desk, Office 2A)', toM.data.name || toM.data.t) || (toM.data.name || toM.data.t);
+  var sw = markers.find(function(x) { return x.id === markerId; });
+  var endDev = markers.find(function(x) { return x.id === conn.toId; });
+  var wj = conn.viaId ? markers.find(function(x) { return x.id === conn.viaId; }) : null;
 
-  // Store port mapping
+  var h = '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">';
+  h += '<div style="font-family:monospace;font-size:13px;color:#5b9bd5;font-weight:700">PORT ' + portNum + ' — CONNECTION DETAILS</div>';
+  h += '<button onclick="closePortInfo()" style="background:transparent;border:1px solid #2c3e52;color:#7a8a9a;font-family:monospace;font-size:11px;padding:6px 12px;border-radius:6px;cursor:pointer">← BACK</button>';
+  h += '</div>';
+
+  // Chain diagram
+  h += '<div style="background:#0d1117;border:1px solid #2c3e52;border-radius:10px;padding:14px;margin-bottom:16px">';
+  h += '<div style="font-size:9px;color:#4a5e72;font-family:monospace;letter-spacing:1px;margin-bottom:10px">CONNECTION CHAIN</div>';
+
+  // Switch
+  h += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">';
+  h += '<div style="font-size:18px">🔀</div>';
+  h += '<div><div style="font-size:12px;color:#f4f6f9;font-family:monospace;font-weight:700">' + (sw ? (sw.data.name || sw.data.t) : 'Switch') + '</div>';
+  h += '<div style="font-size:10px;color:#7a8a9a;font-family:monospace">Port ' + portNum + (conn.speed ? ' · ' + conn.speed : '') + '</div></div>';
+  h += '</div>';
+  h += '<div style="margin-left:14px;border-left:2px dashed #2c3e52;height:16px"></div>';
+
+  // Wall jack (if any)
+  if (wj || conn.viaName) {
+    h += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">';
+    h += '<div style="font-size:18px">🔲</div>';
+    h += '<div><div style="font-size:12px;color:#f0a500;font-family:monospace;font-weight:700">' + (conn.viaName || 'Wall Jack') + '</div>';
+    h += '<div style="font-size:10px;color:#7a8a9a;font-family:monospace">Patch through</div></div>';
+    h += '</div>';
+    h += '<div style="margin-left:14px;border-left:2px dashed #2c3e52;height:16px"></div>';
+  }
+
+  // End device
+  h += '<div style="display:flex;align-items:center;gap:10px">';
+  h += '<div style="font-size:18px">' + (endDev ? endDev.data.i : '💻') + '</div>';
+  h += '<div><div style="font-size:12px;color:#3dd68c;font-family:monospace;font-weight:700">' + (conn.toName || 'Unknown') + '</div>';
+  h += '<div style="font-size:10px;color:#7a8a9a;font-family:monospace">' + (conn.toType || '') + (endDev && endDev.data.ip ? ' · ' + endDev.data.ip : '') + '</div></div>';
+  h += '</div>';
+  h += '</div>';
+
+  // Disconnect warning
+  h += '<div style="background:#2a0010;border:1px solid #e84057;border-radius:8px;padding:12px;margin-bottom:16px">';
+  h += '<div style="font-size:10px;color:#e84057;font-family:monospace;font-weight:700;margin-bottom:4px">⚠ DISCONNECT WARNING</div>';
+  h += '<div style="font-size:11px;color:#7a8a9a;font-family:monospace">Removing this connection will sever the link between <span style="color:#f4f6f9">' + (sw ? (sw.data.name||sw.data.t) : 'switch') + '</span> and <span style="color:#3dd68c">' + (conn.toName||'device') + '</span>.' + (conn.viaName ? ' Wall jack <span style="color:#f0a500">' + conn.viaName + '</span> will show as unlinked.' : '') + '</div>';
+  h += '</div>';
+
+  h += '<div style="display:flex;gap:8px">';
+  h += '<button id="sp-do-disconnect" style="flex:1;background:#e84057;border:none;color:#fff;font-family:monospace;font-weight:700;font-size:12px;padding:12px;border-radius:8px;cursor:pointer">DISCONNECT</button>';
+  h += '<button id="sp-keep-conn" style="flex:1;background:transparent;border:1px solid #2c3e52;color:#7a8a9a;font-family:monospace;font-size:12px;padding:12px;border-radius:8px;cursor:pointer">KEEP CONNECTION</button>';
+  h += '</div>';
+
+  content.innerHTML = h;
+  // Attach listeners after innerHTML set
+  var discBtn = document.getElementById('sp-do-disconnect');
+  var keepBtn = document.getElementById('sp-keep-conn');
+  if (discBtn) discBtn.addEventListener('click', function() { unmapPort(markerId, portNum); closePortInfo(); });
+  if (keepBtn) keepBtn.addEventListener('click', closePortInfo);
+  info.style.display = 'flex';
+}
+
+function closePortInfo() {
+  var info = document.getElementById('sp-info');
+  if (info) info.style.display = 'none';
+}
+
+function showPortPicker(markerId, portNum) {
+  _pickerMid  = markerId;
+  _pickerPort = portNum;
+  var picker = document.getElementById('sp-picker');
+  var list   = document.getElementById('sp-picker-list');
+  var title  = document.getElementById('sp-picker-title');
+  var back   = document.getElementById('sp-picker-back');
+  if (!picker || !list) return;
+
+  title.textContent = 'PORT ' + portNum + ' — CONNECT TO DEVICE';
+  if (back) back.onclick = function() { picker.style.display = 'none'; };
+
+  // Step 1: pick end device or wall jack
+  var h = '<div style="padding:10px 16px;font-size:9px;color:#4a5e72;font-family:monospace;letter-spacing:1px;border-bottom:1px solid #1a2535">STEP 1: SELECT DEVICE TO CONNECT</div>';
+
+  var hasDevices = false;
+  markers.forEach(function(dev) {
+    if (dev.id === markerId) return;
+    // Check if already connected to this port
+    var alreadyOnThisSwitch = false;
+    for (var pk in portMap) {
+      if (pk.indexOf(markerId + '_') === 0 && portMap[pk].toId === dev.id) { alreadyOnThisSwitch = true; break; }
+    }
+    hasDevices = true;
+    var isWJ = dev.data.t === 'Wall Jack' || !!dev.data.wj;
+    var sub = dev.data.t + (dev.data.ip ? ' · ' + dev.data.ip : '') + (alreadyOnThisSwitch ? ' · Already on another port' : '');
+    h += '<div class="sp-picker-item' + (alreadyOnThisSwitch ? ' disabled' : '') + '" data-devid="' + dev.id + '" data-iswj="' + isWJ + '">';
+    h += '<div class="sp-picker-icon">' + dev.data.i + '</div>';
+    h += '<div style="flex:1"><div class="sp-picker-name">' + (dev.data.name || dev.data.t) + '</div>';
+    h += '<div class="sp-picker-sub">' + sub + '</div></div>';
+    if (isWJ) h += '<div style="font-size:9px;color:#f0a500;font-family:monospace">WALL JACK</div>';
+    h += '</div>';
+  });
+
+  if (!hasDevices) h += '<div style="padding:24px;text-align:center;font-family:monospace;font-size:12px;color:#4a5e72">No other devices placed yet.<br>Place devices first, then map ports.</div>';
+
+  list.innerHTML = h;
+  list.onclick = function(e) {
+    var item = e.target.closest('.sp-picker-item');
+    if (!item || item.classList.contains('disabled')) return;
+    var devId = item.dataset.devid;
+    var isWJ  = item.dataset.iswj === 'true';
+    connectPort(_pickerMid, _pickerPort, devId, isWJ);
+    picker.style.display = 'none';
+  };
+
+  picker.style.display = 'flex';
+}
+
+function connectPort(switchId, portNum, deviceId, isWallJack) {
+  var sw  = markers.find(function(x) { return x.id === switchId; });
+  var dev = markers.find(function(x) { return x.id === deviceId; });
+  if (!sw || !dev) return;
+
+  var key = switchId + '_' + portNum;
   portMap[key] = {
-    toId:      toM.id,
-    toName:    toM.data.name || toM.data.t,
-    portLabel: portLabel,
+    toId:      deviceId,
+    toName:    dev.data.name || dev.data.t,
+    toType:    dev.data.t,
+    viaId:     isWallJack ? deviceId : null,
+    viaName:   isWallJack ? (dev.data.name || 'Wall Jack') : null,
     speed:     '1G',
-    fromPort:  portNum,
-    fromName:  fromM.data.name || fromM.data.t
+    portLabel: 'Port ' + portNum
   };
 
-  // Also store reverse reference on destination
-  var revKey = toM.id + '_switch';
-  portMap[revKey] = {
-    fromId:    fromM.id,
-    fromName:  fromM.data.name || fromM.data.t,
-    fromPort:  portNum,
-    portLabel: portLabel
-  };
+  // Draw line between switch and device
+  addPortConn(switchId, deviceId, portNum);
 
-  // Draw the 3D connection line
-  makeDirectionalConn(fromM, toM, portNum, portLabel);
-
-  pendingPortFrom = null;
-  document.getElementById('pm-status').style.display = 'none';
-  setBadge('Port mapped: ' + (fromM.data.name || fromM.data.t) + ' Port ' + portNum + ' → ' + portLabel);
-  document.getElementById('f-mode').textContent = 'ORBIT';
+  // Refresh panel
+  var m   = markers.find(function(x) { return x.id === switchId; });
+  var def = getSwitchDef(m ? m.data.t : '');
+  if (m && def) {
+    var panel = document.getElementById('switch-panel');
+    panel.innerHTML = buildSwitchPanelHTML(m, def);
+    panel.classList.add('show');
+  }
 }
 
-function unmapPort(markerId, portNum) {
-  var key  = markerId + '_' + portNum;
-  var conn = portMap[key];
-  if (!conn) return;
-
-  // Remove 3D line
-  var connId = key;
-  var c = portConns.find(function(x) { return x.portKey === key; });
-  if (c) removePortConn(c.id);
-
-  // Clear reverse
-  if (conn.toId) { delete portMap[conn.toId + '_switch']; }
+function unmapPort(switchId, portNum) {
+  var key  = switchId + '_' + portNum;
+  if (!portMap[key]) return;
+  var conn = portConns.find(function(c) { return c.fromId === switchId && c.portNum === portNum; });
+  if (conn) removePortConn(conn.id);
   delete portMap[key];
+  var m   = markers.find(function(x) { return x.id === switchId; });
+  var def = getSwitchDef(m ? m.data.t : '');
+  if (m && def) {
+    var panel = document.getElementById('switch-panel');
+    panel.innerHTML = buildSwitchPanelHTML(m, def);
+    panel.classList.add('show');
+  }
+}
 
-  // Refresh panel if open
+function promptPortCount(markerId) {
   var m = markers.find(function(x) { return x.id === markerId; });
-  if (m) { var def = getSwitchDef(m.data.t); if (def) openSwitchPanel(markerId); }
-}
-
-// ── DIRECTIONAL 3D CONNECTION ─────────────────────────────────────────────────
-// Arrow always flows from switch/source → endpoint/destination
-function makeDirectionalConn(fromM, toM, portNum, label) {
-  var a = fromM.pos.clone(); a.y += 0.2;
-  var b = toM.pos.clone();   b.y += 0.2;
-
-  // Curved path points
-  var pts = [];
-  for (var i = 0; i <= 24; i++) {
-    var t = i / 24;
-    pts.push(new THREE.Vector3(
-      a.x + (b.x - a.x) * t,
-      a.y + (b.y - a.y) * t + Math.sin(t * Math.PI) * 0.4,
-      a.z + (b.z - a.z) * t
-    ));
-  }
-
-  var lineGeo = new THREE.BufferGeometry().setFromPoints(pts);
-  var lineMat = new THREE.LineDashedMaterial({
-    color: 0x5b9bd5, linewidth: 2,
-    dashSize: 0.18, gapSize: 0.09,
-    transparent: true, opacity: 0.9
-  });
-  var line = new THREE.Line(lineGeo, lineMat);
-  line.computeLineDistances();
-  scene.add(line);
-
-  // Arrow cone at 70% of the path (always pointing toward destination)
-  var arrowGeo = new THREE.ConeGeometry(0.08, 0.25, 8);
-  var arrowMat = new THREE.MeshBasicMaterial({color: 0x5b9bd5});
-  var arrow = new THREE.Mesh(arrowGeo, arrowMat);
-  scene.add(arrow);
-
-  var id = Date.now() + Math.random();
-  var conn = {
-    id:       id,
-    fromId:   fromM.id,
-    toId:     toM.id,
-    fromPort: portNum,
-    label:    label,
-    portKey:  fromM.id + '_' + portNum,
-    line:     line,
-    arrow:    arrow,
-    fromPos:  a.clone(),
-    toPos:    b.clone()
-  };
-  portConns.push(conn);
-  return conn;
-}
-
-// ── CLOSE PANEL ───────────────────────────────────────────────────────────────
-function closeSwitchPanel() {
-  var panel = document.getElementById('switch-panel');
-  if (panel) panel.style.display = 'none';
-}
-
-// ── TOOLTIP ENHANCEMENT ───────────────────────────────────────────────────────
-// Show port connection info on marker hover
-function getConnectionLabel(m) {
-  // If it's a switch, show how many ports are mapped
-  var def = getSwitchDef(m.data.t);
-  if (def) {
-    var mapped = 0;
-    for (var i = 1; i <= (def.rj45 + def.sfp + def.sfpPlus + def.sfp28); i++) {
-      if (portMap[m.id + '_' + i]) mapped++;
-    }
-    return mapped > 0 ? mapped + ' port(s) mapped' : 'No ports mapped';
-  }
-  // If it's an endpoint, show what switch it's connected to
-  var rev = portMap[m.id + '_switch'];
-  if (rev) return rev.fromName + ' Port ' + rev.fromPort + ' → ' + (rev.portLabel || m.data.name);
-  return null;
-}
-
-// ── PATCH PANEL SPECIAL HANDLING ─────────────────────────────────────────────
-// Patch panel acts as a passthrough — connections go: Switch → Patch Port → Wall Jack → Endpoint
-// We store the chain and render it as two connected lines
-
-function getPatchChain(markerId) {
-  var results = [];
-  var keys = Object.keys(portMap);
-  keys.forEach(function(k) {
-    if (k.indexOf(markerId + '_') === 0) {
-      results.push({portNum: k.split('_')[1], conn: portMap[k]});
-    }
-  });
-  return results;
-}
-
-// ── EXPORT PORT MAP ───────────────────────────────────────────────────────────
-function exportPortMap() {
-  return JSON.stringify(portMap);
-}
-
-function importPortMap(json) {
-  try { portMap = JSON.parse(json); } catch(e) {}
-}
-
-
-
-
-// ═══════════════════════════════════════════════════════════
-// MOBILE UI CONTROLLER
-// ═══════════════════════════════════════════════════════════
-
-var mobSelDev = null; // selected device for mobile placement
-
-// Apply mobile class on touch devices
-if (isMobile) {
-  document.body.classList.add('is-mobile');
-}
-
-// Sync badge between desktop and mobile
-function setBadge(txt) {
-  var b = document.getElementById('badge');
-  var mb = document.getElementById('mob-badge');
-  if (b) b.textContent = txt;
-  if (mb) mb.textContent = txt;
-}
-
-// ── MOBILE SHEET ──────────────────────────────────────────
-var currentSheet = null;
-
-function showMobSheet(type) {
-  currentSheet = type;
-  var bg      = document.getElementById('mob-sheet-bg');
-  var sheet   = document.getElementById('mob-sheet');
-  var content = document.getElementById('mob-sheet-content');
-
-  // Mark active toolbar button
-  ['place','view','devices','settings'].forEach(function(t) {
-    var btn = document.getElementById('mtb-' + t);
-    if (btn) btn.classList.toggle('on', t === type);
-  });
-
-  if (type === 'place')    content.innerHTML = buildPlaceSheet();
-  if (type === 'view')     content.innerHTML = buildViewSheet();
-  if (type === 'devices')  content.innerHTML = buildDevicesSheet();
-  if (type === 'settings') content.innerHTML = buildSettingsSheet();
-  if (type === '_edit')    content.innerHTML = ''; // filled by moreEditFields
-
-  bg.classList.add('show');
-  setTimeout(function() { sheet.classList.add('show'); }, 10);
-}
-
-function closeMobSheet() {
-  var bg    = document.getElementById('mob-sheet-bg');
-  var sheet = document.getElementById('mob-sheet');
-  sheet.classList.remove('show');
-  bg.classList.remove('show');
-  // Clear toolbar active states
-  ['place','view','devices','settings'].forEach(function(t) {
-    var btn = document.getElementById('mtb-' + t);
-    if (btn) btn.classList.remove('on');
-  });
-  currentSheet = null;
-}
-
-// ── PLACE SHEET ────────────────────────────────────────────
-var MOB_CATS = [
-  { label: '⭐ FREQUENT', devs: [
-    {t:'Wall Jack', c:'network', i:'🔲', wj:1, l:'WALL JACK'},
-    {t:'Patch Panel', c:'network', i:'🔌', l:'PATCH PNL'},
-    {t:'Desktop PC', c:'endpoint', i:'🖥️', l:'DESKTOP'},
-    {t:'Laptop', c:'endpoint', i:'💻', l:'LAPTOP'},
-    {t:'Net Printer', c:'printer', i:'🖨️', l:'PRINTER'},
-    {t:'MFP/Copier', c:'printer', i:'📠', l:'MFP'},
-    {t:'VoIP Phone', c:'endpoint', i:'☎️', l:'VOIP'},
-    {t:'Rack Server', c:'server', i:'🖥️', l:'RACK SVR'},
-  ]},
-  { label: '🔷 UNIFI GATEWAYS', devs: [
-    {t:'UDM-Pro', c:'network', i:'🛡️', l:'UDM-PRO'},
-    {t:'UDM-SE', c:'network', i:'🛡️', l:'UDM-SE'},
-    {t:'UDR7', c:'network', i:'🛡️', l:'UDR7'},
-    {t:'UCG-Ultra', c:'network', i:'🌐', l:'UCG-ULTRA'},
-    {t:'UXG-Pro', c:'network', i:'🌐', l:'UXG-PRO'},
-    {t:'UX7', c:'network', i:'🌐', l:'UX7'},
-    {t:'Firewall', c:'network', i:'🔥', l:'FIREWALL'},
-    {t:'Router', c:'network', i:'🔄', l:'ROUTER'},
-  ]},
-  { label: '📡 ISP / CARRIER', devs: [
-    {t:'Telus ONT', c:'network', i:'📥', l:'TELUS ONT'},
-    {t:'Telus Router', c:'network', i:'📡', l:'TELUS RTR'},
-    {t:'Wall Jack', c:'network', i:'🔲', wj:1, l:'WALL JACK'},
-    {t:'Patch Panel', c:'network', i:'🔌', l:'PATCH PNL'},
-  ]},
-  { label: '🔀 UNIFI SWITCHES', devs: [
-    {t:'USW-Pro-Max-48-POE', c:'network', i:'🔀', l:'USW-MAX-48P'},
-    {t:'USW-Pro-48-POE', c:'network', i:'🔀', l:'USW-PRO-48P'},
-    {t:'USW-Pro-24-POE', c:'network', i:'🔀', l:'USW-PRO-24P'},
-    {t:'USW-48-POE', c:'network', i:'🔀', l:'USW-48-POE'},
-    {t:'USW-24-POE', c:'network', i:'🔀', l:'USW-24-POE'},
-    {t:'USW-Lite-8-POE', c:'network', i:'🔀', l:'USW-LITE-8P'},
-    {t:'USW-Flex-Mini', c:'network', i:'🔀', l:'FLEX-MINI'},
-    {t:'Switch Generic', c:'network', i:'🔀', l:'SW GENERIC'},
-  ]},
-  { label: '📶 ACCESS POINTS', devs: [
-    {t:'U7-Pro', c:'network', i:'📶', l:'U7-PRO'},
-    {t:'U7-Pro-Wall', c:'network', i:'📶', l:'U7-PRO-WALL'},
-    {t:'U6-Enterprise', c:'network', i:'📶', l:'U6-ENT'},
-    {t:'U6-Pro', c:'network', i:'📶', l:'U6-PRO'},
-    {t:'U6-Lite', c:'network', i:'📶', l:'U6-LITE'},
-    {t:'AP Generic', c:'network', i:'📶', l:'AP'},
-  ]},
-  { label: '🖥️ SERVERS', devs: [
-    {t:'Rack Server', c:'server', i:'🖥️', l:'RACK SVR'},
-    {t:'Tower Server', c:'server', i:'🗄️', l:'TOWER SVR'},
-    {t:'NAS', c:'server', i:'💾', l:'NAS'},
-    {t:'UPS', c:'server', i:'🔋', l:'UPS'},
-    {t:'PDU', c:'server', i:'🔌', l:'PDU'},
-  ]},
-  { label: '📷 CAMERAS', devs: [
-    {t:'G6-Pro 4K', c:'camera', i:'📷', l:'G6 PRO 4K'},
-    {t:'G5-Pro', c:'camera', i:'📷', l:'G5 PRO'},
-    {t:'G5-Dome', c:'camera', i:'📷', l:'G5 DOME'},
-    {t:'AI-PTZ', c:'camera', i:'📷', l:'AI PTZ'},
-    {t:'UNVR', c:'camera', i:'📹', l:'UNVR'},
-    {t:'IP Camera', c:'camera', i:'📷', l:'IP CAM'},
-  ]},
-];
-
-// Flat lookup array for mobile device selection
-var MOB_DEV_LOOKUP = [];
-MOB_CATS.forEach(function(cat) {
-  cat.devs.forEach(function(d) { MOB_DEV_LOOKUP.push(d); });
-});
-
-function buildPlaceSheet() {
-  var h = '<div style="font-size:11px;color:#5b9bd5;font-family:monospace;font-weight:700;margin-bottom:8px;letter-spacing:1px">SELECT DEVICE TO PLACE</div>';
-  h += '<input id="mob-dev-search" class="mob-field" placeholder="🔍  Search devices..." oninput="mobFilterDevices(this.value)" style="margin-bottom:12px;width:100%">';
-  var idx = 0;
-  MOB_CATS.forEach(function(cat) {
-    h += '<div class="mob-cat-title">' + cat.label + '</div>';
-    h += '<div class="mob-dev-grid">';
-    cat.devs.forEach(function(d) {
-      var isOn = mobSelDev && mobSelDev.t === d.t ? ' on' : '';
-      h += '<div class="mob-dev-item' + isOn + '" data-idx="' + idx + '">';
-      h += '<div class="mob-dev-icon">' + d.i + '</div>';
-      h += '<div class="mob-dev-label">' + d.l + '</div>';
-      h += '</div>';
-      idx++;
-    });
-    h += '</div>';
-  });
-  return h;
-}
-
-// Event delegation for mob sheet - handles dynamically created content
-document.addEventListener('click', function(e) {
-  var item = e.target.closest('.mob-dev-item');
-  if (!item) return;
-  var idx = parseInt(item.dataset.idx);
-  var d   = MOB_DEV_LOOKUP[idx];
-  if (!d) return;
-  mobSelDev = d;
-  pendingDev = {t: d.t, c: d.c, i: d.i, wj: !!d.wj};
-  // Flash green immediately
-  document.querySelectorAll('.mob-dev-item').forEach(function(b) { b.classList.remove('on'); });
-  item.classList.add('on');
-  item.style.borderColor = '#3dd68c';
-  item.style.background  = '#0d2018';
-  // Close after short delay so user sees the highlight
-  setTimeout(function() {
-    closeMobSheet();
-    placementRotation = 0;
-    setBadge('TAP SURFACE TO PLACE ' + d.t.toUpperCase());
-    var fm = document.getElementById('f-mode');
-    if (fm) fm.textContent = 'PLACING';
-    var pb = document.getElementById('mtb-place');
-    if (pb) { pb.style.color = '#3dd68c'; }
-    showPlaceRotate();
-  }, 300);
-});
-
-// ── VIEW SHEET ─────────────────────────────────────────────
-
-function mobFilterDevices(query) {
-  query = (query || '').toLowerCase().trim();
-  var items = document.querySelectorAll('#mob-sheet-content .mob-dev-item');
-  var titles = document.querySelectorAll('#mob-sheet-content .mob-cat-title');
-  var grids  = document.querySelectorAll('#mob-sheet-content .mob-dev-grid');
-  if (!query) {
-    items.forEach(function(i) { i.style.display = ''; });
-    titles.forEach(function(t) { t.style.display = ''; });
-    grids.forEach(function(g) { g.style.display = ''; });
-    return;
-  }
-  // Hide all titles first
-  titles.forEach(function(t) { t.style.display = 'none'; });
-  items.forEach(function(item) {
-    var idx = parseInt(item.dataset.idx);
-    var d   = MOB_DEV_LOOKUP[idx];
-    var match = d && (d.t.toLowerCase().indexOf(query) >= 0 || d.l.toLowerCase().indexOf(query) >= 0);
-    item.style.display = match ? '' : 'none';
-  });
-}
-
-function buildViewSheet() {
-  var modes = [
-    {id:'real', icon:'🏠', label:'ARCH'},
-    {id:'wire', icon:'◻', label:'WIRE'},
-    {id:'blue', icon:'📐', label:'DARK'},
-  ];
-  var h = '<div class="mob-view-pills">';
-  modes.forEach(function(m) {
-    var on = viewMode === m.id ? ' on' : '';
-    h += '<div class="mob-view-pill' + on + '" onclick="setVM(\'' + m.id + '\');closeMobSheet()">';
-    h += '<span style="font-size:24px">' + m.icon + '</span>';
-    h += '<span style="font-size:11px;font-family:monospace;font-weight:700">' + m.label + '</span>';
-    h += '</div>';
-  });
-  h += '</div>';
-  h += '<button class="mob-sheet-btn" onclick="resetCam();closeMobSheet()">⊡ &nbsp;Reset Camera</button>';
-  h += '<button class="mob-sheet-btn" onclick="toggleLabels();closeMobSheet()">🏷 &nbsp;Toggle Labels</button>';
-  h += '<button class="mob-sheet-btn" onclick="enterFP();closeMobSheet()">👁 &nbsp;First Person View</button>';
-  return h;
-}
-
-// ── DEVICES SHEET ──────────────────────────────────────────
-function buildDevicesSheet() {
-  var h = '<div style="font-size:11px;color:#5b9bd5;font-family:monospace;font-weight:700;margin-bottom:12px;letter-spacing:1px">PLACED DEVICES (' + markers.length + ')</div>';
-  if (!markers.length) {
-    h += '<div style="color:#4a5e72;font-family:monospace;font-size:12px;text-align:center;padding:24px 0">No devices placed yet</div>';
-    return h;
-  }
-  markers.forEach(function(m) {
-    var sc = m.data.status === 'active' ? '#3dd68c' : m.data.status === 'warning' ? '#f0a500' : '#e84057';
-    h += '<div class="mob-dev-list-item' + (m.id === selId ? ' on' : '') + '" onclick="mobSelectDev(\'' + m.id + '\')">';
-    h += '<div style="font-size:20px">' + m.data.i + '</div>';
-    h += '<div style="flex:1">';
-    h += '<div style="font-size:12px;color:#f4f6f9;font-family:monospace;font-weight:700">' + (m.data.name || m.data.t) + '</div>';
-    h += '<div style="font-size:10px;color:#7a8a9a;font-family:monospace">' + m.data.t + (m.data.ip ? ' · ' + m.data.ip : '') + '</div>';
-    h += '</div>';
-    h += '<div style="width:8px;height:8px;border-radius:50%;background:' + sc + ';flex-shrink:0"></div>';
-    h += '</div>';
-  });
-  return h;
-}
-
-function mobSelectDev(id) {
-  selectMarker(id);
-  closeMobSheet();
-  var m = markers.find(function(x) { return x.id === id; });
-  if (m) { flyToMarker(m); openMobEdit(id); }
-}
-
-// ── SETTINGS SHEET ─────────────────────────────────────────
-function buildSettingsSheet() {
-  var h = '';
-  h += '<button class="mob-sheet-btn" onclick="triggerLoad();closeMobSheet()">⬆ &nbsp;Load Floor Scan (GLB / OBJ)</button>';
-  h += '<button class="mob-sheet-btn" onclick="doExport();closeMobSheet()">⬇ &nbsp;Export as HTML</button>';
-  h += '<button class="mob-sheet-btn" onclick="triggerImport();closeMobSheet()">⬆ &nbsp;Import Saved File</button>';
-  h += '<div style="height:1px;background:#2c3e52;margin:12px 0"></div>';
-  h += '<button class="mob-sheet-btn" onclick="togglePortMap();closeMobSheet()">🔗 &nbsp;Port Mapping Mode</button>';
-  h += '<div style="height:1px;background:#2c3e52;margin:12px 0"></div>';
-  h += '<div style="font-size:9px;color:#4a5e72;font-family:monospace;margin-bottom:8px;letter-spacing:1px">CLIENT INFO</div>';
-  h += '<div style="margin-bottom:8px"><div class="mob-label">Client Name</div><input class="mob-field" value="' + (document.getElementById('cname') ? document.getElementById('cname').value : '') + '" oninput="document.getElementById(\'cname\').value=this.value;updateFooter()"></div>';
-  h += '<div><div class="mob-label">Site / Floor</div><input class="mob-field" value="' + (document.getElementById('sname') ? document.getElementById('sname').value : '') + '" oninput="document.getElementById(\'sname\').value=this.value;updateFooter()"></div>';
-  return h;
-}
-
-// ── MOBILE EDIT CARD ───────────────────────────────────────
-var mobEditId = null;
-
-function openMobEdit(id) {
-  var m = markers.find(function(x) { return x.id === id; });
   if (!m) return;
-  mobEditId = id;
-  document.getElementById('mob-edit-icon').textContent  = m.data.i;
-  document.getElementById('mob-edit-type').textContent  = m.data.t.toUpperCase();
-  document.getElementById('mob-edit-name').value  = m.data.name  || '';
-  document.getElementById('mob-edit-ip').value    = m.data.ip    || '';
-  document.getElementById('mob-edit-port').value  = m.data.port  || '';
-
-  // Context-aware port label
-  var t = (m.data.t || '').toLowerCase();
-  var portLabel = 'CONNECTED TO PORT';
-  var portPh    = 'Port 4 / Gi0/4';
-  if (t.indexOf('usw') >= 0 || t.indexOf('switch') >= 0 || t.indexOf('patch') >= 0) {
-    portLabel = 'UPLINK PORT'; portPh = 'SFP1 / Gi0/48';
-  } else if (t.indexOf('wall jack') >= 0 || t.indexOf('keystone') >= 0) {
-    portLabel = 'PATCH PANEL PORT'; portPh = 'Port 12 / Panel A-12';
-  } else if (t.indexOf('ap') >= 0 || t.indexOf('u6') >= 0 || t.indexOf('u7') >= 0) {
-    portLabel = 'POE SWITCH PORT'; portPh = 'Port 4 (PoE)';
-  } else if (t.indexOf('camera') >= 0 || t.indexOf('g5') >= 0 || t.indexOf('g6') >= 0) {
-    portLabel = 'POE / NVR PORT'; portPh = 'Port 8 / NVR Ch.2';
-  } else if (t.indexOf('server') >= 0 || t.indexOf('nas') >= 0) {
-    portLabel = 'SWITCH PORT (NIC 1)'; portPh = 'Port 24 / Gi0/24';
-  } else if (t.indexOf('printer') >= 0 || t.indexOf('mfp') >= 0) {
-    portLabel = 'SWITCH PORT'; portPh = 'Port 6';
-  } else if (t.indexOf('udm') >= 0 || t.indexOf('uxg') >= 0 || t.indexOf('gateway') >= 0) {
-    portLabel = 'WAN / UPLINK PORT'; portPh = 'WAN1 / Eth0';
-  }
-  var lbl = document.getElementById('mob-port-label');
-  var inp = document.getElementById('mob-edit-port');
-  if (lbl) lbl.textContent = portLabel;
-  if (inp) inp.placeholder = portPh;
-  document.getElementById('mob-edit-vlan').value  = m.data.vlan  || '';
-  document.getElementById('mob-edit-status').value = m.data.status || 'active';
-  // Show current rotation
-  var rotEl = document.getElementById('mob-rot-deg');
-  if (rotEl && m.group) {
-    var angle = Math.round(m.group.rotation.y * 180 / Math.PI) % 360;
-    if (angle < 0) angle += 360;
-    rotEl.textContent = angle + '°';
-  }
-  document.getElementById('mob-edit-card').classList.add('show');
-}
-
-function saveMobEdit() {
-  var m = markers.find(function(x) { return x.id === mobEditId; });
-  if (!m) return;
-  m.data.name   = document.getElementById('mob-edit-name').value;
-  m.data.ip     = document.getElementById('mob-edit-ip').value;
-  m.data.port   = document.getElementById('mob-edit-port').value;
-  m.data.vlan   = document.getElementById('mob-edit-vlan').value;
-  m.data.status = document.getElementById('mob-edit-status').value;
-  closeMobEdit();
-  updateDevList();
-  // If wall jack — prompt to link
-  if (m.data.t === 'Wall Jack' || (m.data.wj)) promptWallJack(mobEditId);
-}
-
-
-function mobDelDev() {
-  if (!mobEditId) return;
-  var confirm_div = document.createElement('div');
-  confirm_div.id = 'mob-del-confirm';
-  confirm_div.style.cssText = 'position:absolute;inset:0;background:#0d1117ee;border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;z-index:201';
-  confirm_div.innerHTML = '<div style="font-size:14px;color:#e84057;font-family:monospace;font-weight:700">DELETE DEVICE?</div>' +
-    '<div style="font-size:11px;color:#7a8a9a;font-family:monospace">This cannot be undone</div>' +
-    '<div style="display:flex;gap:12px">' +
-    '<button id="mob-del-yes" style="background:#e84057;border:none;color:#fff;font-family:monospace;font-weight:700;font-size:13px;padding:10px 24px;border-radius:8px;cursor:pointer">DELETE</button>' +
-    '<button id="mob-del-no" style="background:transparent;border:1px solid #2c3e52;color:#dde3ec;font-family:monospace;font-size:13px;padding:10px 24px;border-radius:8px;cursor:pointer">CANCEL</button>' +
+  var panel = document.createElement('div');
+  panel.id = 'port-count-prompt';
+  panel.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#162032;border:2px solid #5b9bd5;border-radius:14px;padding:20px;z-index:500;width:320px;font-family:JetBrains Mono,monospace;box-shadow:0 8px 40px #000c';
+  var btns = [4,8,12,16,24,48].map(function(n) {
+    return '<button class="pcp-btn" data-n="' + n + '" style="background:#0d1117;border:1px solid #2c3e52;color:#dde3ec;font-family:monospace;font-size:13px;padding:10px;border-radius:8px;cursor:pointer">' + n + '</button>';
+  }).join('');
+  panel.innerHTML =
+    '<div style="font-size:13px;color:#5b9bd5;font-weight:700;margin-bottom:8px">' + m.data.i + ' ' + m.data.t + '</div>' +
+    '<div style="font-size:11px;color:#7a8a9a;margin-bottom:14px">How many RJ45 ports does this device have?</div>' +
+    '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px">' + btns + '</div>' +
+    '<div style="margin-bottom:12px"><input id="pcp-custom" class="mob-field" type="number" placeholder="Custom port count..." style="width:100%"></div>' +
+    '<div style="display:flex;gap:8px">' +
+    '<button id="pcp-confirm" style="flex:2;background:#5b9bd5;border:none;color:#fff;font-family:monospace;font-weight:700;font-size:12px;padding:10px;border-radius:8px;cursor:pointer">CONFIRM</button>' +
+    '<button id="pcp-cancel" style="background:transparent;border:1px solid #2c3e52;color:#7a8a9a;font-family:monospace;font-size:12px;padding:10px;border-radius:8px;cursor:pointer">✕</button>' +
     '</div>';
-  var card = document.getElementById('mob-edit-card');
-  card.style.position = 'fixed';
-  card.appendChild(confirm_div);
-  document.getElementById('mob-del-yes').addEventListener('click', confirmMobDel);
-  document.getElementById('mob-del-no').addEventListener('click', function() { confirm_div.remove(); });
-}
-
-
-function confirmMobDel() {
-  if (!mobEditId) return;
-  removeMarker(mobEditId);
-  var card = document.getElementById('mob-edit-card');
-  card.classList.remove('show');
-  mobEditId = null;
-  returnToOrbit();
-  updateDevList(); updateFooter();
-}
-
-function closeMobEdit() {
-  document.getElementById('mob-edit-card').classList.remove('show');
-  mobEditId = null;
-  returnToOrbit();
-}
-
-function moreEditFields() {
-  // Show full edit as a bottom sheet on mobile
-  var id = mobEditId;
-  closeMobEdit();
-  if (!id) return;
-  // Build full edit sheet content
-  showMobSheet('_edit');
-  var m = markers.find(function(x) { return x.id === id; });
-  if (!m) return;
-  var h = '<div style="font-size:11px;color:#5b9bd5;font-family:monospace;font-weight:700;margin-bottom:12px;letter-spacing:1px">' + m.data.i + ' ' + m.data.t.toUpperCase() + '</div>';
-  var fields = [
-    {id:'e-name',  label:'Hostname',      val: m.data.name   || '', ph: 'SW-MAIN-01'},
-    {id:'e-ip',    label:'IP Address',    val: m.data.ip     || '', ph: '192.168.1.x'},
-    {id:'e-mac',   label:'MAC Address',   val: m.data.mac    || '', ph: 'AA:BB:CC:DD:EE:FF'},
-    {id:'e-unifi', label:'UniFi ID',      val: m.data.unifi  || '', ph: 'UniFi device ID'},
-    {id:'e-port',  label:'Switch Port',   val: m.data.port   || '', ph: 'Port 4'},
-    {id:'e-vlan',  label:'VLAN',          val: m.data.vlan   || '', ph: 'VLAN10'},
-    {id:'e-model', label:'Model',         val: m.data.model  || '', ph: 'USW-Pro-48'},
-    {id:'e-serial',label:'Serial #',      val: m.data.serial || '', ph: 'ABC123'},
-    {id:'e-asset', label:'MSP Asset #',   val: m.data.asset  || '', ph: 'MSP-00123'},
-  ];
-  fields.forEach(function(f) {
-    h += '<div style="margin-bottom:10px"><div class="mob-label">' + f.label + '</div>';
-    h += '<input class="mob-field" id="mob-full-' + f.id + '" value="' + (f.val||'').replace(/"/g,"&quot;") + '" placeholder="' + f.ph + '"></div>';
+  document.body.appendChild(panel);
+  panel._portCount = 24;
+  panel.addEventListener('click', function(e) {
+    var btn = e.target.closest('.pcp-btn');
+    if (!btn) return;
+    panel._portCount = parseInt(btn.dataset.n);
+    panel.querySelectorAll('.pcp-btn').forEach(function(b) { b.style.borderColor='#2c3e52'; b.style.color='#dde3ec'; });
+    btn.style.borderColor = '#5b9bd5'; btn.style.color = '#5b9bd5';
   });
-  h += '<div style="margin-bottom:10px"><div class="mob-label">Notes</div>';
-  h += '<textarea class="mob-field" id="mob-full-notes" style="min-height:60px;resize:none">' + (m.data.notes||'') + '</textarea></div>';
-  h += '<div style="display:flex;gap:8px;margin-top:4px">';
-  h += '<button class="mob-sheet-btn" id="mob-save-full-btn" style="flex:2;background:#5b9bd5;color:#fff;border-color:#5b9bd5;justify-content:center">✓ SAVE ALL</button>';
-  h += '<button class="mob-sheet-btn" id="mob-del-full-btn" style="flex:1;color:#e84057;border-color:#2a0010;justify-content:center">🗑</button>';
-  h += '</div>';
-  document.getElementById('mob-sheet-content').innerHTML = h;
-  document.getElementById('mob-save-full-btn').addEventListener('click', function() { saveMobFull(id); });
-  document.getElementById('mob-del-full-btn').addEventListener('click', function() { deleteMobFull(id); });
+  document.getElementById('pcp-confirm').addEventListener('click', function() { confirmPortCount(markerId); });
+  document.getElementById('pcp-cancel').addEventListener('click', function() { panel.remove(); });
 }
 
-function saveMobFull(id) {
-  var m = markers.find(function(x) { return x.id === id; }); if (!m) return;
-  var get = function(fid) { var el = document.getElementById('mob-full-' + fid); return el ? el.value : ''; };
-  m.data.name   = get('e-name');
-  m.data.ip     = get('e-ip');
-  m.data.mac    = get('e-mac');
-  m.data.unifi  = get('e-unifi');
-  m.data.port   = get('e-port');
-  m.data.vlan   = get('e-vlan');
-  m.data.model  = get('e-model');
-  m.data.serial = get('e-serial');
-  m.data.asset  = get('e-asset');
-  var nt = document.getElementById('mob-full-notes'); m.data.notes = nt ? nt.value : '';
-  closeMobSheet();
-  updateDevList();
+function confirmPortCount(markerId) {
+  var panel = document.getElementById('port-count-prompt');
+  var m = markers.find(function(x) { return x.id === markerId; });
+  if (!m || !panel) return;
+  var custom = document.getElementById('pcp-custom');
+  var count = (custom && custom.value) ? parseInt(custom.value) : panel._portCount;
+  if (!count || count < 1) count = 24;
+  SWITCH_DEFS[m.data.t] = {rj45:count, poe:0, sfp:0, sfpPlus:0, sfp28:0, speed:'1G', rows:count>12?2:1};
+  panel.remove();
+  openSwitchPanel(markerId);
 }
-
-function deleteMobFull(id) {
-  var confirm_div = document.createElement('div');
-  confirm_div.style.cssText = 'position:absolute;inset:0;background:#0d1117ee;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;z-index:300';
-  confirm_div.innerHTML = '<div style="font-size:14px;color:#e84057;font-family:monospace;font-weight:700">DELETE DEVICE?</div>' +
-    '<div style="display:flex;gap:12px">' +
-    '<button id="dfy-btn" style="background:#e84057;border:none;color:#fff;font-family:monospace;font-weight:700;font-size:13px;padding:10px 24px;border-radius:8px;cursor:pointer">DELETE</button>' +
-    '<button id="dfn-btn" style="background:transparent;border:1px solid #2c3e52;color:#dde3ec;font-family:monospace;font-size:13px;padding:10px 24px;border-radius:8px;cursor:pointer">CANCEL</button>' +
-    '</div>';
-  document.getElementById('mob-sheet-content').style.position = 'relative';
-  document.getElementById('mob-sheet-content').appendChild(confirm_div);
-  document.getElementById('dfy-btn').addEventListener('click', function() {
-    removeMarker(id); closeMobSheet(); updateDevList(); updateFooter();
-  });
-  document.getElementById('dfn-btn').addEventListener('click', function() { confirm_div.remove(); });
-}
-
-// Open mobile edit after placing a device
-var origPlaceDev = placeDev;
-placeDev = function(worldPt) {
-  origPlaceDev(worldPt);
-  if (isMobile && selId) {
-    setTimeout(function() { openMobEdit(selId); }, 100);
-  }
-};
-
-// Toggle mobile menu (hamburger in mob-bar)
-function toggleMobMenu() { showMobSheet('settings'); }
-
 
 </script>
-
-
-<!-- SWITCH PORT PANEL -->
-<div id="switch-panel"></div>
-
-
-<!-- Placement rotation controls (body level so not clipped by vp overflow) -->
-<div id="place-rotate" style="display:none;position:fixed;bottom:160px;left:50%;transform:translateX(-50%);z-index:9999;align-items:center;gap:12px;background:#0d1117f0;border:2px solid #5b9bd5;border-radius:14px;padding:10px 18px;box-shadow:0 4px 24px #000a">
-  <div style="font-size:9px;color:#7a8a9a;font-family:monospace;letter-spacing:1px;text-align:center;margin-bottom:2px">ROTATE DEVICE</div>
-  <div style="display:flex;align-items:center;gap:12px">
-    <button ontouchstart="startRotate(-1)" ontouchend="stopRotate()" onmousedown="startRotate(-1)" onmouseup="stopRotate()" style="background:#111822;border:1px solid #2c3e52;color:#5b9bd5;font-size:22px;width:52px;height:52px;border-radius:10px;cursor:pointer">↺</button>
-    <div style="font-size:18px;color:#5b9bd5;font-family:monospace;font-weight:700;min-width:52px;text-align:center"><span id="rotate-deg">0</span>°</div>
-    <button ontouchstart="startRotate(1)" ontouchend="stopRotate()" onmousedown="startRotate(1)" onmouseup="stopRotate()" style="background:#111822;border:1px solid #2c3e52;color:#5b9bd5;font-size:22px;width:52px;height:52px;border-radius:10px;cursor:pointer">↻</button>
-  </div>
-</div>
-
-</body>
-</html>
