@@ -1059,7 +1059,7 @@ body.is-mobile #vp { width: 100% !important; }
   <div>SITE: <span id="f-site" style="color:#5b9bd5">—</span></div>
   <div>DEVICES: <span id="f-devs" style="color:#5b9bd5">0</span></div>
   <div>MODE: <span id="f-mode" style="color:#5b9bd5">ORBIT</span></div>
-  <div style="margin-left:auto;color:#2c3e52">PROJECT ATLAS // MSP SITE MAPPING</div>
+  <div style="margin-left:auto;color:#2c3e52">PROJECT ATLAS // MSP SITE MAPPING &nbsp;·&nbsp; <span style="color:#1a3a52">v1.2.0</span></div>
 </div>
 
 </div><!-- /app -->
@@ -1071,7 +1071,7 @@ body.is-mobile #vp { width: 100% !important; }
 <!-- Mobile top bar -->
 <div id="mob-bar">
   <button class="mob-icon-btn" onclick="toggleMobMenu()" title="Menu">☰</button>
-  <div style="font-family:'JetBrains Mono',monospace;font-size:13px;color:#f4f6f9;font-weight:700;letter-spacing:2px">ATLAS</div>
+  <div style="font-family:'JetBrains Mono',monospace;font-size:13px;color:#f4f6f9;font-weight:700;letter-spacing:2px">ATLAS <span style="font-size:9px;color:#2c3e52;font-weight:400">v1.2.0</span></div>
   <div style="font-size:10px;color:#5b9bd5;font-family:monospace" id="mob-badge">LOAD A SCAN</div>
   <button class="mob-icon-btn" onclick="doExport()" title="Export">⬇</button>
 </div>
@@ -8241,7 +8241,7 @@ function renderSwitchPanel() {
 
   var totalPorts = def.rj45 + def.sfp + def.sfpPlus + def.sfp28;
   var usedPorts  = 0;
-  for (var pk in portMap) { if (pk.indexOf(_spMarkerId + '_') === 0) usedPorts++; }
+  for (var pk in portMap) { if (pk.indexOf(_spMarkerId + '_') === 0 && portMap[pk].toId) usedPorts++; }
 
   panel.innerHTML =
     '<div class="sp-handle"></div>' +
@@ -8409,11 +8409,12 @@ function showPortDetail(portNum, conn) {
   });
 
   detail.classList.add('show');
+  detail.style.display = 'flex';
 }
 
 function closePortDetail() {
   var d = document.getElementById('sp-detail');
-  if (d) d.classList.remove('show');
+  if (d) { d.classList.remove('show'); d.style.display = ''; }
 }
 
 // ── PORT PICKER (empty port) ───────────────────────────────────────────────────
@@ -8499,6 +8500,15 @@ function spConnectPort(switchId, portNum, deviceId, isWallJack) {
   };
 
   makePortConn(sw, dev, portNum, '');
+  // Refresh header count
+  var model = document.querySelector('.sp-model');
+  if (model) {
+    var def2 = getSwitchDef(sw.data.t);
+    var total = def2 ? def2.rj45 + def2.sfp + def2.sfpPlus + def2.sfp28 : 0;
+    var used2 = 0;
+    for (var pk2 in portMap) { if (pk2.indexOf(sw.id + '_') === 0 && portMap[pk2].toId) used2++; }
+    model.textContent = sw.data.t + ' · ' + used2 + '/' + total + ' ports used' + (sw.data.ip ? ' · ' + sw.data.ip : '');
+  }
 }
 
 function spUnmapPort(switchId, portNum) {
